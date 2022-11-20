@@ -19,15 +19,15 @@ func (bb BitBoard) Value() uint64 {
 }
 
 func (bb *BitBoard) SetBit(number uint64) {
-	bb.value = (1 << number) | bb.value
+	bb.value = (uint64(1) << number) | bb.value
 }
 
 func (bb *BitBoard) ClearBit(number uint64) {
-	bb.value = ^(1 << number) & bb.value
+	bb.value = ^(uint64(1) << number) & bb.value
 }
 
 func (bb BitBoard) BitSet(number uint64) bool {
-	return (bb.value & (1 << number)) > 0
+	return (bb.value & (uint64(1) << number)) > 0
 }
 
 func (bb BitBoard) Print() {
