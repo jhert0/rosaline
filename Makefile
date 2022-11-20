@@ -5,3 +5,6 @@ build:
 
 test:
 	go test ./internal/chess
+
+clean:
+	rm -rf bin
