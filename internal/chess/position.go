@@ -22,7 +22,7 @@ type Position struct {
 	kingBB   BitBoard
 
 	enPassant      Square
-	castlingRights uint8
+	castlingRights CastlingRights
 	fiftyMoveClock int
 	fullMoves      int
 
