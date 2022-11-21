@@ -40,28 +40,22 @@ func (p Piece) Character() rune {
 	var character rune
 
 	switch p {
-	case WhitePawn:
-	case BlackPawn:
+	case WhitePawn, BlackPawn:
 		character = 'p'
 		break
-	case WhiteKnight:
-	case BlackKnight:
+	case WhiteKnight, BlackKnight:
 		character = 'n'
 		break
-	case WhiteBishop:
-	case BlackBishop:
+	case WhiteBishop, BlackBishop:
 		character = 'b'
 		break
-	case WhiteRook:
-	case BlackRook:
+	case WhiteRook, BlackRook:
 		character = 'r'
 		break
-	case WhiteQueen:
-	case BlackQueen:
+	case WhiteQueen, BlackQueen:
 		character = 'q'
 		break
-	case WhiteKing:
-	case BlackKing:
+	case WhiteKing, BlackKing:
 		character = 'k'
 		break
 	}
