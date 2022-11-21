@@ -198,6 +198,11 @@ func (p Position) HasCastlingRights(rights CastlingRights) bool {
 	return (p.castlingRights & rights) > 0
 }
 
+// PieceAt checks if there is a piece at the give square.
+func (p Position) PieceAt(square Square) bool {
+	return p.whiteBB.BitSet(uint64(square)) || p.blackBB.BitSet(uint64(square))
+}
+
 func (p Position) Turn() Color {
 	return p.turn
 }
