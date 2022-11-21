@@ -4,7 +4,7 @@ build:
 	go build -o bin/rosaline ./cmd/rosaline/
 
 test:
-	go test ./internal/chess
+	go test -v ./internal/chess
 
 clean:
 	rm -rf bin
