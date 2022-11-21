@@ -9,7 +9,7 @@ import (
 
 // Position is a representation of the current state of the game.
 type Position struct {
-	turn int8
+	turn Color
 
 	whiteBB BitBoard
 	blackBB BitBoard
@@ -193,7 +193,7 @@ func NewPosition(fen string) (Position, error) {
 	return position, nil
 }
 
-func (p Position) Turn() int8 {
+func (p Position) Turn() Color {
 	return p.turn
 }
 

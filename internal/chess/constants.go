@@ -1,8 +1,10 @@
 package chess
 
+type Color uint8
+
 const (
-	WHITE = 0
-	BLACK = 1
+	WHITE Color = 0
+	BLACK Color = 1
 )
 
 const (
