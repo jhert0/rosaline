@@ -5,7 +5,9 @@ import "unicode"
 type Piece uint8
 
 const (
-	WhitePawn Piece = iota
+	NoPiece Piece = iota
+
+	WhitePawn
 	WhiteKnight
 	WhiteBishop
 	WhiteRook
@@ -22,6 +24,10 @@ const (
 
 // Color returns the color of the piece.
 func (p Piece) Color() Color {
+	if p == NoPiece {
+		return NOCOLOR
+	}
+
 	if p < 6 {
 		return WHITE
 	}
