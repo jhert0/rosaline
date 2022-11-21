@@ -28,7 +28,7 @@ func (p Piece) Color() Color {
 		return NOCOLOR
 	}
 
-	if p < 6 {
+	if p <= 6 {
 		return WHITE
 	}
 
