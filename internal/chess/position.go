@@ -193,6 +193,11 @@ func NewPosition(fen string) (Position, error) {
 	return position, nil
 }
 
+// HasCastlingRights checks if the given castling rights are available.
+func (p Position) HasCastlingRights(rights CastlingRights) bool {
+	return (p.castlingRights & rights) > 0
+}
+
 func (p Position) Turn() Color {
 	return p.turn
 }
