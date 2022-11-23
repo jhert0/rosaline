@@ -25,14 +25,14 @@ const (
 // Color returns the color of the piece.
 func (p Piece) Color() Color {
 	if p == NoPiece {
-		return NOCOLOR
+		return NoColor
 	}
 
 	if p <= 6 {
-		return WHITE
+		return White
 	}
 
-	return BLACK
+	return Black
 }
 
 // Character returns the character associated with the piece.
@@ -60,7 +60,7 @@ func (p Piece) Character() rune {
 		break
 	}
 
-	if p.Color() == WHITE {
+	if p.Color() == White {
 		return unicode.ToUpper(character)
 	}
 

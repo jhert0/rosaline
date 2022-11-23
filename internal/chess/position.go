@@ -131,9 +131,9 @@ func NewPosition(fen string) (Position, error) {
 
 	// parse who's turn it is in the current position
 	if fenParts[1] == "w" {
-		position.turn = WHITE
+		position.turn = White
 	} else if fenParts[2] == "b" {
-		position.turn = BLACK
+		position.turn = Black
 	} else {
 		return Position{}, errors.New(fmt.Sprintf("invalid character: %s for turn", fenParts[1]))
 	}
@@ -206,14 +206,14 @@ func (p Position) PieceAt(square Square) bool {
 // GetPieceColor gets the color of the piece at the give square.
 func (p Position) GetPieceColor(square Square) (Color, error) {
 	if p.whiteBB.BitSet(uint64(square)) {
-		return WHITE, nil
+		return White, nil
 	}
 
 	if p.blackBB.BitSet(uint64(square)) {
-		return BLACK, nil
+		return Black, nil
 	}
 
-	return NOCOLOR, errors.New(fmt.Sprintf("no piece exists at: %s", square.ToAlgebraic()))
+	return NoColor, errors.New(fmt.Sprintf("no piece exists at: %s", square.ToAlgebraic()))
 }
 
 // GetPiece gets the piece at the given square.
@@ -227,7 +227,7 @@ func (p Position) GetPiece(square Square) (Piece, error) {
 
 	// TODO: figure out if there is a better way to do this
 	if p.pawnBB.BitSet(index) {
-		if color == WHITE {
+		if color == White {
 			return WhitePawn, nil
 		} else {
 			return BlackPawn, nil
@@ -235,7 +235,7 @@ func (p Position) GetPiece(square Square) (Piece, error) {
 	}
 
 	if p.knightBB.BitSet(index) {
-		if color == WHITE {
+		if color == White {
 			return WhiteKnight, nil
 		} else {
 			return BlackKnight, nil
@@ -243,7 +243,7 @@ func (p Position) GetPiece(square Square) (Piece, error) {
 	}
 
 	if p.bishopBB.BitSet(index) {
-		if color == WHITE {
+		if color == White {
 			return WhiteBishop, nil
 		} else {
 			return BlackBishop, nil
@@ -251,7 +251,7 @@ func (p Position) GetPiece(square Square) (Piece, error) {
 	}
 
 	if p.rookBB.BitSet(index) {
-		if color == WHITE {
+		if color == White {
 			return WhiteRook, nil
 		} else {
 			return BlackRook, nil
@@ -259,7 +259,7 @@ func (p Position) GetPiece(square Square) (Piece, error) {
 	}
 
 	if p.queenBB.BitSet(index) {
-		if color == WHITE {
+		if color == White {
 			return WhiteQueen, nil
 		} else {
 			return BlackQueen, nil
@@ -267,7 +267,7 @@ func (p Position) GetPiece(square Square) (Piece, error) {
 	}
 
 	if p.kingBB.BitSet(index) {
-		if color == WHITE {
+		if color == White {
 			return WhiteKing, nil
 		} else {
 			return BlackKing, nil
