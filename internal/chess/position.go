@@ -256,3 +256,24 @@ func (p Position) FullMoves() int {
 func (p Position) EnPassantPossible() bool {
 	return p.enPassant > -1
 }
+
+func (p Position) Print() {
+	for rank := 8; rank >= 1; rank-- {
+		fmt.Printf("%d | ", rank)
+
+		for file := 1; file <= 8; file++ {
+			square := SquareFromRankFile(rank, file)
+			piece, _ := p.GetPiece(square)
+			if p.PieceAt(square) {
+				fmt.Printf(" %c ", piece.Character())
+			} else {
+				fmt.Print(" - ")
+			}
+		}
+
+		fmt.Println()
+	}
+
+	fmt.Println("   +------------------------")
+	fmt.Println("     a  b  c  d  e  f  g  h")
+}
