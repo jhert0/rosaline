@@ -219,62 +219,37 @@ func (p Position) GetPieceColor(square Square) (Color, error) {
 // GetPiece gets the piece at the given square.
 func (p Position) GetPiece(square Square) (Piece, error) {
 	if !p.PieceAt(square) {
-		return NoPiece, errors.New(fmt.Sprintf("no piece exists at: %s", square.ToAlgebraic()))
+		return NewEmptyPiece(), errors.New(fmt.Sprintf("no piece exists at: %s", square.ToAlgebraic()))
 	}
 
 	index := uint64(square)
 	color, _ := p.GetPieceColor(square)
 
-	// TODO: figure out if there is a better way to do this
 	if p.pawnBB.BitSet(index) {
-		if color == White {
-			return WhitePawn, nil
-		} else {
-			return BlackPawn, nil
-		}
+		return NewPiece(Pawn, color), nil
 	}
 
 	if p.knightBB.BitSet(index) {
-		if color == White {
-			return WhiteKnight, nil
-		} else {
-			return BlackKnight, nil
-		}
+		return NewPiece(Knight, color), nil
 	}
 
 	if p.bishopBB.BitSet(index) {
-		if color == White {
-			return WhiteBishop, nil
-		} else {
-			return BlackBishop, nil
-		}
+		return NewPiece(Bishop, color), nil
 	}
 
 	if p.rookBB.BitSet(index) {
-		if color == White {
-			return WhiteRook, nil
-		} else {
-			return BlackRook, nil
-		}
+		return NewPiece(Rook, color), nil
 	}
 
 	if p.queenBB.BitSet(index) {
-		if color == White {
-			return WhiteQueen, nil
-		} else {
-			return BlackQueen, nil
-		}
+		return NewPiece(Queen, color), nil
 	}
 
 	if p.kingBB.BitSet(index) {
-		if color == White {
-			return WhiteKing, nil
-		} else {
-			return BlackKing, nil
-		}
+		return NewPiece(King, color), nil
 	}
 
-	return NoPiece, nil
+	return NewEmptyPiece(), nil
 }
 
 func (p Position) Turn() Color {
