@@ -3,7 +3,7 @@ package chess
 import "testing"
 
 func getPieceTest(t *testing.T, algebraic string, expectedPiece Piece) {
-	position, _ := NewPosition(STARTING_FEN)
+	position, _ := NewPosition(StartingFen)
 	square, _ := SquareFromAlgebraic(algebraic)
 
 	piece, err := position.GetPiece(square)
