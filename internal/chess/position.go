@@ -111,14 +111,7 @@ func NewPosition(fen string) (Position, error) {
 				position.kingBB.SetBit(index)
 				break
 
-			case '1':
-			case '2':
-			case '3':
-			case '4':
-			case '5':
-			case '6':
-			case '7':
-			case '8':
+			case '1', '2', '3', '4', '5', '6', '7', '8':
 				fileIncrement, _ = strconv.Atoi(string(character))
 				break
 			}
