@@ -144,19 +144,19 @@ func NewPosition(fen string) (Position, error) {
 		position.castlingRights = 0
 	} else {
 		if strings.Contains(castlingRights, "K") {
-			position.castlingRights |= WHITE_CASTLE_KINGSIDE
+			position.castlingRights |= WhiteCastleKingside
 		}
 
 		if strings.Contains(castlingRights, "Q") {
-			position.castlingRights |= WHITE_CASTLE_QUEENSIDE
+			position.castlingRights |= WhiteCastleQueenside
 		}
 
 		if strings.Contains(castlingRights, "k") {
-			position.castlingRights |= BLACK_CASTLE_KINGSIDE
+			position.castlingRights |= BlackCastleKingside
 		}
 
 		if strings.Contains(castlingRights, "q") {
-			position.castlingRights |= BLACK_CASTLE_QUEENSIDE
+			position.castlingRights |= BlackCastleQueenside
 		}
 	}
 
