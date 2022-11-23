@@ -4,32 +4,24 @@ import (
 	"fmt"
 )
 
-type BitBoard struct {
-	value uint64
-}
+type BitBoard uint64
 
 func NewBitBoard(value uint64) BitBoard {
-	return BitBoard{
-		value: value,
-	}
-}
-
-func (bb BitBoard) Value() uint64 {
-	return bb.value
+	return BitBoard(value)
 }
 
 func (bb *BitBoard) SetBit(number uint64) {
-	bb.value = (uint64(1) << number) | bb.value
+	*bb |= BitBoard(uint64(1) << number)
 }
 
 func (bb *BitBoard) ClearBit(number uint64) {
-	bb.value = ^(uint64(1) << number) & bb.value
+	*bb &= BitBoard(^(uint64(1) << number))
 }
 
 func (bb BitBoard) BitSet(number uint64) bool {
-	return (bb.value & (uint64(1) << number)) > 0
+	return (bb & BitBoard((uint64(1) << number))) > 0
 }
 
 func (bb BitBoard) Print() {
-	fmt.Printf("%064b\n", bb.value)
+	fmt.Printf("%064b\n", bb)
 }
