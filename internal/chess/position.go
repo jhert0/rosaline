@@ -125,7 +125,7 @@ func NewPosition(fen string) (Position, error) {
 	// parse who's turn it is in the current position
 	if fenParts[1] == "w" {
 		position.turn = White
-	} else if fenParts[2] == "b" {
+	} else if fenParts[1] == "b" {
 		position.turn = Black
 	} else {
 		return Position{}, errors.New(fmt.Sprintf("invalid character: %s for turn", fenParts[1]))
