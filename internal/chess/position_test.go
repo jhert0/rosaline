@@ -26,3 +26,22 @@ func TestGetPiece(t *testing.T) {
 	getPieceTest(t, "a8", Rook, Black)
 	getPieceTest(t, "e8", King, Black)
 }
+
+func TestFen(t *testing.T) {
+	fens := []string{
+		"rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+		"rnbq1rk1/pppp1ppp/4pn2/8/1bB1P3/2N2N2/PPPP1PPP/R1BQK2R w KQ - 6 5",
+		"rn1qkbnr/pp2pppp/8/7b/2BQ4/2N1PP2/PP4PP/R1B1K1NR b KQkq - 0 7",
+	}
+
+	for _, fen := range fens {
+		position, err := NewPosition(fen)
+		if err != nil {
+			t.Fatalf("%s: fen %s returned error: %e", t.Name(), fen, err)
+		}
+
+		if position.Fen() != fen {
+			t.Fatalf("%s: expected %s got %s", t.Name(), fen, position.Fen())
+		}
+	}
+}

@@ -186,6 +186,90 @@ func NewPosition(fen string) (Position, error) {
 	return position, nil
 }
 
+// Fen gets the FEN for the current position.
+func (p Position) Fen() string {
+	var builder strings.Builder
+
+	// write the board
+	for rank := 8; rank >= 1; rank-- {
+		for file := 1; file <= 8; {
+			fileIncrement := 1
+
+			square := SquareFromRankFile(rank, file)
+			if p.PieceAt(square) {
+				piece, _ := p.GetPiece(square)
+				builder.WriteString(string(piece.Character()))
+			} else {
+				for f := file + 1; f <= 8; f++ {
+					nextSquare := SquareFromRankFile(rank, f)
+					if p.PieceAt(nextSquare) {
+						break
+					}
+
+					fileIncrement++
+				}
+
+				builder.WriteString(fmt.Sprintf("%d", fileIncrement))
+			}
+
+			file += fileIncrement
+		}
+
+		if rank != 1 {
+			builder.WriteString("/")
+		}
+	}
+
+	builder.WriteString(" ")
+
+	// write whos turn it is
+	if p.turn == White {
+		builder.WriteString("w")
+	} else {
+		builder.WriteString("b")
+	}
+
+	builder.WriteString(" ")
+
+	// write castling rights
+	if p.HasCastlingRights(WhiteCastleKingside) {
+		builder.WriteString("K")
+	}
+
+	if p.HasCastlingRights(WhiteCastleQueenside) {
+		builder.WriteString("Q")
+	}
+
+	if p.HasCastlingRights(BlackCastleKingside) {
+		builder.WriteString("k")
+	}
+
+	if p.HasCastlingRights(BlackCastleQueenside) {
+		builder.WriteString("q")
+	}
+
+	builder.WriteString(" ")
+
+	// write en passant square
+	if p.enPassant == -1 {
+		builder.WriteString("-")
+	} else {
+		builder.WriteString(p.enPassant.ToAlgebraic())
+	}
+
+	builder.WriteString(" ")
+
+	// write fifty move clock
+	builder.WriteString(fmt.Sprintf("%d", p.fiftyMoveClock))
+
+	builder.WriteString(" ")
+
+	// write full moves
+	builder.WriteString(fmt.Sprintf("%d", p.fullMoves))
+
+	return builder.String()
+}
+
 // HasCastlingRights checks if the given castling rights are available.
 func (p Position) HasCastlingRights(rights CastlingRights) bool {
 	return (p.castlingRights & rights) > 0
