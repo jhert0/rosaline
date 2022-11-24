@@ -1,13 +1,5 @@
 package chess
 
-type Color uint8
-
-const (
-	NoColor Color = 0
-	White   Color = 1
-	Black   Color = 2
-)
-
 const (
 	StartingFen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
 )
