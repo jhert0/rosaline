@@ -60,6 +60,18 @@ loop:
 			position = newPosition
 
 			break
+		case "move":
+			if len(args) < 1 {
+				fmt.Println("move requires a uci formatted move as an argument")
+				break
+			}
+
+			err := position.MakeUciMove(args[0])
+			if err != nil {
+				fmt.Println(err)
+			}
+
+			break
 		case "quit":
 			break loop
 		}
