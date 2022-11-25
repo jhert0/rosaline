@@ -15,3 +15,14 @@ const (
 	BlackCastleQueenside CastlingRights = 0b1000
 	BlackCastleBoth      CastlingRights = BlackCastleKingside | BlackCastleQueenside
 )
+
+type direction int8
+
+// These directions are from white's perspective.
+const (
+	north direction = 8
+	south direction = -8
+
+	east direction = 1
+	west direction = -1
+)
