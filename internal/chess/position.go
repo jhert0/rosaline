@@ -337,6 +337,14 @@ func (p Position) FullMoves() int {
 	return p.fullMoves
 }
 
+func (p Position) EnPassant() Square {
+	return p.enPassant
+}
+
+func (p Position) CastlingRights() CastlingRights {
+	return p.castlingRights
+}
+
 func (p Position) EnPassantPossible() bool {
 	return p.enPassant > -1
 }
