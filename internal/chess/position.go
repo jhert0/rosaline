@@ -361,3 +361,119 @@ func (p Position) Print() {
 	fmt.Println("   +------------------------")
 	fmt.Println("     a  b  c  d  e  f  g  h")
 }
+
+func (p *Position) setPiece(square Square, piece Piece) {
+	index := uint64(square)
+
+	if piece.Color() == White {
+		p.whiteBB.SetBit(index)
+	} else {
+		p.blackBB.SetBit(index)
+	}
+
+	switch piece.Type() {
+	case Pawn:
+		p.pawnBB.SetBit(index)
+		break
+	case Knight:
+		p.knightBB.SetBit(index)
+		break
+	case Bishop:
+		p.bishopBB.SetBit(index)
+		break
+	case Rook:
+		p.rookBB.SetBit(index)
+		break
+	case Queen:
+		p.queenBB.SetBit(index)
+		break
+	case King:
+		p.kingBB.SetBit(index)
+		break
+	}
+}
+
+func (p *Position) clearPiece(square Square, piece Piece) {
+	index := uint64(square)
+
+	if piece.Color() == White {
+		p.whiteBB.ClearBit(index)
+	} else {
+		p.blackBB.ClearBit(index)
+	}
+
+	switch piece.Type() {
+	case Pawn:
+		p.pawnBB.ClearBit(index)
+		break
+	case Knight:
+		p.knightBB.ClearBit(index)
+		break
+	case Bishop:
+		p.bishopBB.ClearBit(index)
+		break
+	case Rook:
+		p.rookBB.ClearBit(index)
+		break
+	case Queen:
+		p.queenBB.ClearBit(index)
+		break
+	case King:
+		p.kingBB.ClearBit(index)
+		break
+	}
+}
+
+// makeMove applies the move to the current position.
+func (p *Position) makeMove(move Move) error {
+	movingPiece, err := p.GetPiece(move.From)
+	if err != nil {
+		return err
+	}
+
+	capturePiece, _ := p.GetPiece(move.To)
+	if movingPiece.Color() == capturePiece.Color() {
+		return errors.New("trying to capture piece of same color")
+	}
+
+	switch move.Type() {
+	case NormalMove:
+		p.clearPiece(move.From, movingPiece)
+		p.setPiece(move.To, movingPiece)
+
+		if capturePiece.Type() != None {
+			p.clearPiece(move.To, capturePiece)
+		}
+		break
+	case CastleMove:
+		break
+	}
+
+	return nil
+}
+
+// MakeUciMove makes a move from the give uci string.
+func (p *Position) MakeUciMove(uci string) error {
+	if len(uci) < 4 {
+		return errors.New("uci move is too short")
+	}
+
+	from, err := SquareFromAlgebraic(uci[:2])
+	if err != nil {
+		return err
+	}
+
+	to, err := SquareFromAlgebraic(uci[2:4])
+	if err != nil {
+		return err
+	}
+
+	move := NewMove(from, to, NormalMove)
+
+	capturePiece, err := p.GetPiece(to)
+	if err == nil {
+		move.WithCapture(capturePiece.Type())
+	}
+
+	return p.makeMove(move)
+}
