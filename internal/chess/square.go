@@ -7,7 +7,7 @@ import (
 	"strings"
 )
 
-type Square int
+type Square int8
 
 // SquareFromAlgebraic creates a Square from the given algebraic string.
 func SquareFromAlgebraic(algebraic string) (Square, error) {
