@@ -436,8 +436,16 @@ func (p *Position) makeMove(move Move) error {
 		return errors.New("trying to capture piece of same color")
 	}
 
+	p.enPassant = -1   // clear en passant square, this will be set later if needed
+	p.fiftyMoveClock++ // increment the fifty move clock, this will be cleared later if needed
+
 	switch move.Type() {
 	case NormalMove:
+		// clear the fifty move clock, a pawn has moved or a capture has happened
+		if movingPiece.Type() == Pawn || capturePiece.Type() != None {
+			p.fiftyMoveClock = 0
+		}
+
 		p.clearPiece(move.From, movingPiece)
 		p.setPiece(move.To, movingPiece)
 
