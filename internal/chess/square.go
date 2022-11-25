@@ -69,6 +69,11 @@ func (s Square) File() int {
 	return int(s%8) + 1
 }
 
+// IsValid returns if the Square is a valid square index on the board.
+func (s Square) IsValid() bool {
+	return s >= 0 && s < 64
+}
+
 // ToAlgebraic returns the algebraic string for the Square.
 func (s Square) ToAlgebraic() string {
 	algebraic := [2]string{}
