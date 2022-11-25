@@ -20,3 +20,16 @@ func (c Color) String() string {
 
 	return "No Color"
 }
+
+// OpposingSide returns the opposite color.
+func (c Color) OpposingSide() Color {
+	if c == NoColor {
+		panic("NoColor does not have an opposing side.")
+	}
+
+	if c == White {
+		return Black
+	}
+
+	return White
+}

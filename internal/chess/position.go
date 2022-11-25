@@ -449,6 +449,8 @@ func (p *Position) makeMove(move Move) error {
 		break
 	}
 
+	p.turn = p.turn.OpposingSide()
+
 	return nil
 }
 
