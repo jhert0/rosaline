@@ -72,6 +72,21 @@ loop:
 			}
 
 			break
+		case "debug":
+			fmt.Println("Turn:", position.Turn())
+			fmt.Printf("Castling Rights: %04b\n", position.CastlingRights())
+
+			enPassant := position.EnPassant()
+			fmt.Printf("En Passant: %d ", enPassant)
+			if enPassant.IsValid() {
+				fmt.Printf("(%s)", enPassant.ToAlgebraic())
+			} else {
+				fmt.Printf("(-)")
+			}
+			fmt.Println()
+
+			fmt.Println("FEN:", position.Fen())
+			break
 		case "quit":
 			break loop
 		}
