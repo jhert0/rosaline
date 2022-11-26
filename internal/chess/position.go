@@ -506,6 +506,10 @@ func (p *Position) makeMove(move Move) error {
 		break
 	}
 
+	if p.turn == Black {
+		p.fullMoves++
+	}
+
 	p.turn = p.turn.OpposingSide()
 
 	return nil
