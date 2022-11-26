@@ -477,6 +477,8 @@ func (p *Position) makeMove(move Move) error {
 		return errors.New("trying to capture piece of same color")
 	}
 
+	copy := p.Copy()
+
 	p.enPassant = -1   // clear en passant square, this will be set later if needed
 	p.fiftyMoveClock++ // increment the fifty move clock, this will be cleared later if needed
 
@@ -511,6 +513,7 @@ func (p *Position) makeMove(move Move) error {
 	}
 
 	p.turn = p.turn.OpposingSide()
+	p.previous = &copy
 
 	return nil
 }
@@ -539,4 +542,49 @@ func (p *Position) MakeUciMove(uci string) error {
 	}
 
 	return p.makeMove(move)
+}
+
+// Copy creates a copy of the current position.
+func (p Position) Copy() Position {
+	copy := Position{
+		turn:           p.turn,
+		whiteBB:        p.whiteBB,
+		blackBB:        p.blackBB,
+		pawnBB:         p.pawnBB,
+		bishopBB:       p.bishopBB,
+		knightBB:       p.knightBB,
+		rookBB:         p.rookBB,
+		queenBB:        p.queenBB,
+		kingBB:         p.kingBB,
+		enPassant:      p.enPassant,
+		castlingRights: p.castlingRights,
+		fiftyMoveClock: p.fiftyMoveClock,
+		fullMoves:      p.fullMoves,
+		previous:       p.previous,
+	}
+
+	return copy
+}
+
+// CanUndo returns if there is a previous Position that can be restored to.
+func (p Position) CanUndo() bool {
+	return p.previous != nil
+}
+
+// Undo restores the Position to the previous Position.
+func (p *Position) Undo() {
+	p.turn = p.previous.turn
+	p.whiteBB = p.previous.whiteBB
+	p.blackBB = p.previous.blackBB
+	p.pawnBB = p.previous.pawnBB
+	p.bishopBB = p.previous.bishopBB
+	p.knightBB = p.previous.knightBB
+	p.rookBB = p.previous.rookBB
+	p.queenBB = p.previous.queenBB
+	p.kingBB = p.previous.kingBB
+	p.enPassant = p.previous.enPassant
+	p.castlingRights = p.previous.castlingRights
+	p.fiftyMoveClock = p.previous.fiftyMoveClock
+	p.fullMoves = p.previous.fullMoves
+	p.previous = p.previous.previous
 }
