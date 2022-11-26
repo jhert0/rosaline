@@ -349,6 +349,39 @@ func (p Position) EnPassantPossible() bool {
 	return p.enPassant > -1
 }
 
+// GetColorBB returns the bitboard for the given color.
+func (p Position) GetColorBB(color Color) BitBoard {
+	if color == White {
+		return p.whiteBB
+	}
+
+	if color == Black {
+		return p.blackBB
+	}
+
+	panic("requested bitboard for NoColor")
+}
+
+// GetPieceBB returns the bitboard for the given PieceType.
+func (p Position) GetPieceBB(pieceType PieceType) BitBoard {
+	switch pieceType {
+	case Pawn:
+		return p.pawnBB
+	case Knight:
+		return p.knightBB
+	case Bishop:
+		return p.bishopBB
+	case Rook:
+		return p.rookBB
+	case Queen:
+		return p.queenBB
+	case King:
+		return p.kingBB
+	}
+
+	panic(fmt.Sprintf("requested bitboard for unknown piece type: %d", pieceType))
+}
+
 func (p Position) Print() {
 	for rank := 8; rank >= 1; rank-- {
 		fmt.Printf("%d | ", rank)
