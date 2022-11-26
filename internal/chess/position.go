@@ -506,6 +506,8 @@ func (p *Position) makeMove(move Move) error {
 		break
 	case CastleMove:
 		break
+	case EnPassantMove:
+		break
 	}
 
 	if p.turn == Black {

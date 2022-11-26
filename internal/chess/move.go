@@ -7,6 +7,7 @@ type MoveType uint8
 const (
 	NormalMove MoveType = iota
 	CastleMove
+	EnPassantMove
 )
 
 type Move struct {
