@@ -43,6 +43,10 @@ func (m Move) Type() MoveType {
 	return m.moveType
 }
 
+func (m Move) PromotionPiece() PieceType {
+	return m.promotionPiece
+}
+
 // RankDifference calculates the difference in ranks between the from
 // square and the to square.
 func (m Move) RankDifference() int {
