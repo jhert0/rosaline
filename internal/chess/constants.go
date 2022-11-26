@@ -1,5 +1,7 @@
 package chess
 
+import "strings"
+
 const (
 	StartingFen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
 )
@@ -15,6 +17,28 @@ const (
 	BlackCastleQueenside CastlingRights = 0b0010
 	BlackCastleBoth      CastlingRights = BlackCastleKingside | BlackCastleQueenside
 )
+
+func (rights CastlingRights) String() string {
+	var builder strings.Builder
+
+	if (rights & WhiteCastleKingside) > 0 {
+		builder.WriteString("K")
+	}
+
+	if (rights & WhiteCastleQueenside) > 0 {
+		builder.WriteString("Q")
+	}
+
+	if (rights & BlackCastleKingside) > 0 {
+		builder.WriteString("k")
+	}
+
+	if (rights & BlackCastleQueenside) > 0 {
+		builder.WriteString("q")
+	}
+
+	return builder.String()
+}
 
 type direction int8
 
