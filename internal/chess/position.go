@@ -454,6 +454,14 @@ func (p *Position) makeMove(move Move) error {
 			p.fiftyMoveClock = 0
 		}
 
+		if movingPiece.Type() == Pawn && move.RankDifference() == 2 {
+			if p.turn == White {
+				p.enPassant = Square(move.To - 8)
+			} else {
+				p.enPassant = Square(move.To + 8)
+			}
+		}
+
 		p.clearPiece(move.From, movingPiece)
 		p.setPiece(move.To, movingPiece)
 
