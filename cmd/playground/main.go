@@ -82,7 +82,7 @@ loop:
 			break
 		case "debug":
 			fmt.Println("Turn:", position.Turn())
-			fmt.Printf("Castling Rights: %04b\n", position.CastlingRights())
+			fmt.Printf("Castling Rights: %04b (%s)\n", position.CastlingRights(), position.CastlingRights())
 
 			enPassant := position.EnPassant()
 			fmt.Printf("En Passant: %d ", enPassant)
