@@ -60,7 +60,7 @@ func (m Move) FileDifference() int {
 }
 
 func (m Move) IsPromotion() bool {
-	return m.promotionPiece == None
+	return m.promotionPiece != None
 }
 
 func (m Move) Captures() bool {
