@@ -72,6 +72,14 @@ loop:
 			}
 
 			break
+		case "undo":
+			if !position.CanUndo() {
+				fmt.Println("unable to undo, no previous position availible")
+				break
+			}
+
+			position.Undo()
+			break
 		case "debug":
 			fmt.Println("Turn:", position.Turn())
 			fmt.Printf("Castling Rights: %04b\n", position.CastlingRights())
