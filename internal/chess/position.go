@@ -497,11 +497,53 @@ func (p *Position) makeMove(move Move) error {
 			}
 		}
 
+		if movingPiece.Type() == Rook {
+			switch move.From {
+			case A1:
+				p.castlingRights &= ^WhiteCastleQueenside
+				break
+			case A8:
+				p.castlingRights &= ^BlackCastleQueenside
+				break
+			case H1:
+				p.castlingRights &= ^WhiteCastleKingside
+				break
+			case H8:
+				p.castlingRights &= ^BlackCastleKingside
+				break
+			}
+		}
+
+		if movingPiece.Type() == King {
+			if p.turn == White {
+				p.castlingRights &= ^WhiteCastleBoth
+			} else {
+				p.castlingRights &= ^BlackCastleBoth
+			}
+		}
+
 		p.clearPiece(move.From, movingPiece)
 		p.setPiece(move.To, movingPiece)
 
 		if capturePiece.Type() != None {
 			p.clearPiece(move.To, capturePiece)
+
+			if capturePiece.Type() == Rook {
+				switch move.To {
+				case A1:
+					p.castlingRights &= ^WhiteCastleQueenside
+					break
+				case A8:
+					p.castlingRights &= ^BlackCastleQueenside
+					break
+				case H1:
+					p.castlingRights &= ^WhiteCastleKingside
+					break
+				case H8:
+					p.castlingRights &= ^BlackCastleKingside
+					break
+				}
+			}
 		}
 		break
 	case CastleMove:
