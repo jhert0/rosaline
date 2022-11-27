@@ -490,10 +490,13 @@ func (p *Position) makeMove(move Move) error {
 		}
 
 		if movingPiece.Type() == Pawn && move.RankDifference() == 2 {
-			if p.turn == White {
-				p.enPassant = Square(move.To - 8)
-			} else {
-				p.enPassant = Square(move.To + 8)
+			opposingSide := p.turn.OpposingSide()
+
+			// check to see if a pawn is on a valid square for en passant
+			pawn1, _ := p.GetPiece(move.To + Square(west))
+			pawn2, _ := p.GetPiece(move.To + Square(east))
+			if (pawn1.Type() == Pawn && pawn1.Color() == opposingSide) || (pawn2.Type() == Pawn && pawn2.Color() == opposingSide) {
+				p.enPassant = move.To + Square(pawnDirection(opposingSide))
 			}
 		}
 
