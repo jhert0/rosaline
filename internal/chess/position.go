@@ -590,6 +590,14 @@ func (p *Position) makeMove(move Move) error {
 		}
 		break
 	case EnPassantMove:
+		// move the pawn to its new square
+		p.clearPiece(move.From, movingPiece)
+		p.setPiece(move.To, movingPiece)
+
+		// remove the captured pawn
+		captureSquare := move.To + Square(pawnDirection(p.turn.OpposingSide()))
+		capturedPawn, _ := p.GetPiece(captureSquare)
+		p.clearPiece(captureSquare, capturedPawn)
 		break
 	}
 
@@ -625,6 +633,11 @@ func (p *Position) MakeUciMove(uci string) error {
 	case "e1g1", "e1c1", "e8g8", "e8c8":
 		moveType = CastleMove
 		break
+	}
+
+	movingPiece, _ := p.GetPiece(from)
+	if movingPiece.Type() == Pawn && to == p.enPassant {
+		moveType = EnPassantMove
 	}
 
 	move := NewMove(from, to, moveType)
