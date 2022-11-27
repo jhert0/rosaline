@@ -555,6 +555,39 @@ func (p *Position) makeMove(move Move) error {
 		}
 		break
 	case CastleMove:
+		// move the king to its new square
+		p.clearPiece(move.From, movingPiece)
+		p.setPiece(move.To, movingPiece)
+
+		// move the rook to its new square
+		switch move.To {
+		case C1:
+			rook, _ := p.GetPiece(A1)
+			p.clearPiece(A1, rook)
+			p.setPiece(D1, rook)
+			break
+		case G1:
+			rook, _ := p.GetPiece(H1)
+			p.clearPiece(H1, rook)
+			p.setPiece(F1, rook)
+			break
+		case C8:
+			rook, _ := p.GetPiece(C8)
+			p.clearPiece(C8, rook)
+			p.setPiece(F8, rook)
+			break
+		case G8:
+			rook, _ := p.GetPiece(A8)
+			p.clearPiece(A8, rook)
+			p.setPiece(D8, rook)
+			break
+		}
+
+		if p.turn == White {
+			p.castlingRights &= ^WhiteCastleBoth
+		} else {
+			p.castlingRights &= ^BlackCastleBoth
+		}
 		break
 	case EnPassantMove:
 		break
@@ -586,7 +619,15 @@ func (p *Position) MakeUciMove(uci string) error {
 		return err
 	}
 
-	move := NewMove(from, to, NormalMove)
+	moveType := NormalMove
+
+	switch uci {
+	case "e1g1", "e1c1", "e8g8", "e8c8":
+		moveType = CastleMove
+		break
+	}
+
+	move := NewMove(from, to, moveType)
 
 	capturePiece, err := p.GetPiece(to)
 	if err == nil {
