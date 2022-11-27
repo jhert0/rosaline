@@ -9,24 +9,24 @@ import (
 
 // Position is a representation of the current state of the game.
 type Position struct {
-	turn Color
+	turn Color // Whos turn it is currently.
 
-	whiteBB BitBoard
-	blackBB BitBoard
+	whiteBB BitBoard // BitBoard for all wihte pieces.
+	blackBB BitBoard // BitBoard for all black pieces.
 
-	pawnBB   BitBoard
-	bishopBB BitBoard
-	knightBB BitBoard
-	rookBB   BitBoard
-	queenBB  BitBoard
-	kingBB   BitBoard
+	pawnBB   BitBoard // BitBoard for all pawns.
+	bishopBB BitBoard // BitBoard for all bishops.
+	knightBB BitBoard // BitBoard for all knights.
+	rookBB   BitBoard // BitBoard for all rooks.
+	queenBB  BitBoard // BitBoard for all queens.
+	kingBB   BitBoard // BitBoard for all kings.
 
-	enPassant      Square
-	castlingRights CastlingRights
-	fiftyMoveClock int
-	fullMoves      int
+	enPassant      Square         // The square where en passant is posssible.
+	castlingRights CastlingRights // The current castling rights for both players.
+	fiftyMoveClock int            // Number of moves since a capture or a pawn has moved. This is stored in half moves.
+	fullMoves      int            // Number of moves played in the game.
 
-	previous *Position
+	previous *Position // The previous Position.
 }
 
 // NewPositions creates a Position from the given FEN.
