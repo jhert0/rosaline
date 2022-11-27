@@ -638,7 +638,11 @@ func (p *Position) MakeUciMove(uci string) error {
 		break
 	}
 
-	movingPiece, _ := p.GetPiece(from)
+	movingPiece, err := p.GetPiece(from)
+	if err != nil {
+		return err
+	}
+
 	if movingPiece.Type() == Pawn && to == p.enPassant {
 		moveType = EnPassantMove
 	}
