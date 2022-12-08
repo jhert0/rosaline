@@ -42,23 +42,23 @@ loop:
 		command, args := parseCommand(scanner.Text())
 		switch command {
 		case "fen":
-			fmt.Println(position.Fen())
-			break
-		case "startpos":
 			if len(args) < 1 {
-				fmt.Println("startpos requires an argument")
-				break
+				fmt.Println(position.Fen())
+			} else {
+				fen := strings.Join(args, " ")
+
+				if fen == "startpos" {
+					fen = chess.StartingFen
+				}
+
+				newPosition, err := chess.NewPosition(fen)
+				if err != nil {
+					fmt.Println("invalid fen string:", err)
+					break
+				}
+
+				position = newPosition
 			}
-
-			fen := strings.Join(args, " ")
-			newPosition, err := chess.NewPosition(fen)
-			if err != nil {
-				fmt.Println("invalid fen string:", err)
-				break
-			}
-
-			position = newPosition
-
 			break
 		case "move":
 			if len(args) < 1 {
