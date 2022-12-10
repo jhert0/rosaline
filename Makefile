@@ -1,8 +1,8 @@
 all: build
 
 build:
-	go build -o bin/rosaline ./cmd/rosaline/
-	go build -o bin/playground ./cmd/playground/
+	mkdir -p bin
+	go build -o bin/ ./...
 
 test:
 	go test -v ./internal/chess
