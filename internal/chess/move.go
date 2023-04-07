@@ -70,3 +70,7 @@ func (m Move) IsPromotion() bool {
 func (m Move) Captures() bool {
 	return m.capturePiece == None
 }
+
+func (m Move) String() string {
+	return m.From.ToAlgebraic() + m.To.ToAlgebraic()
+}
