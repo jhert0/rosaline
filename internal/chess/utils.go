@@ -8,3 +8,13 @@ func pawnDirection(color Color) direction {
 
 	return south
 }
+
+// pawnStartingRank returns the rank that a pawn will start on
+// for the standard starting position.
+func pawnStartingRank(color Color) int {
+	if color == White {
+		return 2;
+	}
+
+	return 7
+}
