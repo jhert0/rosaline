@@ -14,6 +14,8 @@ const (
 	Rook   PieceType = 0x40
 	Queen  PieceType = 0x50
 	King   PieceType = 0x60
+
+	EmptyPiece Piece = Piece(uint8(None) | uint8(NoColor))
 )
 
 // NewPiece creates a piece with the given type and color.
@@ -23,7 +25,7 @@ func NewPiece(pieceType PieceType, color Color) Piece {
 
 // NewEmptyPiece creates a piece with no piece type or color.
 func NewEmptyPiece() Piece {
-	return Piece(uint8(None) | uint8(NoColor))
+	return EmptyPiece
 }
 
 // Color returns the color of the piece.
