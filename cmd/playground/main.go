@@ -80,6 +80,15 @@ loop:
 
 			position.Undo()
 			break
+		case "?":
+			moves := position.GenerateMoves()
+
+			for _, move := range moves {
+				fmt.Printf("%s ", move)
+			}
+
+			fmt.Println()
+			break
 		case "debug":
 			fmt.Println("Turn:", position.Turn())
 			fmt.Printf("Castling Rights: %04b (%s)\n", position.CastlingRights(), position.CastlingRights())
