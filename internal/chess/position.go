@@ -329,6 +329,12 @@ func (p Position) GetPiece(square Square) (Piece, error) {
 	return NewEmptyPiece(), nil
 }
 
+// IsPieceAt returns whether a piece matching the piece type and color are
+func (p Position) IsPieceAt(square Square, pieceType PieceType, color Color) bool {
+	piece, _ := p.GetPiece(square)
+	return piece.Type() == pieceType && piece.Color() == color;
+}
+
 func (p Position) Turn() Color {
 	return p.turn
 }
