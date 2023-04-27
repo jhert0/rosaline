@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"rosaline/internal/chess"
+	"strconv"
 	"strings"
 )
 
@@ -89,6 +90,19 @@ loop:
 
 			fmt.Println()
 			break
+		case "perft":
+			depth := 1
+			if len(args) >= 1 {
+				depth, err = strconv.Atoi(args[0])
+				if err != nil {
+					fmt.Println("invalid argument provided for depth")
+					break
+				}
+			}
+
+			number := perft(position, depth)
+			fmt.Println("number of moves:", number)
+			break
 		case "debug":
 			fmt.Println("Turn:", position.Turn())
 			fmt.Printf("Castling Rights: %04b (%s)\n", position.CastlingRights(), position.CastlingRights())
@@ -108,4 +122,20 @@ loop:
 			break loop
 		}
 	}
+}
+
+func perft(position chess.Position, depth int) int {
+	moves := position.GenerateMoves()
+	if depth == 1 {
+		return len(moves)
+	}
+
+	nodes := 0
+	for _, move := range moves {
+		position.MakeUciMove(move.String())
+		nodes += len(position.GenerateMoves())
+		position.Undo()
+	}
+
+	return nodes
 }
