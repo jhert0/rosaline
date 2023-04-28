@@ -70,3 +70,20 @@ func TestMakeUciMove(t *testing.T) {
 		"rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq - 0 1",
 	)
 }
+
+func TestGetKingSquare(t *testing.T) {
+	position, err := NewPosition(StartingFen)
+	if err != nil {
+		t.Fatalf("%s: fen %s returned error: %s", t.Name(), StartingFen, err)
+	}
+
+	whiteKing := position.GetKingSquare(White)
+	if whiteKing != E1 {
+		t.Fatalf("%s: expected white king to be on %d but got %d", t.Name(), E1, whiteKing)
+	}
+
+	blackKing := position.GetKingSquare(Black)
+	if blackKing != E8 {
+		t.Fatalf("%s: expected black king to be on %d but got %d", t.Name(), E8, blackKing)
+	}
+}

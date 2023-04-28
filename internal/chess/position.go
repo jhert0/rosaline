@@ -329,6 +329,12 @@ func (p Position) GetPiece(square Square) (Piece, error) {
 	return NewEmptyPiece(), nil
 }
 
+// GetKingSquare returns the square of the specified color's King is on.
+func (p Position) GetKingSquare(color Color) Square {
+	kingBB := p.GetColorBB(color) & p.kingBB
+	return Square(kingBB.TrailingZeros())
+}
+
 // IsPieceAt returns whether a piece matching the piece type and color are
 func (p Position) IsPieceAt(square Square, pieceType PieceType, color Color) bool {
 	piece, _ := p.GetPiece(square)
