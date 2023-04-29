@@ -27,6 +27,10 @@ func (bb BitBoard) TrailingZeros() int {
 	return bits.TrailingZeros64(uint64(bb))
 }
 
+func (bb BitBoard) PopulationCount() int {
+	return bits.OnesCount64(uint64(bb))
+}
+
 func (bb BitBoard) Print() {
 	fmt.Printf("%064b\n", bb)
 }
