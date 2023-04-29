@@ -528,6 +528,10 @@ func (p *Position) makeMove(move Move) error {
 		return err
 	}
 
+	if movingPiece.Color() != p.turn {
+		return errors.New("invalid move: trying to move opponents piece")
+	}
+
 	capturePiece, _ := p.GetPiece(move.To)
 	if movingPiece.Color() == capturePiece.Color() {
 		return errors.New("trying to capture piece of same color")
