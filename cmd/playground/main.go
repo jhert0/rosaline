@@ -42,6 +42,12 @@ loop:
 
 		command, args := parseCommand(scanner.Text())
 		switch command {
+		case "reset":
+			position, err = chess.NewPosition(chess.StartingFen)
+			if err != nil {
+				panic(err)
+			}
+			break
 		case "fen":
 			if len(args) < 1 {
 				fmt.Println(position.Fen())
