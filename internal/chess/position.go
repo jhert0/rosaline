@@ -589,12 +589,12 @@ func (p *Position) makeMove(move Move) error {
 		case C8:
 			rook, _ := p.GetPiece(C8)
 			p.clearPiece(C8, rook)
-			p.setPiece(F8, rook)
+			p.setPiece(D8, rook)
 			break
 		case G8:
-			rook, _ := p.GetPiece(A8)
-			p.clearPiece(A8, rook)
-			p.setPiece(D8, rook)
+			rook, _ := p.GetPiece(H8)
+			p.clearPiece(H8, rook)
+			p.setPiece(F8, rook)
 			break
 		}
 
