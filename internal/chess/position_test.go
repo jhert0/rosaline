@@ -49,7 +49,7 @@ func TestFen(t *testing.T) {
 	}
 }
 
-func makeMoveTest(t *testing.T, position Position, move string, fen string) {
+func makeMoveTest(t *testing.T, position *Position, move string, fen string) {
 	err := position.MakeUciMove(move)
 	if err != nil {
 		t.Fatalf("%s: move: %s returned an error: %e", t.Name(), move, err)
@@ -68,7 +68,7 @@ func TestMakeUciMove(t *testing.T) {
 
 	makeMoveTest(
 		t,
-		position,
+		&position,
 		"e2e4",
 		"rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq - 0 1",
 	)
