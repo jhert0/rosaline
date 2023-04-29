@@ -87,3 +87,14 @@ func TestGetKingSquare(t *testing.T) {
 		t.Fatalf("%s: expected black king to be on %d but got %d", t.Name(), E8, blackKing)
 	}
 }
+
+func TestIsValid(t *testing.T) {
+	position, err := NewPosition(StartingFen)
+	if err != nil {
+		t.Fatalf("%s: fen %s returned error: %s", t.Name(), StartingFen, err)
+	}
+
+	if !position.IsValid() {
+		t.Fatalf("%s: fen %s should be valid but IsValid returned false", t.Name(), StartingFen)
+	}
+}

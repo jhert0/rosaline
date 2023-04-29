@@ -183,6 +183,10 @@ func NewPosition(fen string) (Position, error) {
 
 	position.previous = nil
 
+	if !position.IsValid() {
+		return Position{}, errors.New("invalid fen: too many or too few pieces")
+	}
+
 	return position, nil
 }
 
@@ -392,6 +396,42 @@ func (p Position) GetPieceBB(pieceType PieceType) BitBoard {
 	}
 
 	panic(fmt.Sprintf("requested bitboard for unknown piece type: %d", pieceType))
+}
+
+// IsValid returns whether the position is playable, i.e no more than 8 pawns, one king, etc.
+func (p Position) IsValid() bool {
+	// check that neither side has more than 16 pieces or zero pieces
+	if p.whiteBB.PopulationCount() > 16 || p.whiteBB.PopulationCount() == 0 {
+		return false
+	}
+
+	if p.blackBB.PopulationCount() > 16 || p.blackBB.PopulationCount() == 0 {
+		return false
+	}
+
+	// check that neither side has more than 8 pawns
+	whitePawns := p.pawnBB & p.whiteBB
+	if whitePawns.PopulationCount() > 8 {
+		return false
+	}
+
+	blackPawns := p.pawnBB & p.blackBB
+	if blackPawns.PopulationCount() > 8 {
+		return false
+	}
+
+	// check that both side only has one king
+	whiteKing := p.kingBB & p.whiteBB
+	if whiteKing.PopulationCount() != 1 {
+		return false
+	}
+
+	blackKings := p.kingBB & p.blackBB
+	if blackKings.PopulationCount() != 1 {
+		return false
+	}
+
+	return true
 }
 
 func (p Position) Print() {
