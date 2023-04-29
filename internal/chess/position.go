@@ -236,20 +236,24 @@ func (p Position) Fen() string {
 	builder.WriteString(" ")
 
 	// write castling rights
-	if p.HasCastlingRights(WhiteCastleKingside) {
-		builder.WriteString("K")
-	}
+	if p.castlingRights == 0 {
+		builder.WriteString("-")
+	} else {
+		if p.HasCastlingRights(WhiteCastleKingside) {
+			builder.WriteString("K")
+		}
 
-	if p.HasCastlingRights(WhiteCastleQueenside) {
-		builder.WriteString("Q")
-	}
+		if p.HasCastlingRights(WhiteCastleQueenside) {
+			builder.WriteString("Q")
+		}
 
-	if p.HasCastlingRights(BlackCastleKingside) {
-		builder.WriteString("k")
-	}
+		if p.HasCastlingRights(BlackCastleKingside) {
+			builder.WriteString("k")
+		}
 
-	if p.HasCastlingRights(BlackCastleQueenside) {
-		builder.WriteString("q")
+		if p.HasCastlingRights(BlackCastleQueenside) {
+			builder.WriteString("q")
+		}
 	}
 
 	builder.WriteString(" ")
