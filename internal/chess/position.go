@@ -296,7 +296,7 @@ func (p Position) GetPieceColor(square Square) (Color, error) {
 // GetPiece gets the piece at the given square.
 func (p Position) GetPiece(square Square) (Piece, error) {
 	if !p.PieceAt(square) {
-		return NewEmptyPiece(), errors.New(fmt.Sprintf("no piece exists at: %s", square.ToAlgebraic()))
+		return EmptyPiece, errors.New(fmt.Sprintf("no piece exists at: %s", square.ToAlgebraic()))
 	}
 
 	index := uint64(square)
@@ -326,7 +326,7 @@ func (p Position) GetPiece(square Square) (Piece, error) {
 		return NewPiece(King, color), nil
 	}
 
-	return NewEmptyPiece(), nil
+	return EmptyPiece, nil
 }
 
 // GetKingSquare returns the square of the specified color's King is on.
