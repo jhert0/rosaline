@@ -72,6 +72,24 @@ func TestMakeUciMove(t *testing.T) {
 		"e2e4",
 		"rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq - 0 1",
 	)
+	makeMoveTest(
+		t,
+		&position,
+		"e7e5",
+		"rnbqkbnr/pppp1ppp/8/4p3/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 0 2",
+	)
+	makeMoveTest(
+		t,
+		&position,
+		"f1c4",
+		"rnbqkbnr/pppp1ppp/8/4p3/2B1P3/8/PPPP1PPP/RNBQK1NR b KQkq - 1 2",
+	)
+	makeMoveTest(
+		t,
+		&position,
+		"f8c5",
+		"rnbqk1nr/pppp1ppp/8/2b1p3/2B1P3/8/PPPP1PPP/RNBQK1NR w KQkq - 2 3",
+	)
 }
 
 func TestGetKingSquare(t *testing.T) {
