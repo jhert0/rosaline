@@ -338,7 +338,7 @@ func (p Position) GetKingSquare(color Color) Square {
 // IsPieceAt returns whether a piece matching the piece type and color are
 func (p Position) IsPieceAt(square Square, pieceType PieceType, color Color) bool {
 	piece, _ := p.GetPiece(square)
-	return piece.Type() == pieceType && piece.Color() == color;
+	return piece.Type() == pieceType && piece.Color() == color
 }
 
 func (p Position) Turn() Color {
