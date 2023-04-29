@@ -32,6 +32,9 @@ func TestFen(t *testing.T) {
 		"rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
 		"rnbq1rk1/pppp1ppp/4pn2/8/1bB1P3/2N2N2/PPPP1PPP/R1BQK2R w KQ - 6 5",
 		"rn1qkbnr/pp2pppp/8/7b/2BQ4/2N1PP2/PP4PP/R1B1K1NR b KQkq - 0 7",
+		"rnbqkb1r/ppp1pppp/5n2/3pP3/8/8/PPPP1PPP/RNBQKBNR w KQkq d6 0 3",
+		"r2qkb1r/ppp2ppp/2np1n2/8/2B3b1/5N2/PPPP1PPP/RNBQ1RK1 b kq - 5 6",
+		"3r4/6k1/3n2p1/pNnB4/P4P2/1P6/7P/5K2 w - - 2 49",
 	}
 
 	for _, fen := range fens {
