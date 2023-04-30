@@ -150,20 +150,21 @@ func generateRookMoves(position Position, pieceBB BitBoard) []Move {
 	for pieceBB > 0 {
 		fromSquare := Square(pieceBB.TrailingZeros())
 
+diretionLoop:
 		for _, direction := range directions {
 			toSquare := fromSquare + Square(direction)
 
 			for {
 				if !toSquare.IsValid() {
-					break
+					continue diretionLoop
 				}
 
 				if (direction == north || direction == south) && toSquare.File() != fromSquare.File() {
-					break
+					continue diretionLoop
 				}
 
 				if (direction == east || direction == west) && toSquare.Rank() != fromSquare.Rank() {
-					break
+					continue diretionLoop
 				}
 
 				piece, _ := position.GetPiece(toSquare)
@@ -182,7 +183,7 @@ func generateRookMoves(position Position, pieceBB BitBoard) []Move {
 				moves = append(moves, move)
 
 				if piece.Color() == position.turn.OpposingSide() {
-					break
+					continue diretionLoop
 				}
 
 				toSquare += Square(direction)
