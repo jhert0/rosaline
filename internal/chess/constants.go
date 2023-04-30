@@ -1,7 +1,5 @@
 package chess
 
-import "strings"
-
 const (
 	StartingFen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
 )
@@ -26,40 +24,6 @@ var kingMoves = [64]BitBoard{
 	846636838289408, 1975852459884544, 3951704919769088, 7903409839538176, 15806819679076352, 31613639358152704, 63227278716305408, 54114388906344448,
 	216739030602088448, 505818229730443264, 1011636459460886528, 2023272918921773056, 4046545837843546112, 8093091675687092224, 16186183351374184448, 13853283560024178688,
 	144959613005987840, 362258295026614272, 724516590053228544, 1449033180106457088, 2898066360212914176, 5796132720425828352, 11592265440851656704, 4665729213955833856,
-}
-
-type CastlingRights uint8
-
-const (
-	WhiteCastleKingside  CastlingRights = 0b0100
-	WhiteCastleQueenside CastlingRights = 0b1000
-	WhiteCastleBoth      CastlingRights = WhiteCastleKingside | WhiteCastleQueenside
-
-	BlackCastleKingside  CastlingRights = 0b0001
-	BlackCastleQueenside CastlingRights = 0b0010
-	BlackCastleBoth      CastlingRights = BlackCastleKingside | BlackCastleQueenside
-)
-
-func (rights CastlingRights) String() string {
-	var builder strings.Builder
-
-	if (rights & WhiteCastleKingside) > 0 {
-		builder.WriteString("K")
-	}
-
-	if (rights & WhiteCastleQueenside) > 0 {
-		builder.WriteString("Q")
-	}
-
-	if (rights & BlackCastleKingside) > 0 {
-		builder.WriteString("k")
-	}
-
-	if (rights & BlackCastleQueenside) > 0 {
-		builder.WriteString("q")
-	}
-
-	return builder.String()
 }
 
 type direction int8
