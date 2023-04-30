@@ -424,7 +424,7 @@ func (p Position) IsValid() bool {
 		return false
 	}
 
-	// check that both side only has one king
+	// check that both sides only have one king
 	whiteKing := p.kingBB & p.whiteBB
 	if whiteKing.PopulationCount() != 1 {
 		return false
@@ -618,11 +618,11 @@ func (p *Position) makeMove(move Move) error {
 		}
 		break
 	case CastleMove:
-		// move the king to its new square
+		// move the king to it's new square
 		p.clearPiece(move.From, movingPiece)
 		p.setPiece(move.To, movingPiece)
 
-		// move the rook to its new square
+		// move the rook to it's new square
 		switch move.To {
 		case C1:
 			rook, _ := p.GetPiece(A1)
@@ -653,7 +653,7 @@ func (p *Position) makeMove(move Move) error {
 		}
 		break
 	case EnPassantMove:
-		// move the pawn to its new square
+		// move the pawn to it's new square
 		p.clearPiece(move.From, movingPiece)
 		p.setPiece(move.To, movingPiece)
 
@@ -674,7 +674,7 @@ func (p *Position) makeMove(move Move) error {
 	return nil
 }
 
-// MakeUciMove makes a move from the give uci string.
+// MakeUciMove makes a move from the given uci string.
 func (p *Position) MakeUciMove(uci string) error {
 	if len(uci) < 4 {
 		return errors.New("uci move is too short")
