@@ -19,7 +19,7 @@ func TestSquareFromAlgebraic(t *testing.T) {
 	algebraicTest(t, "a8", 8, 1)
 }
 
-func rankFileTest(t *testing.T, rank int, file int, expectedSquare int) {
+func rankFileTest(t *testing.T, rank int, file int, expectedSquare Square) {
 	square := SquareFromRankFile(rank, file)
 	if square != Square(expectedSquare) {
 		t.Fatalf("%s: expected %d  but got %d ", t.Name(), expectedSquare, square)
@@ -27,7 +27,7 @@ func rankFileTest(t *testing.T, rank int, file int, expectedSquare int) {
 }
 
 func TestSquareFromRankFile(t *testing.T) {
-	rankFileTest(t, 1, 1, 0)
-	rankFileTest(t, 1, 8, 7)
-	rankFileTest(t, 8, 1, 56)
+	rankFileTest(t, 1, 1, A1)
+	rankFileTest(t, 1, 8, H1)
+	rankFileTest(t, 8, 1, A8)
 }
