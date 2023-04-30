@@ -18,14 +18,14 @@ func generatePawnMoves(position Position, pieceBB BitBoard) []Move {
 			}
 		}
 
-		capturePiece, _ := position.GetPiece(direction + Square(east))
+		capturePiece, _ := position.GetPiece(square + direction + Square(east))
 		if capturePiece != EmptyPiece && capturePiece.Color() != position.turn {
 			move := NewMove(square, square + direction + Square(east), NormalMove)
 			move.WithCapture(capturePiece.Type())
 			moves = append(moves, move)
 		}
 
-		capturePiece, _ = position.GetPiece(direction + Square(west))
+		capturePiece, _ = position.GetPiece(square + direction + Square(west))
 		if capturePiece != EmptyPiece && capturePiece.Color() != position.turn {
 			move := NewMove(square, square + direction + Square(west), NormalMove)
 			move.WithCapture(capturePiece.Type())
