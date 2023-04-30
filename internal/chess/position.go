@@ -529,12 +529,12 @@ func (p *Position) makeMove(move Move) error {
 	}
 
 	if movingPiece.Color() != p.turn {
-		return errors.New("invalid move: trying to move opponents piece")
+		return errors.New(fmt.Sprintf("invalid move: '%s', trying to move opponents piece", move))
 	}
 
 	capturePiece, _ := p.GetPiece(move.To)
 	if movingPiece.Color() == capturePiece.Color() {
-		return errors.New("invalid move: trying to capture piece of same color")
+		return errors.New(fmt.Sprintf("invalid move: '%s', trying to capture piece of same color", move))
 	}
 
 	copy := p.Copy()
@@ -677,7 +677,7 @@ func (p *Position) makeMove(move Move) error {
 // MakeUciMove makes a move from the given uci string.
 func (p *Position) MakeUciMove(uci string) error {
 	if len(uci) < 4 {
-		return errors.New("uci move is too short")
+		return errors.New(fmt.Sprintf("invalid move: provided uci: '%s' is too short", uci))
 	}
 
 	from, err := SquareFromAlgebraic(uci[:2])
