@@ -55,7 +55,7 @@ func generateKnightMoves(position Position, pieceBB BitBoard) []Move {
 	for pieceBB > 0 {
 		fromSquare := Square(pieceBB.TrailingZeros())
 
-		moveBB := KnightMoves[fromSquare]
+		moveBB := knightMoves[fromSquare]
 		for moveBB > 0 {
 			toSquare := Square(moveBB.TrailingZeros())
 
@@ -114,7 +114,7 @@ func generateKingMoves(position Position, pieceBB BitBoard, includeCastling bool
 	for pieceBB > 0 {
 		fromSquare := Square(pieceBB.TrailingZeros())
 
-		moveBB := KingMoves[fromSquare]
+		moveBB := kingMoves[fromSquare]
 		for moveBB > 0 {
 			toSquare := Square(moveBB.TrailingZeros())
 
