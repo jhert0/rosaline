@@ -106,12 +106,12 @@ loop:
 				}
 			}
 
-			fmt.Println("Depth:", depth)
-
 			start := time.Now()
-			number := perft(position, depth)
+			number := perft(position, depth, true)
 			elapsed := time.Since(start)
 
+			fmt.Println()
+			fmt.Println("Depth:", depth)
 			fmt.Println("Nodes:", number)
 			fmt.Printf("Total time: %f seconds\n", elapsed.Seconds())
 			break
@@ -138,16 +138,31 @@ loop:
 	}
 }
 
-func perft(position chess.Position, depth int) int {
+func perft(position chess.Position, depth int, print bool) uint64 {
 	if depth == 0 {
 		return 1
 	}
 
-	nodes := 0
+	leaf := depth == 2
+
+	var nodes uint64 = 0
 	moves := position.GenerateMoves()
 	for _, move := range moves {
 		position.MakeUciMove(move.String())
-		nodes += perft(position, depth - 1)
+
+		var count uint64
+		if leaf {
+			count = uint64(len(position.GenerateMoves()))
+		} else {
+			count = perft(position, depth - 1, false)
+		}
+
+		nodes += count
+
+		if (print) {
+			fmt.Printf("%s: %d\n", move, count)
+		}
+
 		position.Undo()
 	}
 
