@@ -7,6 +7,7 @@ import (
 	"rosaline/internal/chess"
 	"strconv"
 	"strings"
+	"time"
 )
 
 func parseCommand(line string) (string, []string) {
@@ -107,8 +108,14 @@ loop:
 				}
 			}
 
+			fmt.Println("Depth:", depth)
+
+			start := time.Now()
 			number := perft(position, depth)
-			fmt.Println("number of moves:", number)
+			elapsed := time.Since(start)
+
+			fmt.Println("Nodes:", number)
+			fmt.Printf("Total time: %f seconds\n", elapsed.Seconds())
 			break
 		case "debug":
 			fmt.Println("Turn:", position.Turn())
