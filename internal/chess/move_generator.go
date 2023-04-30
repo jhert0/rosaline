@@ -91,11 +91,55 @@ func generateBishopMoves(position Position, pieceBB BitBoard) []Move {
 
 // generateRookMoves generates the moves for the rooks on the board
 func generateRookMoves(position Position, pieceBB BitBoard) []Move {
+	// TODO: use bitboard magic to generate rook moves
+
 	moves := []Move{}
 
+	directions := []direction{north, south, east, west}
+
 	for pieceBB > 0 {
-		square := Square(pieceBB.TrailingZeros())
-		pieceBB.ClearBit(uint64(square))
+		fromSquare := Square(pieceBB.TrailingZeros())
+
+		for _, direction := range directions {
+			toSquare := fromSquare + Square(direction)
+
+			for {
+				if !toSquare.IsValid() {
+					break
+				}
+
+				if (direction == north || direction == south) && toSquare.File() != fromSquare.File() {
+					break
+				}
+
+				if (direction == east || direction == west) && toSquare.Rank() != fromSquare.Rank() {
+					break
+				}
+
+				piece, _ := position.GetPiece(toSquare)
+
+				// we hit one of our pieces, stop looking for moves in this direction
+				if piece.Color() == position.turn {
+					break
+				}
+
+				move := NewMove(fromSquare, toSquare, NormalMove)
+
+				if piece.Color() == position.turn.OpposingSide() {
+					move.WithCapture(piece.Type())
+				}
+
+				moves = append(moves, move)
+
+				if piece.Color() == position.turn.OpposingSide() {
+					break
+				}
+
+				toSquare += Square(direction)
+			}
+		}
+
+		pieceBB.ClearBit(uint64(fromSquare))
 	}
 
 	return moves
