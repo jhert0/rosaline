@@ -132,14 +132,14 @@ loop:
 
 func perft(position chess.Position, depth int) int {
 	moves := position.GenerateMoves()
-	if depth == 1 {
-		return len(moves)
+	if depth == 0 {
+		return 1
 	}
 
 	nodes := 0
 	for _, move := range moves {
 		position.MakeUciMove(move.String())
-		nodes += len(position.GenerateMoves())
+		nodes += perft(position, depth - 1)
 		position.Undo()
 	}
 
