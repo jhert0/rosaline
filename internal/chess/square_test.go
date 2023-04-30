@@ -31,3 +31,27 @@ func TestSquareFromRankFile(t *testing.T) {
 	rankFileTest(t, 1, 8, H1)
 	rankFileTest(t, 8, 1, A8)
 }
+
+func squareFileTest(t *testing.T, square Square, file int) {
+	if square.File() != file {
+		t.Fatalf("%s: expected %d but got %d for %s", t.Name(), file, square.File(), square.ToAlgebraic())
+	}
+}
+
+func TestSquareFile(t *testing.T) {
+	squareFileTest(t, A1, 1)
+	squareFileTest(t, A2, 1)
+	squareFileTest(t, G5, 7)
+}
+
+func squareRankTest(t *testing.T, square Square, rank int) {
+	if square.Rank() != rank {
+		t.Fatalf("%s: expected %d but got %d for %s", t.Name(), rank, square.Rank(), square.ToAlgebraic())
+	}
+}
+
+func TestSquareRank(t *testing.T) {
+	squareRankTest(t, A1, 1)
+	squareRankTest(t, A2, 2)
+	squareRankTest(t, G5, 5)
+}
