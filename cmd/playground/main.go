@@ -41,6 +41,8 @@ loop:
 
 		scanner.Scan()
 
+		fmt.Println()
+
 		command, args := parseCommand(scanner.Text())
 		switch command {
 		case "reset":
@@ -89,14 +91,10 @@ loop:
 			position.Undo()
 			break
 		case "?":
-			fmt.Println()
-
 			moves := position.GenerateMoves()
 			for _, move := range moves {
 				fmt.Println(move)
 			}
-
-			fmt.Println()
 			break
 		case "perft":
 			depth := 1
@@ -135,6 +133,8 @@ loop:
 		case "quit":
 			break loop
 		}
+
+		fmt.Println()
 	}
 }
 
