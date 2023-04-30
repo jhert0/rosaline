@@ -183,22 +183,22 @@ func generateKingMoves(position Position, pieceBB BitBoard, includeCastling bool
 
 	kingSquare := position.GetKingSquare(position.turn)
 	if position.turn == White {
-		if position.HasCastlingRights(WhiteCastleKingside) {
+		if position.HasCastlingRights(WhiteCastleKingside) && position.squaresEmpty([]Square{F1, G1}) {
 			move := NewMove(kingSquare, kingSquare + Square(east * 2), CastleMove)
 			moves = append(moves, move)
 		}
 
-		if position.HasCastlingRights(WhiteCastleQueenside) {
+		if position.HasCastlingRights(WhiteCastleQueenside) && position.squaresEmpty([]Square{D1, C1, B1}) {
 			move := NewMove(kingSquare, kingSquare + Square(west * 2), CastleMove)
 			moves = append(moves, move)
 		}
 	} else {
-		if position.HasCastlingRights(BlackCastleKingside) {
+		if position.HasCastlingRights(BlackCastleKingside) && position.squaresEmpty([]Square{F8, G8}) {
 			move := NewMove(kingSquare, kingSquare + Square(east * 2), CastleMove)
 			moves = append(moves, move)
 		}
 
-		if position.HasCastlingRights(BlackCastleQueenside) {
+		if position.HasCastlingRights(BlackCastleQueenside) && position.squaresEmpty([]Square{D8, C8, B8}){
 			move := NewMove(kingSquare, kingSquare + Square(west * 2), CastleMove)
 			moves = append(moves, move)
 		}
