@@ -402,6 +402,18 @@ func (p Position) GetPieceBB(pieceType PieceType) BitBoard {
 	panic(fmt.Sprintf("requested bitboard for unknown piece type: %d", pieceType))
 }
 
+// squaresEmpty returns whether all squares are empty.
+func (p Position) squaresEmpty(squares []Square) bool {
+	for _, square := range squares {
+		piece, _ := p.GetPiece(square)
+		if piece != EmptyPiece {
+			return false
+		}
+	}
+
+	return true
+}
+
 // IsValid returns whether the position is playable, i.e no more than 8 pawns, one king, etc.
 func (p Position) IsValid() bool {
 	// check that neither side has more than 16 pieces or zero pieces
