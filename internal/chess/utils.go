@@ -9,6 +9,15 @@ func pawnDirection(color Color) direction {
 	return south
 }
 
+// pawnPromotionRank returns the rank where a pawn will get promoted.
+func pawnPromotionRank(color Color) int {
+	if color == White {
+		return 8
+	}
+
+	return 1
+}
+
 // pawnStartingRank returns the rank that a pawn will start on
 // for the standard starting position.
 func pawnStartingRank(color Color) int {
