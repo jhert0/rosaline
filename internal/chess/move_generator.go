@@ -147,7 +147,11 @@ func generateRookMoves(position Position, pieceBB BitBoard) []Move {
 
 // generateQueenMoves generates the moves for the queens on the board
 func generateQueenMoves(position Position, pieceBB BitBoard) []Move {
-	moves := []Move{}
+	moves := generateRookMoves(position, pieceBB)
+
+	bishopMoves := generateBishopMoves(position, pieceBB)
+	moves = append(moves, bishopMoves...)
+
 	return moves
 }
 
