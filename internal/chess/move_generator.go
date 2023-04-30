@@ -1,5 +1,7 @@
 package chess
 
+import "math"
+
 // generatePawnMoves generates the moves for the pawns on the board
 func generatePawnMoves(position Position, pieceBB BitBoard) []Move {
 	moves := []Move{}
@@ -79,11 +81,59 @@ func generateKnightMoves(position Position, pieceBB BitBoard) []Move {
 
 // generateBishopMoves generates the moves for the bishops on the board
 func generateBishopMoves(position Position, pieceBB BitBoard) []Move {
+	// TODO: generate moves using bitboard magic
+
 	moves := []Move{}
 
+	directions := []direction{
+		north + east,
+		north + west,
+		south + east,
+		south + west,
+	}
+
 	for pieceBB > 0 {
-		square := Square(pieceBB.TrailingZeros())
-		pieceBB.ClearBit(uint64(square))
+		fromSquare := Square(pieceBB.TrailingZeros())
+
+directionLoop:
+		for _, direction := range directions {
+			toSquare := fromSquare + Square(direction)
+
+			for {
+				if !toSquare.IsValid() {
+					continue directionLoop
+				}
+
+				var rankDifference = math.Abs(float64(toSquare.Rank()) - float64(fromSquare.Rank()))
+				var fileDifference = math.Abs(float64(toSquare.File()) - float64(fromSquare.File()))
+				if rankDifference != fileDifference {
+					continue directionLoop
+				}
+
+				piece, _ := position.GetPiece(toSquare)
+
+				// we hit one of our pieces, stop looking for moves in this direction
+				if piece.Color() == position.turn {
+					break
+				}
+
+				move := NewMove(fromSquare, toSquare, NormalMove)
+
+				if piece.Color() == position.turn.OpposingSide() {
+					move.WithCapture(piece.Type())
+				}
+
+				moves = append(moves, move)
+
+				if piece.Color() == position.turn.OpposingSide() {
+					continue directionLoop
+				}
+
+				toSquare += Square(direction)
+			}
+		}
+
+		pieceBB.ClearBit(uint64(fromSquare))
 	}
 
 	return moves
