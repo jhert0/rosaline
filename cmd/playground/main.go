@@ -88,10 +88,11 @@ loop:
 			position.Undo()
 			break
 		case "?":
-			moves := position.GenerateMoves()
+			fmt.Println()
 
+			moves := position.GenerateMoves()
 			for _, move := range moves {
-				fmt.Printf("%s ", move)
+				fmt.Println(move)
 			}
 
 			fmt.Println()
