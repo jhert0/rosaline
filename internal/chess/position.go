@@ -534,7 +534,7 @@ func (p *Position) makeMove(move Move) error {
 
 	capturePiece, _ := p.GetPiece(move.To)
 	if movingPiece.Color() == capturePiece.Color() {
-		return errors.New("trying to capture piece of same color")
+		return errors.New("invalid move: trying to capture piece of same color")
 	}
 
 	copy := p.Copy()
