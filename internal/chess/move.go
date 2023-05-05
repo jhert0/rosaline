@@ -16,8 +16,8 @@ type Move struct {
 
 	moveType MoveType
 
-	promotionPiece PieceType
-	capturePiece   PieceType
+	promotionPiece Piece
+	capturePiece   Piece
 }
 
 // NewMove creates a new move with the given from and to.
@@ -26,24 +26,24 @@ func NewMove(from, to Square, moveType MoveType) Move {
 		From:           from,
 		To:             to,
 		moveType:       moveType,
-		promotionPiece: None,
-		capturePiece:   None,
+		promotionPiece: EmptyPiece,
+		capturePiece:   EmptyPiece,
 	}
 }
 
-func (m *Move) WithPromotion(pieceType PieceType) {
-	m.promotionPiece = pieceType
+func (m *Move) WithPromotion(piece Piece) {
+	m.promotionPiece = piece
 }
 
-func (m *Move) WithCapture(pieceType PieceType) {
-	m.capturePiece = pieceType
+func (m *Move) WithCapture(piece Piece) {
+	m.capturePiece = piece
 }
 
 func (m Move) Type() MoveType {
 	return m.moveType
 }
 
-func (m Move) PromotionPiece() PieceType {
+func (m Move) PromotionPiece() Piece {
 	return m.promotionPiece
 }
 
@@ -64,11 +64,11 @@ func (m Move) FileDifference() int {
 }
 
 func (m Move) IsPromotion() bool {
-	return m.promotionPiece != None
+	return m.promotionPiece != EmptyPiece
 }
 
 func (m Move) Captures() bool {
-	return m.capturePiece == None
+	return m.capturePiece == EmptyPiece
 }
 
 func (m Move) String() string {

@@ -625,8 +625,7 @@ func (p *Position) makeMove(move Move) error {
 			p.clearPiece(move.To, movingPiece) // remove the original piece
 
 			// place the newly promoted piece
-			promotedPiece := NewPiece(move.PromotionPiece(), p.turn)
-			p.setPiece(move.To, promotedPiece)
+			p.setPiece(move.To, move.PromotionPiece())
 		}
 		break
 	case CastleMove:
@@ -723,22 +722,22 @@ func (p *Position) MakeUciMove(uci string) error {
 
 	capturePiece, err := p.GetPiece(to)
 	if err == nil {
-		move.WithCapture(capturePiece.Type())
+		move.WithCapture(capturePiece)
 	}
 
 	if len(uci) > 4 {
 		switch uci[4] {
 		case 'n':
-			move.WithPromotion(Knight)
+			move.WithPromotion(NewPiece(Knight, p.turn))
 			break
 		case 'b':
-			move.WithPromotion(Bishop)
+			move.WithPromotion(NewPiece(Bishop, p.turn))
 			break
 		case 'r':
-			move.WithPromotion(Rook)
+			move.WithPromotion(NewPiece(Rook, p.turn))
 			break
 		case 'q':
-			move.WithPromotion(Queen)
+			move.WithPromotion(NewPiece(Queen, p.turn))
 			break
 		}
 	}

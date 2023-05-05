@@ -17,14 +17,14 @@ func generatePawnMoves(position Position, pieceBB BitBoard) []Move {
 			if toSquare.Rank() == 8 && position.Turn() == White {
 				for _, pieceType := range promotablePieces {
 					move := NewMove(square, toSquare, NormalMove)
-					move.WithPromotion(pieceType)
+					move.WithPromotion(NewPiece(pieceType, position.turn))
 
 					moves = append(moves, move)
 				}
 			} else if toSquare.Rank() == 1 && position.Turn() == Black {
 				for _, pieceType := range promotablePieces {
 					move := NewMove(square, toSquare, NormalMove)
-					move.WithPromotion(pieceType)
+					move.WithPromotion(NewPiece(pieceType, position.turn))
 
 					moves = append(moves, move)
 				}
@@ -40,14 +40,14 @@ func generatePawnMoves(position Position, pieceBB BitBoard) []Move {
 		capturePiece, _ := position.GetPiece(square + direction + Square(east))
 		if capturePiece != EmptyPiece && capturePiece.Color() != position.turn {
 			move := NewMove(square, square + direction + Square(east), NormalMove)
-			move.WithCapture(capturePiece.Type())
+			move.WithCapture(capturePiece)
 			moves = append(moves, move)
 		}
 
 		capturePiece, _ = position.GetPiece(square + direction + Square(west))
 		if capturePiece != EmptyPiece && capturePiece.Color() != position.turn {
 			move := NewMove(square, square + direction + Square(west), NormalMove)
-			move.WithCapture(capturePiece.Type())
+			move.WithCapture(capturePiece)
 			moves = append(moves, move)
 		}
 
@@ -85,7 +85,7 @@ func generateKnightMoves(position Position, pieceBB BitBoard) []Move {
 				moves = append(moves, NewMove(fromSquare, toSquare, NormalMove))
 			} else if piece.Color() != position.turn {
 				move := NewMove(fromSquare, toSquare, NormalMove)
-				move.WithCapture(piece.Type())
+				move.WithCapture(piece)
 				moves = append(moves, move)
 			}
 
@@ -139,7 +139,7 @@ directionLoop:
 				move := NewMove(fromSquare, toSquare, NormalMove)
 
 				if piece.Color() == position.turn.OpposingSide() {
-					move.WithCapture(piece.Type())
+					move.WithCapture(piece)
 				}
 
 				moves = append(moves, move)
@@ -196,7 +196,7 @@ diretionLoop:
 				move := NewMove(fromSquare, toSquare, NormalMove)
 
 				if piece.Color() == position.turn.OpposingSide() {
-					move.WithCapture(piece.Type())
+					move.WithCapture(piece)
 				}
 
 				moves = append(moves, move)
@@ -241,7 +241,7 @@ func generateKingMoves(position Position, pieceBB BitBoard, includeCastling bool
 				moves = append(moves, NewMove(fromSquare, toSquare, NormalMove))
 			} else if piece.Color() != position.Turn() {
 				move := NewMove(fromSquare, toSquare, NormalMove)
-				move.WithCapture(piece.Type())
+				move.WithCapture(piece)
 				moves = append(moves, move)
 			}
 
