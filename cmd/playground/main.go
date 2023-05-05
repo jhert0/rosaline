@@ -148,18 +148,21 @@ func perft(position chess.Position, depth int, print bool) uint64 {
 	var nodes uint64 = 0
 	moves := position.GenerateMoves()
 	for _, move := range moves {
-		position.MakeUciMove(move.String())
+		err := position.MakeUciMove(move.String())
+		if err != nil {
+			panic(err)
+		}
 
 		var count uint64
 		if leaf {
 			count = uint64(len(position.GenerateMoves()))
 		} else {
-			count = perft(position, depth - 1, false)
+			count = perft(position, depth-1, false)
 		}
 
 		nodes += count
 
-		if (print) {
+		if print {
 			fmt.Printf("%s: %d\n", move, count)
 		}
 
