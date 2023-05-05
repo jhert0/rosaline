@@ -18,6 +18,8 @@ const (
 	EmptyPiece Piece = Piece(uint8(None) | uint8(NoColor))
 )
 
+var promotablePieces = []PieceType{Knight, Bishop, Rook, Queen}
+
 // NewPiece creates a piece with the given type and color.
 func NewPiece(pieceType PieceType, color Color) Piece {
 	return Piece(uint8(pieceType) | uint8(color))

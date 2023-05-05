@@ -2,6 +2,7 @@ package chess
 
 import "math"
 
+
 // generatePawnMoves generates the moves for the pawns on the board
 func generatePawnMoves(position Position, pieceBB BitBoard) []Move {
 	moves := []Move{}
@@ -11,7 +12,25 @@ func generatePawnMoves(position Position, pieceBB BitBoard) []Move {
 
 		direction := Square(pawnDirection(position.turn))
 		if !position.PieceAt(square + direction) {
-			moves = append(moves, NewMove(square, square + direction, NormalMove))
+			toSquare := square + direction
+
+			if toSquare.Rank() == 8 && position.Turn() == White {
+				for _, pieceType := range promotablePieces {
+					move := NewMove(square, toSquare, NormalMove)
+					move.WithPromotion(pieceType)
+
+					moves = append(moves, move)
+				}
+			} else if toSquare.Rank() == 1 && position.Turn() == Black {
+				for _, pieceType := range promotablePieces {
+					move := NewMove(square, toSquare, NormalMove)
+					move.WithPromotion(pieceType)
+
+					moves = append(moves, move)
+				}
+			} else {
+				moves = append(moves, NewMove(square, toSquare, NormalMove))
+			}
 
 			if !position.PieceAt(square + (direction * 2)) && square.Rank() == pawnStartingRank(position.turn) {
 				moves = append(moves, NewMove(square, square + (direction * 2), NormalMove))
