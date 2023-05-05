@@ -72,5 +72,11 @@ func (m Move) Captures() bool {
 }
 
 func (m Move) String() string {
-	return m.From.ToAlgebraic() + m.To.ToAlgebraic()
+	str := m.From.ToAlgebraic() + m.To.ToAlgebraic()
+
+	if m.promotionPiece != EmptyPiece {
+		str += string(m.promotionPiece.Character())
+	}
+
+	return str
 }
