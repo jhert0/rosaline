@@ -718,7 +718,7 @@ func (p *Position) MakeUciMove(uci string) error {
 		moveType = EnPassantMove
 	}
 
-	move := NewMove(from, to, moveType)
+	move := NewMove(from, to, moveType, NoMoveFlag)
 
 	capturePiece, err := p.GetPiece(to)
 	if err == nil {

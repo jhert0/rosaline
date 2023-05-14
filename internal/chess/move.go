@@ -10,32 +10,46 @@ const (
 	EnPassantMove
 )
 
+type MoveFlag uint8
+
+const (
+	NoMoveFlag MoveFlag = iota
+	QuietMoveFlag
+	CaputureMoveFlag
+	PawnPushMoveFlag
+	PromotionMoveFlag
+)
+
 type Move struct {
 	From Square
 	To   Square
 
 	moveType MoveType
+	flags MoveFlag
 
 	promotionPiece Piece
 	capturePiece   Piece
 }
 
 // NewMove creates a new move with the given from and to.
-func NewMove(from, to Square, moveType MoveType) Move {
+func NewMove(from, to Square, moveType MoveType, flags MoveFlag) Move {
 	return Move{
 		From:           from,
 		To:             to,
 		moveType:       moveType,
+		flags:          flags,
 		promotionPiece: EmptyPiece,
 		capturePiece:   EmptyPiece,
 	}
 }
 
 func (m *Move) WithPromotion(piece Piece) {
+	m.flags |= PromotionMoveFlag
 	m.promotionPiece = piece
 }
 
 func (m *Move) WithCapture(piece Piece) {
+	m.flags |= CaputureMoveFlag
 	m.capturePiece = piece
 }
 
@@ -69,6 +83,11 @@ func (m Move) IsPromotion() bool {
 
 func (m Move) Captures() bool {
 	return m.capturePiece == EmptyPiece
+}
+
+// HasFlag checks if the move has that flag set.
+func (m Move) HasFlag(flag MoveFlag) bool {
+	return (m.flags & flag) > 0
 }
 
 func (m Move) String() string {

@@ -2,7 +2,6 @@ package chess
 
 import "math"
 
-
 // generatePawnMoves generates the moves for the pawns on the board
 func generatePawnMoves(position Position, pieceBB BitBoard) []Move {
 	moves := []Move{}
@@ -16,49 +15,49 @@ func generatePawnMoves(position Position, pieceBB BitBoard) []Move {
 
 			if toSquare.Rank() == 8 && position.Turn() == White {
 				for _, pieceType := range promotablePieces {
-					move := NewMove(square, toSquare, NormalMove)
+					move := NewMove(square, toSquare, NormalMove, PawnPushMoveFlag)
 					move.WithPromotion(NewPiece(pieceType, position.turn))
 
 					moves = append(moves, move)
 				}
 			} else if toSquare.Rank() == 1 && position.Turn() == Black {
 				for _, pieceType := range promotablePieces {
-					move := NewMove(square, toSquare, NormalMove)
+					move := NewMove(square, toSquare, NormalMove, QuietMoveFlag)
 					move.WithPromotion(NewPiece(pieceType, position.turn))
 
 					moves = append(moves, move)
 				}
 			} else {
-				moves = append(moves, NewMove(square, toSquare, NormalMove))
+				moves = append(moves, NewMove(square, toSquare, NormalMove, QuietMoveFlag))
 			}
 
 			if !position.PieceAt(square + (direction * 2)) && square.Rank() == pawnStartingRank(position.turn) {
-				moves = append(moves, NewMove(square, square + (direction * 2), NormalMove))
+				moves = append(moves, NewMove(square, square + (direction * 2), NormalMove, QuietMoveFlag))
 			}
 		}
 
 		capturePiece, _ := position.GetPiece(square + direction + Square(east))
 		if capturePiece != EmptyPiece && capturePiece.Color() != position.turn {
-			move := NewMove(square, square + direction + Square(east), NormalMove)
+			move := NewMove(square, square + direction + Square(east), NormalMove, QuietMoveFlag)
 			move.WithCapture(capturePiece)
 			moves = append(moves, move)
 		}
 
 		capturePiece, _ = position.GetPiece(square + direction + Square(west))
 		if capturePiece != EmptyPiece && capturePiece.Color() != position.turn {
-			move := NewMove(square, square + direction + Square(west), NormalMove)
+			move := NewMove(square, square + direction + Square(west), NormalMove, QuietMoveFlag)
 			move.WithCapture(capturePiece)
 			moves = append(moves, move)
 		}
 
 		if position.EnPassantPossible() {
 			if position.IsPieceAt(square + Square(west), Pawn, position.turn.OpposingSide()) {
-				move := NewMove(square, square + Square(west) + direction, EnPassantMove)
+				move := NewMove(square, square + Square(west) + direction, EnPassantMove, QuietMoveFlag)
 				moves = append(moves, move)
 			}
 
 			if position.IsPieceAt(square + Square(east), Pawn, position.turn.OpposingSide()) {
-				move := NewMove(square, square + Square(east) + direction, EnPassantMove)
+				move := NewMove(square, square + Square(east) + direction, EnPassantMove, QuietMoveFlag)
 				moves = append(moves, move)
 			}
 		}
@@ -82,9 +81,9 @@ func generateKnightMoves(position Position, pieceBB BitBoard) []Move {
 
 			piece, _ := position.GetPiece(toSquare)
 			if piece == EmptyPiece {
-				moves = append(moves, NewMove(fromSquare, toSquare, NormalMove))
+				moves = append(moves, NewMove(fromSquare, toSquare, NormalMove, QuietMoveFlag))
 			} else if piece.Color() != position.turn {
-				move := NewMove(fromSquare, toSquare, NormalMove)
+				move := NewMove(fromSquare, toSquare, NormalMove, QuietMoveFlag)
 				move.WithCapture(piece)
 				moves = append(moves, move)
 			}
@@ -136,7 +135,7 @@ directionLoop:
 					break
 				}
 
-				move := NewMove(fromSquare, toSquare, NormalMove)
+				move := NewMove(fromSquare, toSquare, NormalMove, QuietMoveFlag)
 
 				if piece.Color() == position.turn.OpposingSide() {
 					move.WithCapture(piece)
@@ -193,7 +192,7 @@ diretionLoop:
 					break
 				}
 
-				move := NewMove(fromSquare, toSquare, NormalMove)
+				move := NewMove(fromSquare, toSquare, NormalMove, QuietMoveFlag)
 
 				if piece.Color() == position.turn.OpposingSide() {
 					move.WithCapture(piece)
@@ -238,9 +237,9 @@ func generateKingMoves(position Position, pieceBB BitBoard, includeCastling bool
 
 			piece, _ := position.GetPiece(toSquare);
 			if piece == EmptyPiece {
-				moves = append(moves, NewMove(fromSquare, toSquare, NormalMove))
+				moves = append(moves, NewMove(fromSquare, toSquare, NormalMove, QuietMoveFlag))
 			} else if piece.Color() != position.Turn() {
-				move := NewMove(fromSquare, toSquare, NormalMove)
+				move := NewMove(fromSquare, toSquare, NormalMove, QuietMoveFlag)
 				move.WithCapture(piece)
 				moves = append(moves, move)
 			}
@@ -254,22 +253,22 @@ func generateKingMoves(position Position, pieceBB BitBoard, includeCastling bool
 	kingSquare := position.GetKingSquare(position.turn)
 	if position.turn == White {
 		if position.HasCastlingRights(WhiteCastleKingside) && position.squaresEmpty([]Square{F1, G1}) {
-			move := NewMove(kingSquare, kingSquare + Square(east * 2), CastleMove)
+			move := NewMove(kingSquare, kingSquare + Square(east * 2), CastleMove, QuietMoveFlag)
 			moves = append(moves, move)
 		}
 
 		if position.HasCastlingRights(WhiteCastleQueenside) && position.squaresEmpty([]Square{D1, C1, B1}) {
-			move := NewMove(kingSquare, kingSquare + Square(west * 2), CastleMove)
+			move := NewMove(kingSquare, kingSquare + Square(west * 2), CastleMove, QuietMoveFlag)
 			moves = append(moves, move)
 		}
 	} else {
 		if position.HasCastlingRights(BlackCastleKingside) && position.squaresEmpty([]Square{F8, G8}) {
-			move := NewMove(kingSquare, kingSquare + Square(east * 2), CastleMove)
+			move := NewMove(kingSquare, kingSquare + Square(east * 2), CastleMove, QuietMoveFlag)
 			moves = append(moves, move)
 		}
 
 		if position.HasCastlingRights(BlackCastleQueenside) && position.squaresEmpty([]Square{D8, C8, B8}){
-			move := NewMove(kingSquare, kingSquare + Square(west * 2), CastleMove)
+			move := NewMove(kingSquare, kingSquare + Square(west * 2), CastleMove, QuietMoveFlag)
 			moves = append(moves, move)
 		}
 	}
