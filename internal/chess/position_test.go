@@ -119,3 +119,21 @@ func TestIsValid(t *testing.T) {
 		t.Fatalf("%s: fen %s should be valid but IsValid returned false", t.Name(), StartingFen)
 	}
 }
+
+func squareAttackedTest(t *testing.T, position Position, square Square, expectedAttack bool) {
+	attacked := position.IsSquareAttacked(square)
+	if attacked != expectedAttack {
+		t.Fatalf("%s: expected square %s attack status to be '%v' instead got '%v'", t.Name(), square.ToAlgebraic(), expectedAttack, attacked)
+	}
+}
+
+func TestIsSquareAttacked(t *testing.T) {
+	position, err := NewPosition(StartingFen)
+	if err != nil {
+		t.Fatalf("%s: fen %s returned error: %s", t.Name(), StartingFen, err)
+	}
+
+	squareAttackedTest(t, position, A1, false)
+	squareAttackedTest(t, position, D3, true)
+	squareAttackedTest(t, position, A8, false)
+}

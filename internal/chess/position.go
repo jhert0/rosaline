@@ -21,6 +21,8 @@ type Position struct {
 	queenBB  BitBoard // BitBoard for all queens.
 	kingBB   BitBoard // BitBoard for all kings.
 
+	attackersBB [64]BitBoard // BitBoard for attackers of each square.
+
 	enPassant      Square         // The square where en passant is posssible.
 	castlingRights CastlingRights // The current castling rights for both players.
 	fiftyMoveClock int            // Number of moves since a capture or a pawn has moved. This is stored in half moves.
@@ -186,6 +188,8 @@ func NewPosition(fen string) (Position, error) {
 	if !position.IsValid() {
 		return Position{}, errors.New("invalid fen: too many or too few pieces")
 	}
+
+	position.updateAttackers()
 
 	return position, nil
 }
@@ -675,6 +679,8 @@ func (p *Position) makeMove(move Move) error {
 		break
 	}
 
+	p.updateAttackers()
+
 	if p.turn == Black {
 		p.fullMoves++
 	}
@@ -745,6 +751,40 @@ func (p *Position) MakeUciMove(uci string) error {
 	return p.makeMove(move)
 }
 
+// updateAttackers updates the BitBoard that keeps track of attackers.
+func (p *Position) updateAttackers() {
+	ourMoves := p.GenerateMoves()
+
+	newPosition := p.Copy()
+	newPosition.turn = newPosition.turn.OpposingSide()
+
+	opposingMoves := newPosition.GenerateMoves()
+
+	moves := append(ourMoves, opposingMoves...)
+	for _, move := range moves {
+		if move.HasFlag(PawnPushMoveFlag) { // skip pawn pushes, they aren't attacks
+			continue
+		}
+
+		p.attackersBB[move.To].SetBit(uint64(move.From))
+	}
+}
+
+// IsSquareAttackedBy returns whether the given square is being attacked by the given color.
+func (p Position) IsSquareAttackedBy(square Square, color Color) bool {
+	return (p.GetAttackers(square) & p.GetColorBB(color)) != BitBoard(0)
+}
+
+// IsSquareAttacked returns whether the given square is attacked.
+func (p Position) IsSquareAttacked(square Square) bool {
+	return p.GetAttackers(square) != BitBoard(0)
+}
+
+// GetAttackers returns a BitBoard containing all pieces attacking the given Square.
+func (p Position) GetAttackers(square Square) BitBoard {
+	return p.attackersBB[square]
+}
+
 // Copy creates a copy of the current position.
 func (p Position) Copy() Position {
 	copy := Position{
@@ -783,6 +823,7 @@ func (p *Position) Undo() {
 	p.rookBB = p.previous.rookBB
 	p.queenBB = p.previous.queenBB
 	p.kingBB = p.previous.kingBB
+	p.attackersBB = p.previous.attackersBB
 	p.enPassant = p.previous.enPassant
 	p.castlingRights = p.previous.castlingRights
 	p.fiftyMoveClock = p.previous.fiftyMoveClock
