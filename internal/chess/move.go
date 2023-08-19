@@ -10,14 +10,14 @@ const (
 	EnPassantMove
 )
 
-type MoveFlag uint8
+type MoveFlag uint16
 
 const (
-	NoMoveFlag MoveFlag = iota
-	QuietMoveFlag
-	CaputureMoveFlag
-	PawnPushMoveFlag
-	PromotionMoveFlag
+	NoMoveFlag        MoveFlag = 0x0000
+	QuietMoveFlag     MoveFlag = 0x0001
+	CaputureMoveFlag  MoveFlag = 0x0010
+	PawnPushMoveFlag  MoveFlag = 0x0100
+	PromotionMoveFlag MoveFlag = 0x1000
 )
 
 type Move struct {
@@ -25,7 +25,7 @@ type Move struct {
 	To   Square
 
 	moveType MoveType
-	flags MoveFlag
+	flags    MoveFlag
 
 	promotionPiece Piece
 	capturePiece   Piece
