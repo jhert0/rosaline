@@ -780,6 +780,12 @@ func (p Position) IsSquareAttacked(square Square) bool {
 	return p.GetAttackers(square) != BitBoard(0)
 }
 
+// IsKingInCheck returns whether the given color's king is being attacked.
+func (p Position) IsKingInCheck(color Color) bool {
+	square := p.GetKingSquare(color)
+	return p.IsSquareAttacked(square)
+}
+
 // GetAttackers returns a BitBoard containing all pieces attacking the given Square.
 func (p Position) GetAttackers(square Square) BitBoard {
 	return p.attackersBB[square]

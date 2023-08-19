@@ -1,6 +1,8 @@
 package chess
 
-import "testing"
+import (
+	"testing"
+)
 
 func getPieceTest(t *testing.T, algebraic string, expectedType PieceType, expectedColor Color) {
 	position, _ := NewPosition(StartingFen)
@@ -136,4 +138,21 @@ func TestIsSquareAttacked(t *testing.T) {
 	squareAttackedTest(t, position, A1, false)
 	squareAttackedTest(t, position, D3, true)
 	squareAttackedTest(t, position, A8, false)
+}
+
+func kingInCheckTest(t *testing.T, position Position, color Color, expectedValue bool) {
+	check := position.IsKingInCheck(color)
+	if check != expectedValue {
+		t.Fatalf("%s: expected %s king to have of a check status of '%v' instead got '%v'", t.Name(), color, expectedValue, check)
+	}
+}
+
+func TestIsKingInCheck(t *testing.T) {
+	position, err := NewPosition(StartingFen)
+	if err != nil {
+		t.Fatalf("%s: fen %s returned error: %s", t.Name(), StartingFen, err)
+	}
+
+	kingInCheckTest(t, position, White, false)
+	kingInCheckTest(t, position, Black, false)
 }
