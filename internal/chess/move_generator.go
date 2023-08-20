@@ -282,6 +282,11 @@ func generateKingMoves(position Position, pieceBB BitBoard, includeCastling bool
 func (p Position) isLegalMove(move Move) bool {
 	piece, _ := p.GetPiece(move.From)
 
+	// the only way to get out of a double check is to move the king, therefore any other move is illegal
+	if p.NumberOfCheckers(p.Turn()) == 2 && piece.Type() != King {
+		return false
+	}
+
 	// check that the squares in between the king and rook are not attacked
 	if move.Type() == CastleMove {
 		attacked := false
