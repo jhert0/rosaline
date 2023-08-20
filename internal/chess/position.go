@@ -451,6 +451,11 @@ func (p Position) IsValid() bool {
 		return false
 	}
 
+	// the opposing side can't be in check
+	if p.IsKingInCheck(p.turn.OpposingSide()) {
+		return false
+	}
+
 	return true
 }
 
