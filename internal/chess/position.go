@@ -456,6 +456,11 @@ func (p Position) IsValid() bool {
 		return false
 	}
 
+	// it is not possible to be in check by 3 or more pieces
+	if p.NumberOfCheckers(p.turn) >= 3 {
+		return false
+	}
+
 	return true
 }
 
