@@ -1,6 +1,8 @@
 package chess
 
-import "math"
+import (
+	"math"
+)
 
 // generatePawnMoves generates the moves for the pawns on the board
 func generatePawnMoves(position Position, pieceBB BitBoard) []Move {
@@ -31,33 +33,33 @@ func generatePawnMoves(position Position, pieceBB BitBoard) []Move {
 				moves = append(moves, NewMove(square, toSquare, NormalMove, QuietMoveFlag))
 			}
 
-			if !position.PieceAt(square + (direction * 2)) && square.Rank() == pawnStartingRank(position.turn) {
-				moves = append(moves, NewMove(square, square + (direction * 2), NormalMove, QuietMoveFlag))
+			if !position.PieceAt(square+(direction*2)) && square.Rank() == pawnStartingRank(position.turn) {
+				moves = append(moves, NewMove(square, square+(direction*2), NormalMove, QuietMoveFlag))
 			}
 		}
 
 		capturePiece, _ := position.GetPiece(square + direction + Square(east))
 		if capturePiece != EmptyPiece && capturePiece.Color() != position.turn {
-			move := NewMove(square, square + direction + Square(east), NormalMove, QuietMoveFlag)
+			move := NewMove(square, square+direction+Square(east), NormalMove, QuietMoveFlag)
 			move.WithCapture(capturePiece)
 			moves = append(moves, move)
 		}
 
 		capturePiece, _ = position.GetPiece(square + direction + Square(west))
 		if capturePiece != EmptyPiece && capturePiece.Color() != position.turn {
-			move := NewMove(square, square + direction + Square(west), NormalMove, QuietMoveFlag)
+			move := NewMove(square, square+direction+Square(west), NormalMove, QuietMoveFlag)
 			move.WithCapture(capturePiece)
 			moves = append(moves, move)
 		}
 
 		if position.EnPassantPossible() {
-			if position.IsPieceAt(square + Square(west), Pawn, position.turn.OpposingSide()) {
-				move := NewMove(square, square + Square(west) + direction, EnPassantMove, QuietMoveFlag)
+			if position.IsPieceAt(square+Square(west), Pawn, position.turn.OpposingSide()) {
+				move := NewMove(square, square+Square(west)+direction, EnPassantMove, QuietMoveFlag)
 				moves = append(moves, move)
 			}
 
-			if position.IsPieceAt(square + Square(east), Pawn, position.turn.OpposingSide()) {
-				move := NewMove(square, square + Square(east) + direction, EnPassantMove, QuietMoveFlag)
+			if position.IsPieceAt(square+Square(east), Pawn, position.turn.OpposingSide()) {
+				move := NewMove(square, square+Square(east)+direction, EnPassantMove, QuietMoveFlag)
 				moves = append(moves, move)
 			}
 		}
@@ -113,7 +115,7 @@ func generateBishopMoves(position Position, pieceBB BitBoard) []Move {
 	for pieceBB > 0 {
 		fromSquare := Square(pieceBB.TrailingZeros())
 
-directionLoop:
+	directionLoop:
 		for _, direction := range directions {
 			toSquare := fromSquare + Square(direction)
 
@@ -168,7 +170,7 @@ func generateRookMoves(position Position, pieceBB BitBoard) []Move {
 	for pieceBB > 0 {
 		fromSquare := Square(pieceBB.TrailingZeros())
 
-diretionLoop:
+	diretionLoop:
 		for _, direction := range directions {
 			toSquare := fromSquare + Square(direction)
 
@@ -235,7 +237,7 @@ func generateKingMoves(position Position, pieceBB BitBoard, includeCastling bool
 		for moveBB > 0 {
 			toSquare := Square(moveBB.TrailingZeros())
 
-			piece, _ := position.GetPiece(toSquare);
+			piece, _ := position.GetPiece(toSquare)
 			if piece == EmptyPiece {
 				moves = append(moves, NewMove(fromSquare, toSquare, NormalMove, QuietMoveFlag))
 			} else if piece.Color() != position.Turn() {
@@ -253,27 +255,60 @@ func generateKingMoves(position Position, pieceBB BitBoard, includeCastling bool
 	kingSquare := position.GetKingSquare(position.turn)
 	if position.turn == White {
 		if position.HasCastlingRights(WhiteCastleKingside) && position.squaresEmpty([]Square{F1, G1}) {
-			move := NewMove(kingSquare, kingSquare + Square(east * 2), CastleMove, QuietMoveFlag)
+			move := NewMove(kingSquare, kingSquare+Square(east*2), CastleMove, QuietMoveFlag)
 			moves = append(moves, move)
 		}
 
 		if position.HasCastlingRights(WhiteCastleQueenside) && position.squaresEmpty([]Square{D1, C1, B1}) {
-			move := NewMove(kingSquare, kingSquare + Square(west * 2), CastleMove, QuietMoveFlag)
+			move := NewMove(kingSquare, kingSquare+Square(west*2), CastleMove, QuietMoveFlag)
 			moves = append(moves, move)
 		}
 	} else {
 		if position.HasCastlingRights(BlackCastleKingside) && position.squaresEmpty([]Square{F8, G8}) {
-			move := NewMove(kingSquare, kingSquare + Square(east * 2), CastleMove, QuietMoveFlag)
+			move := NewMove(kingSquare, kingSquare+Square(east*2), CastleMove, QuietMoveFlag)
 			moves = append(moves, move)
 		}
 
-		if position.HasCastlingRights(BlackCastleQueenside) && position.squaresEmpty([]Square{D8, C8, B8}){
-			move := NewMove(kingSquare, kingSquare + Square(west * 2), CastleMove, QuietMoveFlag)
+		if position.HasCastlingRights(BlackCastleQueenside) && position.squaresEmpty([]Square{D8, C8, B8}) {
+			move := NewMove(kingSquare, kingSquare+Square(west*2), CastleMove, QuietMoveFlag)
 			moves = append(moves, move)
 		}
 	}
 
 	return moves
+}
+
+// isLegalMove checks that the move would not result in an illegal position.
+func (p Position) isLegalMove(move Move) bool {
+	piece, _ := p.GetPiece(move.From)
+
+	// check that the squares in between the king and rook are not attacked
+	if move.Type() == CastleMove {
+		attacked := false
+
+		direction := east
+		if move.To == C1 || move.To == C8 {
+			direction = west
+		}
+
+		difference := move.FileDifference()
+		for i := 0; i <= difference; i++ {
+			square := move.To + Square(difference*int(direction))
+			if p.IsSquareAttacked(square) {
+				attacked = true
+				break
+			}
+		}
+
+		return !attacked
+	}
+
+	// check that the king is not moving into an attacked square
+	if piece.Type() == King {
+		return !p.IsSquareAttacked(move.To)
+	}
+
+	return true
 }
 
 // GenerateMoves generates all legal moves in the position.
@@ -306,5 +341,12 @@ func (position Position) GenerateMoves() []Move {
 	kingMoves := generateKingMoves(position, kingBB&colorBB, true)
 	moves = append(moves, kingMoves...)
 
-	return moves
+	legalMoves := []Move{}
+	for _, move := range moves {
+		if position.isLegalMove(move) {
+			legalMoves = append(legalMoves, move)
+		}
+	}
+
+	return legalMoves
 }
