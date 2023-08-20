@@ -156,3 +156,28 @@ func TestIsKingInCheck(t *testing.T) {
 	kingInCheckTest(t, position, White, false)
 	kingInCheckTest(t, position, Black, false)
 }
+
+func numberOfCheckersTest(t *testing.T, position Position, color Color, expectedCheckers int) {
+	checkers := position.NumberOfCheckers(color)
+	if checkers != expectedCheckers {
+		t.Fatalf("%s: expected %s king to have '%v' number of checks instead got '%v'", t.Name(), color, checkers, expectedCheckers)
+	}
+}
+
+func TestNumberOfCheckers(t *testing.T) {
+	position, err := NewPosition(StartingFen)
+	if err != nil {
+		t.Fatalf("%s: fen %s returned error: %s", t.Name(), StartingFen, err)
+	}
+
+	numberOfCheckersTest(t, position, White, 0)
+	numberOfCheckersTest(t, position, White, 0)
+
+	fen := "rnb1kb1r/ppp1pppp/8/2nq4/8/3K4/PPPP1PPP/RNBQ1BNR w HAkq - 0 1"
+	position, err = NewPosition(fen)
+	if err != nil {
+		t.Fatalf("%s: fen %s returned error: %s", t.Name(), fen, err)
+	}
+
+	numberOfCheckersTest(t, position, White, 2)
+}

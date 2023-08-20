@@ -786,6 +786,18 @@ func (p Position) IsKingInCheck(color Color) bool {
 	return p.IsSquareAttacked(square)
 }
 
+// NumberOfCheckers returns the number of opposing pieces attacking the given color's king.
+func (p Position) NumberOfCheckers(color Color) int {
+	if !p.IsKingInCheck(color) {
+		return 0
+	}
+
+	kingSquare := p.GetKingSquare(color)
+	attackers := p.attackersBB[kingSquare] & p.GetColorBB(color.OpposingSide())
+
+	return attackers.PopulationCount()
+}
+
 // GetAttackers returns a BitBoard containing all pieces attacking the given Square.
 func (p Position) GetAttackers(square Square) BitBoard {
 	return p.attackersBB[square]
