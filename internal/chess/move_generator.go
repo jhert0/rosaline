@@ -289,8 +289,6 @@ func (p Position) isLegalMove(move Move) bool {
 
 	// check that the squares in between the king and rook are not attacked
 	if move.Type() == CastleMove {
-		attacked := false
-
 		direction := east
 		if move.To == C1 || move.To == C8 {
 			direction = west
@@ -300,12 +298,11 @@ func (p Position) isLegalMove(move Move) bool {
 		for i := 0; i <= difference; i++ {
 			square := move.To + Square(difference*int(direction))
 			if p.IsSquareAttacked(square) {
-				attacked = true
-				break
+				return false
 			}
 		}
 
-		return !attacked
+		return true
 	}
 
 	// check that the king is not moving into an attacked square
