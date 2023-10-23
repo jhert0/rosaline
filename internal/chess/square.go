@@ -150,6 +150,10 @@ func (s Square) IsValid() bool {
 
 // ToAlgebraic returns the algebraic string for the Square.
 func (s Square) ToAlgebraic() string {
+	if !s.IsValid() {
+		return "<invalid square>"
+	}
+
 	algebraic := [2]string{}
 
 	switch s.File() {
