@@ -1,5 +1,7 @@
 package chess
 
+import "fmt"
+
 const (
 	StartingFen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
 )
@@ -27,6 +29,29 @@ var kingMoves = [64]BitBoard{
 }
 
 type direction int8
+
+func (d direction) String() string {
+	switch d {
+	case north:
+		return "North"
+	case south:
+		return "South"
+	case east:
+		return "East"
+	case west:
+		return "West"
+	case north + east:
+		return "Northeast"
+	case north + west:
+		return "Northwest"
+	case south + east:
+		return "Southeast"
+	case south + west:
+		return "Southwest"
+	}
+
+	panic(fmt.Sprintf("Unknown direction: %d", d))
+}
 
 // These directions are from white's perspective.
 const (
