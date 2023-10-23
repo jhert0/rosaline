@@ -793,7 +793,7 @@ func (p Position) IsSquareAttacked(square Square) bool {
 // IsKingInCheck returns whether the given color's king is being attacked.
 func (p Position) IsKingInCheck(color Color) bool {
 	square := p.GetKingSquare(color)
-	return p.IsSquareAttacked(square)
+	return p.IsSquareAttackedBy(square, color.OpposingSide())
 }
 
 // NumberOfCheckers returns the number of opposing pieces attacking the given color's king.
