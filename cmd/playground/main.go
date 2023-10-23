@@ -130,6 +130,15 @@ loop:
 
 			fmt.Println("FEN:", position.Fen())
 			break
+		case "attackers":
+			for i := 0; i < 64; i++ {
+				square := chess.Square(i)
+				fmt.Printf("%s: ", square.ToAlgebraic())
+				attackers := position.GetAttackers(square)
+				attackers.Print()
+			}
+
+			break
 		case "quit":
 			break loop
 		}
