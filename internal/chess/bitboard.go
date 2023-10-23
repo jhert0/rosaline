@@ -12,14 +12,26 @@ func NewBitBoard(value uint64) BitBoard {
 }
 
 func (bb *BitBoard) SetBit(number uint64) {
+	if number > 63 {
+		panic(fmt.Sprintf("tried to set invalid bit number: %d", number))
+	}
+
 	*bb |= BitBoard(uint64(1) << number)
 }
 
 func (bb *BitBoard) ClearBit(number uint64) {
+	if number > 63 {
+		panic(fmt.Sprintf("tried to clear invalid bit number: %d", number))
+	}
+
 	*bb &= BitBoard(^(uint64(1) << number))
 }
 
 func (bb BitBoard) BitSet(number uint64) bool {
+	if number > 63 {
+		panic(fmt.Sprintf("tried to check value of invalid bit number: %d", number))
+	}
+
 	return (bb & BitBoard((uint64(1) << number))) > 0
 }
 
