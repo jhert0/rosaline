@@ -6,8 +6,8 @@ func generatePawnAttacks(square Square, color Color) BitBoard {
 	attacks := BitBoard(0)
 	direction := pawnDirection(color)
 
-	attacks.BitSet(uint64(square + Square(direction) + Square(east)))
-	attacks.BitSet(uint64(square + Square(direction) + Square(west)))
+	attacks.SetBit(uint64(square + Square(direction) + Square(east)))
+	attacks.SetBit(uint64(square + Square(direction) + Square(west)))
 
 	return attacks
 }
@@ -41,7 +41,7 @@ directionLoop:
 				continue directionLoop
 			}
 
-			attacks.BitSet(uint64(toSquare))
+			attacks.SetBit(uint64(toSquare))
 
 			if occupied.BitSet(uint64(toSquare)) {
 				continue directionLoop
