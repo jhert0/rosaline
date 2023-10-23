@@ -86,7 +86,7 @@ const (
 // SquareFromAlgebraic creates a Square from the given algebraic string.
 func SquareFromAlgebraic(algebraic string) (Square, error) {
 	if len(algebraic) > 2 || len(algebraic) < 2 {
-		return 0, errors.New("algebraic length is invalid")
+		return -1, errors.New("algebraic length is invalid")
 	}
 
 	// parse the file from the algebraic string
@@ -121,7 +121,7 @@ func SquareFromAlgebraic(algebraic string) (Square, error) {
 	// parse the rank from the algebraic string
 	rank, err := strconv.Atoi(string(algebraic[1]))
 	if err != nil {
-		return 0, errors.New(fmt.Sprintf("invalid value: %c for rank", algebraic[1]))
+		return -1, errors.New(fmt.Sprintf("invalid value: %c for rank", algebraic[1]))
 	}
 
 	return SquareFromRankFile(rank, file), nil
