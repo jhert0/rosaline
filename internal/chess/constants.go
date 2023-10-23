@@ -36,3 +36,15 @@ const (
 	east direction = 1
 	west direction = -1
 )
+
+var directions = []direction{
+	north,
+	south,
+	east,
+	west,
+
+	north + east,
+	north + west,
+	south + east,
+	south + west,
+}
