@@ -183,3 +183,7 @@ func (s Square) ToAlgebraic() string {
 
 	return strings.Join(algebraic[:], "")
 }
+
+func (s Square) String() string {
+	return s.ToAlgebraic()
+}
