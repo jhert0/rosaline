@@ -22,7 +22,7 @@ func TestClearBit(t *testing.T) {
 
 func TestBitSet(t *testing.T) {
 	bb := NewBitBoard(1)
-	if bb.BitSet(1) {
+	if bb.IsBitSet(1) {
 		t.Fatalf("%v: expected: true got %v", t.Name(), bb)
 	}
 }

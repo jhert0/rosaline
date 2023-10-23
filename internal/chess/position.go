@@ -289,16 +289,16 @@ func (p Position) HasCastlingRights(rights CastlingRights) bool {
 
 // PieceAt checks if there is a piece at the give square.
 func (p Position) PieceAt(square Square) bool {
-	return p.whiteBB.BitSet(uint64(square)) || p.blackBB.BitSet(uint64(square))
+	return p.whiteBB.IsBitSet(uint64(square)) || p.blackBB.IsBitSet(uint64(square))
 }
 
 // GetPieceColor gets the color of the piece at the give square.
 func (p Position) GetPieceColor(square Square) (Color, error) {
-	if p.whiteBB.BitSet(uint64(square)) {
+	if p.whiteBB.IsBitSet(uint64(square)) {
 		return White, nil
 	}
 
-	if p.blackBB.BitSet(uint64(square)) {
+	if p.blackBB.IsBitSet(uint64(square)) {
 		return Black, nil
 	}
 
@@ -314,27 +314,27 @@ func (p Position) GetPiece(square Square) (Piece, error) {
 	index := uint64(square)
 	color, _ := p.GetPieceColor(square)
 
-	if p.pawnBB.BitSet(index) {
+	if p.pawnBB.IsBitSet(index) {
 		return NewPiece(Pawn, color), nil
 	}
 
-	if p.knightBB.BitSet(index) {
+	if p.knightBB.IsBitSet(index) {
 		return NewPiece(Knight, color), nil
 	}
 
-	if p.bishopBB.BitSet(index) {
+	if p.bishopBB.IsBitSet(index) {
 		return NewPiece(Bishop, color), nil
 	}
 
-	if p.rookBB.BitSet(index) {
+	if p.rookBB.IsBitSet(index) {
 		return NewPiece(Rook, color), nil
 	}
 
-	if p.queenBB.BitSet(index) {
+	if p.queenBB.IsBitSet(index) {
 		return NewPiece(Queen, color), nil
 	}
 
-	if p.kingBB.BitSet(index) {
+	if p.kingBB.IsBitSet(index) {
 		return NewPiece(King, color), nil
 	}
 

@@ -43,7 +43,7 @@ directionLoop:
 
 			attacks.SetBit(uint64(toSquare))
 
-			if occupied.BitSet(uint64(toSquare)) {
+			if occupied.IsBitSet(uint64(toSquare)) {
 				continue directionLoop
 			}
 
@@ -80,7 +80,7 @@ diretionLoop:
 
 			attacks.SetBit(uint64(toSquare))
 
-			if occupied.BitSet(uint64(toSquare)) {
+			if occupied.IsBitSet(uint64(toSquare)) {
 				continue diretionLoop
 			}
 

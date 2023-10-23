@@ -27,7 +27,7 @@ func (bb *BitBoard) ClearBit(number uint64) {
 	*bb &= BitBoard(^(uint64(1) << number))
 }
 
-func (bb BitBoard) BitSet(number uint64) bool {
+func (bb BitBoard) IsBitSet(number uint64) bool {
 	if number > 63 {
 		panic(fmt.Sprintf("tried to check value of invalid bit number: %d", number))
 	}
