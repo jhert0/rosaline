@@ -181,3 +181,26 @@ func TestNumberOfCheckers(t *testing.T) {
 
 	numberOfCheckersTest(t, position, White, 2)
 }
+
+func isDrawTest(t *testing.T, position Position, isDraw bool) {
+	if position.IsDraw() != isDraw {
+		t.Fatalf("%s: expected IsDraw to return '%v' got '%v'", t.Name(), isDraw, position.IsDraw())
+	}
+}
+
+func TestIsDraw(t *testing.T) {
+	fen := "8/8/8/4k3/8/8/5q2/4K3 w - - 0 1"
+	position, err := NewPosition(fen)
+	if err != nil {
+		t.Fatalf("%s: fen %s returned error: %s", t.Name(), fen, err)
+	}
+
+	isDrawTest(t, position, false)
+
+	err = position.MakeUciMove("e1f2")
+	if err != nil {
+		t.Fatalf("%s: %v", t.Name(), err)
+	}
+
+	isDrawTest(t, position, true)
+}

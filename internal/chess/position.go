@@ -808,6 +808,11 @@ func (p Position) NumberOfCheckers(color Color) int {
 	return attackers.PopulationCount()
 }
 
+// IsDraw returns whether the position is a draw.
+func (p Position) IsDraw() bool {
+	return p.whiteBB.PopulationCount() <= 1 && p.blackBB.PopulationCount() <= 1
+}
+
 // GetAttackers returns a BitBoard containing all pieces attacking the given Square.
 func (p Position) GetAttackers(square Square) BitBoard {
 	return p.attackersBB[square]
