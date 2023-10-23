@@ -1,6 +1,9 @@
 package chess
 
-import "unicode"
+import (
+	"fmt"
+	"unicode"
+)
 
 type Piece uint8
 
@@ -65,4 +68,23 @@ func (p Piece) Character() rune {
 	}
 
 	return character
+}
+
+// Value returns the value of the piece.
+func (p Piece) Value() uint8 {
+	switch p.Type() {
+	case Pawn:
+		return 1
+	case Knight:
+	case Bishop:
+		return 3
+	case Rook:
+		return 5
+	case Queen:
+		return 9
+	case King:
+		return 127
+	}
+
+	panic(fmt.Sprintf("Unknown piece type '%v' encountered in Value()", p.Type()))
 }
