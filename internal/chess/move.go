@@ -1,6 +1,9 @@
 package chess
 
-import "math"
+import (
+	"math"
+	"strings"
+)
 
 type MoveType uint8
 
@@ -94,7 +97,8 @@ func (m Move) String() string {
 	str := m.From.ToAlgebraic() + m.To.ToAlgebraic()
 
 	if m.promotionPiece != EmptyPiece {
-		str += string(m.promotionPiece.Character())
+		character := string(m.promotionPiece.Character())
+		str += strings.ToLower(character)
 	}
 
 	return str
