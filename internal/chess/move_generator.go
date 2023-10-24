@@ -56,8 +56,12 @@ func generatePawnMoves(position Position, pieceBB BitBoard) []Move {
 		}
 
 		if position.EnPassantPossible() {
-			if position.IsPieceAt(position.EnPassant(), Pawn, position.turn.OpposingSide()) {
+			captureSquare := position.EnPassant() + Square(pawnDirection(position.turn.OpposingSide()))
+
+			capturePiece, _ := position.GetPiece(captureSquare)
+			if capturePiece.Type() == Pawn && capturePiece.Color() == position.Turn().OpposingSide() {
 				move := NewMove(square, position.EnPassant(), EnPassantMove, QuietMoveFlag)
+				move.WithCapture(capturePiece)
 				moves = append(moves, move)
 			}
 		}
