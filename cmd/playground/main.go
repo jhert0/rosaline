@@ -76,9 +76,13 @@ loop:
 				break
 			}
 
-			err := position.MakeUciMove(args[0])
-			if err != nil {
-				fmt.Println(err)
+			if args[0] == "null" {
+				position.MakeNullMove()
+			} else {
+				err := position.MakeUciMove(args[0])
+				if err != nil {
+					fmt.Println(err)
+				}
 			}
 
 			break
