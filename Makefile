@@ -6,6 +6,7 @@ build:
 
 test:
 	go test -v ./internal/chess
+	go test -v ./internal/perft/
 
 clean:
 	rm -rf bin
