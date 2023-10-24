@@ -7,13 +7,13 @@ import (
 // generatePawnMoves generates the moves for the pawns on the board
 func generatePawnMoves(position Position, pieceBB BitBoard) []Move {
 	moves := []Move{}
-	direction := Square(pawnDirection(position.turn))
+	dir := Square(pawnDirection(position.turn))
 
 	for pieceBB > 0 {
 		square := Square(pieceBB.TrailingZeros())
 
-		if !position.PieceAt(square + direction) {
-			toSquare := square + direction
+		if !position.PieceAt(square + dir) {
+			toSquare := square + dir
 
 			if toSquare.Rank() == pawnPromotionRank(position.Turn()) {
 				for _, pieceType := range promotablePieces {
@@ -27,25 +27,32 @@ func generatePawnMoves(position Position, pieceBB BitBoard) []Move {
 			}
 
 			if square.Rank() == pawnStartingRank(position.turn) {
-				toSquare := square + (direction * 2)
+				toSquare := square + (dir * 2)
 				if !position.PieceAt(toSquare) {
 					moves = append(moves, NewMove(square, toSquare, NormalMove, QuietMoveFlag))
 				}
 			}
 		}
 
-		capturePiece, _ := position.GetPiece(square + direction + Square(east))
-		if capturePiece != EmptyPiece && capturePiece.Color() != position.turn {
-			move := NewMove(square, square+direction+Square(east), NormalMove, QuietMoveFlag)
-			move.WithCapture(capturePiece)
-			moves = append(moves, move)
-		}
+		captureOffsets := [2]direction{east, west}
+		for _, offset := range captureOffsets {
+			captureSquare := square + dir + Square(offset)
 
-		capturePiece, _ = position.GetPiece(square + direction + Square(west))
-		if capturePiece != EmptyPiece && capturePiece.Color() != position.turn {
-			move := NewMove(square, square+direction+Square(west), NormalMove, QuietMoveFlag)
-			move.WithCapture(capturePiece)
-			moves = append(moves, move)
+			capturePiece, _ := position.GetPiece(captureSquare)
+			if capturePiece != EmptyPiece && capturePiece.Color() != position.turn {
+				if captureSquare.Rank() == pawnPromotionRank(position.Turn()) {
+					for _, pieceType := range promotablePieces {
+						move := NewMove(square, captureSquare, NormalMove, QuietMoveFlag)
+						move.WithCapture(capturePiece)
+						move.WithPromotion(NewPiece(pieceType, position.Turn()))
+						moves = append(moves, move)
+					}
+				} else {
+					move := NewMove(square, captureSquare, NormalMove, QuietMoveFlag)
+					move.WithCapture(capturePiece)
+					moves = append(moves, move)
+				}
+			}
 		}
 
 		if position.EnPassantPossible() {
