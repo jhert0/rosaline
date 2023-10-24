@@ -772,7 +772,7 @@ func (p *Position) updateAttackers() {
 	ourMoves := p.GenerateMoves()
 
 	newPosition := p.Copy()
-	newPosition.turn = newPosition.turn.OpposingSide()
+	newPosition.MakeNullMove()
 
 	opposingMoves := newPosition.GenerateMoves()
 
