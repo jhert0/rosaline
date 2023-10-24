@@ -299,7 +299,7 @@ func (p Position) isLegalMove(move Move) bool {
 		difference := move.FileDifference()
 		for i := 0; i <= difference; i++ {
 			square := move.To + Square(difference*int(direction))
-			if p.IsSquareAttacked(square) {
+			if p.IsSquareAttackedBy(square, p.turn.OpposingSide()) {
 				return false
 			}
 		}
@@ -309,7 +309,7 @@ func (p Position) isLegalMove(move Move) bool {
 
 	// check that the king is not moving into an attacked square
 	if piece.Type() == King {
-		return !p.IsSquareAttacked(move.To)
+		return !p.IsSquareAttackedBy(move.To, p.turn.OpposingSide())
 	}
 
 	return true
