@@ -763,8 +763,12 @@ func (p *Position) MakeUciMove(uci string) error {
 
 // MakeNullMove switches sides without making an actual move.
 func (p *Position) MakeNullMove() {
+	copy := p.Copy()
+
 	p.enPassant = -1
 	p.turn = p.turn.OpposingSide()
+
+	p.previous = &copy
 }
 
 // updateAttackers updates the BitBoard that keeps track of attackers.
