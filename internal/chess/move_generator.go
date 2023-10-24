@@ -10,7 +10,7 @@ func generatePawnMoves(position Position, pieceBB BitBoard) []Move {
 	dir := Square(pawnDirection(position.turn))
 
 	for pieceBB > 0 {
-		square := Square(pieceBB.Lsb())
+		square := Square(pieceBB.PopLsb())
 
 		if !position.PieceAt(square + dir) {
 			toSquare := square + dir
@@ -65,8 +65,6 @@ func generatePawnMoves(position Position, pieceBB BitBoard) []Move {
 				moves = append(moves, move)
 			}
 		}
-
-		pieceBB.ClearBit(uint64(square))
 	}
 
 	return moves
@@ -77,11 +75,11 @@ func generateKnightMoves(position Position, pieceBB BitBoard) []Move {
 	moves := []Move{}
 
 	for pieceBB > 0 {
-		fromSquare := Square(pieceBB.Lsb())
+		fromSquare := Square(pieceBB.PopLsb())
 
 		moveBB := knightMoves[fromSquare]
 		for moveBB > 0 {
-			toSquare := Square(moveBB.Lsb())
+			toSquare := Square(moveBB.PopLsb())
 
 			piece, _ := position.GetPiece(toSquare)
 			if piece == EmptyPiece {
@@ -91,11 +89,7 @@ func generateKnightMoves(position Position, pieceBB BitBoard) []Move {
 				move.WithCapture(piece)
 				moves = append(moves, move)
 			}
-
-			moveBB.ClearBit(uint64(toSquare))
 		}
-
-		pieceBB.ClearBit(uint64(fromSquare))
 	}
 
 	return moves
@@ -115,7 +109,7 @@ func generateBishopMoves(position Position, pieceBB BitBoard) []Move {
 	}
 
 	for pieceBB > 0 {
-		fromSquare := Square(pieceBB.Lsb())
+		fromSquare := Square(pieceBB.PopLsb())
 
 	directionLoop:
 		for _, direction := range directions {
@@ -154,8 +148,6 @@ func generateBishopMoves(position Position, pieceBB BitBoard) []Move {
 				toSquare += Square(direction)
 			}
 		}
-
-		pieceBB.ClearBit(uint64(fromSquare))
 	}
 
 	return moves
@@ -170,7 +162,7 @@ func generateRookMoves(position Position, pieceBB BitBoard) []Move {
 	directions := []direction{north, south, east, west}
 
 	for pieceBB > 0 {
-		fromSquare := Square(pieceBB.Lsb())
+		fromSquare := Square(pieceBB.PopLsb())
 
 	diretionLoop:
 		for _, direction := range directions {
@@ -211,8 +203,6 @@ func generateRookMoves(position Position, pieceBB BitBoard) []Move {
 				toSquare += Square(direction)
 			}
 		}
-
-		pieceBB.ClearBit(uint64(fromSquare))
 	}
 
 	return moves
@@ -233,11 +223,11 @@ func generateKingMoves(position Position, pieceBB BitBoard, includeCastling bool
 	moves := []Move{}
 
 	for pieceBB > 0 {
-		fromSquare := Square(pieceBB.Lsb())
+		fromSquare := Square(pieceBB.PopLsb())
 
 		moveBB := kingMoves[fromSquare]
 		for moveBB > 0 {
-			toSquare := Square(moveBB.Lsb())
+			toSquare := Square(moveBB.PopLsb())
 
 			piece, _ := position.GetPiece(toSquare)
 			if piece == EmptyPiece {
@@ -247,11 +237,7 @@ func generateKingMoves(position Position, pieceBB BitBoard, includeCastling bool
 				move.WithCapture(piece)
 				moves = append(moves, move)
 			}
-
-			moveBB.ClearBit(uint64(toSquare))
 		}
-
-		pieceBB.ClearBit(uint64(fromSquare))
 	}
 
 	kingSquare := position.GetKingSquare(position.turn)
