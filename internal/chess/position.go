@@ -824,6 +824,10 @@ func (p Position) NumberOfCheckers(color Color) int {
 
 // IsDraw returns whether the position is a draw.
 func (p Position) IsDraw() bool {
+	if p.fiftyMoveClock == 100 {
+		return true
+	}
+
 	return p.whiteBB.PopulationCount() <= 1 && p.blackBB.PopulationCount() <= 1
 }
 
