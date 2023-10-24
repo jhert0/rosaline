@@ -49,6 +49,13 @@ func (bb BitBoard) PopulationCount() int {
 	return bits.OnesCount64(uint64(bb))
 }
 
+// PopLsb clears the least significant bit and returns the bit number it was at.
+func (bb *BitBoard) PopLsb() int {
+	lsb := bb.Lsb()
+	bb.ClearBit(uint64(lsb))
+	return lsb
+}
+
 // Print prints the BitBoard value in binary.
 func (bb BitBoard) Print() {
 	fmt.Printf("%064b\n", bb)
