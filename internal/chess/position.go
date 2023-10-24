@@ -773,6 +773,10 @@ func (p *Position) MakeNullMove() {
 
 // updateAttackers updates the BitBoard that keeps track of attackers.
 func (p *Position) updateAttackers() {
+	for i := 0; i < len(p.attackersBB); i++ {
+		p.attackersBB[i] = BitBoard(0)
+	}
+
 	ourMoves := p.GenerateMoves()
 
 	newPosition := p.Copy()
