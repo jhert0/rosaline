@@ -1,0 +1,40 @@
+package perft
+
+import (
+	"fmt"
+	"rosaline/internal/chess"
+)
+
+func Perft(position chess.Position, depth int, print bool) uint64 {
+	if depth == 0 {
+		return 1
+	}
+
+	leaf := depth == 2
+
+	var nodes uint64 = 0
+	moves := position.GenerateMoves()
+	for _, move := range moves {
+		err := position.MakeUciMove(move.String())
+		if err != nil {
+			panic(err)
+		}
+
+		var count uint64
+		if leaf {
+			count = uint64(len(position.GenerateMoves()))
+		} else {
+			count = Perft(position, depth-1, false)
+		}
+
+		nodes += count
+
+		if print {
+			fmt.Printf("%s: %d\n", move, count)
+		}
+
+		position.Undo()
+	}
+
+	return nodes
+}
