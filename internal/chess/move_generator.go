@@ -10,7 +10,7 @@ func generatePawnMoves(position Position, pieceBB BitBoard) []Move {
 	dir := Square(pawnDirection(position.turn))
 
 	for pieceBB > 0 {
-		square := Square(pieceBB.TrailingZeros())
+		square := Square(pieceBB.Lsb())
 
 		if !position.PieceAt(square + dir) {
 			toSquare := square + dir
@@ -77,11 +77,11 @@ func generateKnightMoves(position Position, pieceBB BitBoard) []Move {
 	moves := []Move{}
 
 	for pieceBB > 0 {
-		fromSquare := Square(pieceBB.TrailingZeros())
+		fromSquare := Square(pieceBB.Lsb())
 
 		moveBB := knightMoves[fromSquare]
 		for moveBB > 0 {
-			toSquare := Square(moveBB.TrailingZeros())
+			toSquare := Square(moveBB.Lsb())
 
 			piece, _ := position.GetPiece(toSquare)
 			if piece == EmptyPiece {
@@ -115,7 +115,7 @@ func generateBishopMoves(position Position, pieceBB BitBoard) []Move {
 	}
 
 	for pieceBB > 0 {
-		fromSquare := Square(pieceBB.TrailingZeros())
+		fromSquare := Square(pieceBB.Lsb())
 
 	directionLoop:
 		for _, direction := range directions {
@@ -170,7 +170,7 @@ func generateRookMoves(position Position, pieceBB BitBoard) []Move {
 	directions := []direction{north, south, east, west}
 
 	for pieceBB > 0 {
-		fromSquare := Square(pieceBB.TrailingZeros())
+		fromSquare := Square(pieceBB.Lsb())
 
 	diretionLoop:
 		for _, direction := range directions {
@@ -233,11 +233,11 @@ func generateKingMoves(position Position, pieceBB BitBoard, includeCastling bool
 	moves := []Move{}
 
 	for pieceBB > 0 {
-		fromSquare := Square(pieceBB.TrailingZeros())
+		fromSquare := Square(pieceBB.Lsb())
 
 		moveBB := kingMoves[fromSquare]
 		for moveBB > 0 {
-			toSquare := Square(moveBB.TrailingZeros())
+			toSquare := Square(moveBB.Lsb())
 
 			piece, _ := position.GetPiece(toSquare)
 			if piece == EmptyPiece {

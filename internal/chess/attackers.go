@@ -105,7 +105,7 @@ func getAttackers(position Position, color Color) BitBoard {
 
 	colorBB := position.GetColorBB(color)
 	for colorBB > 0 {
-		square := Square(colorBB.TrailingZeros())
+		square := Square(colorBB.Lsb())
 
 		piece, _ := position.GetPiece(square)
 		switch piece.Type() {

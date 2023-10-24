@@ -39,8 +39,8 @@ func (bb BitBoard) IsBitSet(number uint64) bool {
 	return (bb & BitBoard((uint64(1) << number))) > 0
 }
 
-// TrailingZeros returns the number of trailing zeros.
-func (bb BitBoard) TrailingZeros() int {
+// Lsb returns the bit number of the last bit that is set.
+func (bb BitBoard) Lsb() int {
 	return bits.TrailingZeros64(uint64(bb))
 }
 
