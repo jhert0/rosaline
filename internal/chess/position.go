@@ -761,6 +761,12 @@ func (p *Position) MakeUciMove(uci string) error {
 	return p.makeMove(move)
 }
 
+// MakeNullMove switches sides without making an actual move.
+func (p *Position) MakeNullMove() {
+	p.enPassant = -1
+	p.turn = p.turn.OpposingSide()
+}
+
 // updateAttackers updates the BitBoard that keeps track of attackers.
 func (p *Position) updateAttackers() {
 	ourMoves := p.GenerateMoves()
