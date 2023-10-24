@@ -7,24 +7,17 @@ import (
 // generatePawnMoves generates the moves for the pawns on the board
 func generatePawnMoves(position Position, pieceBB BitBoard) []Move {
 	moves := []Move{}
+	direction := Square(pawnDirection(position.turn))
 
 	for pieceBB > 0 {
 		square := Square(pieceBB.TrailingZeros())
 
-		direction := Square(pawnDirection(position.turn))
 		if !position.PieceAt(square + direction) {
 			toSquare := square + direction
 
-			if toSquare.Rank() == 8 && position.Turn() == White {
+			if toSquare.Rank() == pawnPromotionRank(position.Turn()) {
 				for _, pieceType := range promotablePieces {
 					move := NewMove(square, toSquare, NormalMove, PawnPushMoveFlag)
-					move.WithPromotion(NewPiece(pieceType, position.turn))
-
-					moves = append(moves, move)
-				}
-			} else if toSquare.Rank() == 1 && position.Turn() == Black {
-				for _, pieceType := range promotablePieces {
-					move := NewMove(square, toSquare, NormalMove, QuietMoveFlag)
 					move.WithPromotion(NewPiece(pieceType, position.turn))
 
 					moves = append(moves, move)
@@ -33,8 +26,11 @@ func generatePawnMoves(position Position, pieceBB BitBoard) []Move {
 				moves = append(moves, NewMove(square, toSquare, NormalMove, QuietMoveFlag))
 			}
 
-			if !position.PieceAt(square+(direction*2)) && square.Rank() == pawnStartingRank(position.turn) {
-				moves = append(moves, NewMove(square, square+(direction*2), NormalMove, QuietMoveFlag))
+			if square.Rank() == pawnStartingRank(position.turn) {
+				toSquare := square + (direction * 2)
+				if !position.PieceAt(toSquare) {
+					moves = append(moves, NewMove(square, toSquare, NormalMove, QuietMoveFlag))
+				}
 			}
 		}
 
@@ -53,13 +49,8 @@ func generatePawnMoves(position Position, pieceBB BitBoard) []Move {
 		}
 
 		if position.EnPassantPossible() {
-			if position.IsPieceAt(square+Square(west), Pawn, position.turn.OpposingSide()) {
-				move := NewMove(square, square+Square(west)+direction, EnPassantMove, QuietMoveFlag)
-				moves = append(moves, move)
-			}
-
-			if position.IsPieceAt(square+Square(east), Pawn, position.turn.OpposingSide()) {
-				move := NewMove(square, square+Square(east)+direction, EnPassantMove, QuietMoveFlag)
+			if position.IsPieceAt(position.EnPassant(), Pawn, position.turn.OpposingSide()) {
+				move := NewMove(square, position.EnPassant(), EnPassantMove, QuietMoveFlag)
 				moves = append(moves, move)
 			}
 		}
