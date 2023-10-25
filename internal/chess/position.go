@@ -579,9 +579,9 @@ func (p *Position) makeMove(move Move) error {
 			opposingSide := p.turn.OpposingSide()
 
 			// check to see if a pawn is on a valid square for en passant
-			pawn1, _ := p.GetPiece(move.To + Square(west))
-			pawn2, _ := p.GetPiece(move.To + Square(east))
-			if (pawn1.Type() == Pawn && pawn1.Color() == opposingSide) || (pawn2.Type() == Pawn && pawn2.Color() == opposingSide) {
+			westPawn, _ := p.GetPiece(move.To + Square(west))
+			eastPawn, _ := p.GetPiece(move.To + Square(east))
+			if (westPawn.Type() == Pawn && westPawn.Color() == opposingSide && move.To.File() != 1) || (eastPawn.Type() == Pawn && eastPawn.Color() == opposingSide && move.To.File() != 8) {
 				p.enPassant = move.To + Square(pawnDirection(opposingSide))
 			}
 		}
