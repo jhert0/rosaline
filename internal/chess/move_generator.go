@@ -1,9 +1,5 @@
 package chess
 
-import (
-	"math"
-)
-
 // generatePawnMoves generates the moves for the pawns on the board
 func generatePawnMoves(position Position, pieceBB BitBoard) []Move {
 	moves := []Move{}
@@ -120,8 +116,7 @@ func generateBishopMoves(position Position, pieceBB BitBoard) []Move {
 					continue directionLoop
 				}
 
-				var rankDifference = math.Abs(float64(toSquare.Rank()) - float64(fromSquare.Rank()))
-				var fileDifference = math.Abs(float64(toSquare.File()) - float64(fromSquare.File()))
+				rankDifference, fileDifference := RankFileDifference(toSquare, fromSquare)
 				if rankDifference != fileDifference {
 					continue directionLoop
 				}
