@@ -766,6 +766,11 @@ func (p *Position) MakeNullMove() {
 	copy := p.Copy()
 
 	p.enPassant = -1
+
+	if p.turn == Black {
+		p.fullMoves++
+	}
+
 	p.turn = p.turn.OpposingSide()
 
 	p.previous = &copy
