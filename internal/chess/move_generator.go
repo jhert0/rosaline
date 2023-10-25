@@ -34,6 +34,14 @@ func generatePawnMoves(position Position, pieceBB BitBoard) []Move {
 		for _, offset := range captureOffsets {
 			captureSquare := square + dir + Square(offset)
 
+			if offset == west && square.File() == 1 {
+				continue
+			}
+
+			if offset == east && square.File() == 8 {
+				continue
+			}
+
 			capturePiece, _ := position.GetPiece(captureSquare)
 			if capturePiece != EmptyPiece && capturePiece.Color() != position.turn {
 				if captureSquare.Rank() == pawnPromotionRank(position.Turn()) {
