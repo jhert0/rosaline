@@ -3,6 +3,7 @@ package chess
 import (
 	"errors"
 	"fmt"
+	"math"
 	"strconv"
 	"strings"
 )
@@ -190,4 +191,19 @@ func (s Square) ToAlgebraic() string {
 
 func (s Square) String() string {
 	return s.ToAlgebraic()
+}
+
+// FileDistance returns the distance in file between two sqaures.
+func FileDistance(sq1, sq2 Square) int {
+	return int(math.Abs(float64(sq1.File() - sq2.File())))
+}
+
+// RankDistance returns the distance in ranks between two squares.
+func RankDistance(sq1, sq2 Square) int {
+	return int(math.Abs(float64(sq1.Rank() - sq2.Rank())))
+}
+
+// RankFileDifference returns the distnace in rank and file between two sqaures.
+func RankFileDifference(sq1, sq2 Square) (int, int) {
+	return RankDistance(sq1, sq2), FileDistance(sq1, sq2)
 }
