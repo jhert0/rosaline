@@ -1,6 +1,9 @@
 package chess
 
-import "testing"
+import (
+	"slices"
+	"testing"
+)
 
 func algebraicTest(t *testing.T, algebraic string, expectedRank int, expectedFile int) {
 	square, err := SquareFromAlgebraic(algebraic)
@@ -54,4 +57,33 @@ func TestSquareRank(t *testing.T) {
 	squareRankTest(t, A1, 1)
 	squareRankTest(t, A2, 2)
 	squareRankTest(t, G5, 5)
+}
+
+func sliceEqual(s1, s2 []Square) bool {
+	if len(s1) != len(s2) {
+		return false
+	}
+
+	slices.Sort(s1)
+	slices.Sort(s2)
+
+	for i, val := range s1 {
+		if val != s2[i] {
+			return false
+		}
+	}
+
+	return true
+}
+
+func surroundingSquareTest(t *testing.T, square Square, expectedSquares []Square) {
+	squares := SurroundingSquares(square)
+	if !sliceEqual(squares, expectedSquares) {
+		t.Fatalf("%s: expected squares %v got %v", t.Name(), expectedSquares, squares)
+	}
+}
+
+func TestSurroundingSquares(t *testing.T) {
+	surroundingSquareTest(t, A1, []Square{A2, B2, B1})
+	surroundingSquareTest(t, C5, []Square{C4, D4, D5, D6, C6, B6, B5, B4})
 }

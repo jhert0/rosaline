@@ -207,3 +207,31 @@ func RankDistance(sq1, sq2 Square) int {
 func RankFileDifference(sq1, sq2 Square) (int, int) {
 	return RankDistance(sq1, sq2), FileDistance(sq1, sq2)
 }
+
+// SurroundingSquares returns the squares that surround the given square.
+func SurroundingSquares(square Square) []Square {
+	squares := make([]Square, 0, 8)
+
+	for _, direction := range directions {
+		if square.File() == 1 && (direction == west || direction == southwest || direction == northwest) {
+			continue
+		}
+
+		if square.File() == 8 && (direction == east || direction == southeast || direction == northeast) {
+			continue
+		}
+
+		if square.Rank() == 1 && (direction == south || direction == southwest || direction == southeast) {
+			continue
+		}
+
+		if square.Rank() == 8 && (direction == north || direction == northwest || direction == northeast) {
+			continue
+		}
+
+		newSquare := square + Square(direction)
+		squares = append(squares, newSquare)
+	}
+
+	return squares
+}
