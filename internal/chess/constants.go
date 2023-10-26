@@ -60,6 +60,12 @@ const (
 
 	east direction = 1
 	west direction = -1
+
+	northwest direction = north + west
+	northeast direction = north + east
+
+	southwest direction = south + west
+	southeast direction = south + east
 )
 
 var directions = []direction{
@@ -68,8 +74,8 @@ var directions = []direction{
 	east,
 	west,
 
-	north + east,
-	north + west,
-	south + east,
-	south + west,
+	northeast,
+	northwest,
+	southeast,
+	southwest,
 }
