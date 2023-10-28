@@ -248,26 +248,28 @@ func generateKingMoves(position Position, includeCastling bool) []Move {
 		}
 	}
 
-	kingSquare := position.GetKingSquare(position.turn)
-	if position.turn == White {
-		if position.HasCastlingRights(WhiteCastleKingside) && position.squaresEmpty([]Square{F1, G1}) {
-			move := NewMove(kingSquare, kingSquare+Square(east*2), CastleMove, QuietMoveFlag)
-			moves = append(moves, move)
-		}
+	if includeCastling {
+		kingSquare := position.GetKingSquare(position.turn)
+		if position.turn == White {
+			if position.HasCastlingRights(WhiteCastleKingside) && position.squaresEmpty([]Square{F1, G1}) {
+				move := NewMove(kingSquare, kingSquare+Square(east*2), CastleMove, QuietMoveFlag)
+				moves = append(moves, move)
+			}
 
-		if position.HasCastlingRights(WhiteCastleQueenside) && position.squaresEmpty([]Square{D1, C1, B1}) {
-			move := NewMove(kingSquare, kingSquare+Square(west*2), CastleMove, QuietMoveFlag)
-			moves = append(moves, move)
-		}
-	} else {
-		if position.HasCastlingRights(BlackCastleKingside) && position.squaresEmpty([]Square{F8, G8}) {
-			move := NewMove(kingSquare, kingSquare+Square(east*2), CastleMove, QuietMoveFlag)
-			moves = append(moves, move)
-		}
+			if position.HasCastlingRights(WhiteCastleQueenside) && position.squaresEmpty([]Square{D1, C1, B1}) {
+				move := NewMove(kingSquare, kingSquare+Square(west*2), CastleMove, QuietMoveFlag)
+				moves = append(moves, move)
+			}
+		} else {
+			if position.HasCastlingRights(BlackCastleKingside) && position.squaresEmpty([]Square{F8, G8}) {
+				move := NewMove(kingSquare, kingSquare+Square(east*2), CastleMove, QuietMoveFlag)
+				moves = append(moves, move)
+			}
 
-		if position.HasCastlingRights(BlackCastleQueenside) && position.squaresEmpty([]Square{D8, C8, B8}) {
-			move := NewMove(kingSquare, kingSquare+Square(west*2), CastleMove, QuietMoveFlag)
-			moves = append(moves, move)
+			if position.HasCastlingRights(BlackCastleQueenside) && position.squaresEmpty([]Square{D8, C8, B8}) {
+				move := NewMove(kingSquare, kingSquare+Square(west*2), CastleMove, QuietMoveFlag)
+				moves = append(moves, move)
+			}
 		}
 	}
 
@@ -332,7 +334,7 @@ func (position Position) GenerateMoves() []Move {
 	queenMoves := generateQueenMoves(position)
 	moves = append(moves, queenMoves...)
 
-	kingMoves := generateKingMoves(position, true)
+	kingMoves := generateKingMoves(position, !position.IsKingInCheck(position.turn))
 	moves = append(moves, kingMoves...)
 
 	legalMoves := []Move{}
