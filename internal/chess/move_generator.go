@@ -1,12 +1,13 @@
 package chess
 
 // generatePawnMoves generates the moves for the pawns on the board
-func generatePawnMoves(position Position, pieceBB BitBoard) []Move {
+func generatePawnMoves(position Position) []Move {
 	moves := []Move{}
 	dir := Square(pawnDirection(position.turn))
 
-	for pieceBB > 0 {
-		square := Square(pieceBB.PopLsb())
+	pawnBB := position.pawnBB & position.GetColorBB(position.turn)
+	for pawnBB > 0 {
+		square := Square(pawnBB.PopLsb())
 
 		if !position.PieceAt(square + dir) {
 			toSquare := square + dir
@@ -75,11 +76,12 @@ func generatePawnMoves(position Position, pieceBB BitBoard) []Move {
 }
 
 // generateKnightMoves generates the moves for the knights on the board
-func generateKnightMoves(position Position, pieceBB BitBoard) []Move {
+func generateKnightMoves(position Position) []Move {
 	moves := []Move{}
 
-	for pieceBB > 0 {
-		fromSquare := Square(pieceBB.PopLsb())
+	knightBB := position.knightBB & position.GetColorBB(position.turn)
+	for knightBB > 0 {
+		fromSquare := Square(knightBB.PopLsb())
 
 		moveBB := knightMoves[fromSquare]
 		for moveBB > 0 {
@@ -212,21 +214,24 @@ func generateRookMoves(position Position, pieceBB BitBoard) []Move {
 }
 
 // generateQueenMoves generates the moves for the queens on the board
-func generateQueenMoves(position Position, pieceBB BitBoard) []Move {
-	moves := generateRookMoves(position, pieceBB)
+func generateQueenMoves(position Position) []Move {
+	queenBB := position.queenBB & position.GetColorBB(position.turn)
 
-	bishopMoves := generateBishopMoves(position, pieceBB)
+	moves := generateRookMoves(position, queenBB)
+
+	bishopMoves := generateBishopMoves(position, queenBB)
 	moves = append(moves, bishopMoves...)
 
 	return moves
 }
 
 // generateKingMoves generates the moves for the kings on the board
-func generateKingMoves(position Position, pieceBB BitBoard, includeCastling bool) []Move {
+func generateKingMoves(position Position, includeCastling bool) []Move {
 	moves := []Move{}
 
-	for pieceBB > 0 {
-		fromSquare := Square(pieceBB.PopLsb())
+	kingBB := position.kingBB & position.GetColorBB(position.turn)
+	for kingBB > 0 {
+		fromSquare := Square(kingBB.PopLsb())
 
 		moveBB := kingMoves[fromSquare]
 		for moveBB > 0 {
@@ -310,12 +315,10 @@ func (position Position) GenerateMoves() []Move {
 
 	colorBB := position.GetColorBB(position.turn)
 
-	pawnBB := position.GetPieceBB(Pawn)
-	pawnMoves := generatePawnMoves(position, pawnBB&colorBB)
+	pawnMoves := generatePawnMoves(position)
 	moves = append(moves, pawnMoves...)
 
-	knightBB := position.GetPieceBB(Knight)
-	knightMoves := generateKnightMoves(position, knightBB&colorBB)
+	knightMoves := generateKnightMoves(position)
 	moves = append(moves, knightMoves...)
 
 	bishopBB := position.GetPieceBB(Bishop)
@@ -326,12 +329,10 @@ func (position Position) GenerateMoves() []Move {
 	rookMoves := generateRookMoves(position, rookBB&colorBB)
 	moves = append(moves, rookMoves...)
 
-	queenBB := position.GetPieceBB(Queen)
-	queenMoves := generateQueenMoves(position, queenBB&colorBB)
+	queenMoves := generateQueenMoves(position)
 	moves = append(moves, queenMoves...)
 
-	kingBB := position.GetPieceBB(King)
-	kingMoves := generateKingMoves(position, kingBB&colorBB, true)
+	kingMoves := generateKingMoves(position, true)
 	moves = append(moves, kingMoves...)
 
 	legalMoves := []Move{}
