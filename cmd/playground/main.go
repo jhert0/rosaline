@@ -96,7 +96,7 @@ loop:
 			position.Undo()
 			break
 		case "?":
-			moves := position.GenerateMoves()
+			moves := position.GenerateMoves(chess.LegalMoveGeneration)
 			for _, move := range moves {
 				fmt.Println(move)
 			}

@@ -782,12 +782,12 @@ func (p *Position) updateAttackers() {
 		p.attackersBB[i] = BitBoard(0)
 	}
 
-	ourMoves := p.GenerateMoves()
+	ourMoves := p.GenerateMoves(AttackMoveGeneration)
 
 	newPosition := p.Copy()
 	newPosition.MakeNullMove()
 
-	opposingMoves := newPosition.GenerateMoves()
+	opposingMoves := newPosition.GenerateMoves(AttackMoveGeneration)
 
 	moves := append(ourMoves, opposingMoves...)
 	for _, move := range moves {

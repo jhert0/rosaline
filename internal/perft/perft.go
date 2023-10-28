@@ -13,7 +13,7 @@ func Perft(position chess.Position, depth int, print bool) uint64 {
 	leaf := depth == 2
 
 	var nodes uint64 = 0
-	moves := position.GenerateMoves()
+	moves := position.GenerateMoves(chess.LegalMoveGeneration)
 	for _, move := range moves {
 		err := position.MakeUciMove(move.String())
 		if err != nil {
@@ -22,7 +22,7 @@ func Perft(position chess.Position, depth int, print bool) uint64 {
 
 		var count uint64
 		if leaf {
-			count = uint64(len(position.GenerateMoves()))
+			count = uint64(len(position.GenerateMoves(chess.LegalMoveGeneration)))
 		} else {
 			count = Perft(position, depth-1, false)
 		}

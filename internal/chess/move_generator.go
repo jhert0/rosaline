@@ -1,7 +1,14 @@
 package chess
 
+type MoveGenerationType uint8
+
+const (
+	LegalMoveGeneration MoveGenerationType = iota
+	AttackMoveGeneration
+)
+
 // generatePawnMoves generates the moves for the pawns on the board
-func generatePawnMoves(position Position) []Move {
+func generatePawnMoves(position Position, genType MoveGenerationType) []Move {
 	moves := []Move{}
 	dir := Square(pawnDirection(position.turn))
 
@@ -9,7 +16,7 @@ func generatePawnMoves(position Position) []Move {
 	for pawnBB > 0 {
 		square := Square(pawnBB.PopLsb())
 
-		if !position.PieceAt(square + dir) {
+		if !position.PieceAt(square+dir) && genType != AttackMoveGeneration {
 			toSquare := square + dir
 
 			if toSquare.Rank() == pawnPromotionRank(position.Turn()) {
@@ -311,13 +318,12 @@ func (p Position) isLegalMove(move Move) bool {
 	return true
 }
 
-// GenerateMoves generates all legal moves in the position.
-func (position Position) GenerateMoves() []Move {
+func (position Position) generateLegalMoves() []Move {
 	moves := []Move{}
 
 	colorBB := position.GetColorBB(position.turn)
 
-	pawnMoves := generatePawnMoves(position)
+	pawnMoves := generatePawnMoves(position, LegalMoveGeneration)
 	moves = append(moves, pawnMoves...)
 
 	knightMoves := generateKnightMoves(position)
@@ -345,4 +351,51 @@ func (position Position) GenerateMoves() []Move {
 	}
 
 	return legalMoves
+}
+
+func (position Position) generateAttackMoves() []Move {
+	moves := []Move{}
+
+	colorBB := position.GetColorBB(position.turn)
+
+	pawnMoves := generatePawnMoves(position, AttackMoveGeneration)
+	moves = append(moves, pawnMoves...)
+
+	knightMoves := generateKnightMoves(position)
+	moves = append(moves, knightMoves...)
+
+	bishopBB := position.GetPieceBB(Bishop)
+	bishopMoves := generateBishopMoves(position, bishopBB&colorBB)
+	moves = append(moves, bishopMoves...)
+
+	rookBB := position.GetPieceBB(Rook)
+	rookMoves := generateRookMoves(position, rookBB&colorBB)
+	moves = append(moves, rookMoves...)
+
+	queenMoves := generateQueenMoves(position)
+	moves = append(moves, queenMoves...)
+
+	kingMoves := generateKingMoves(position, false)
+	moves = append(moves, kingMoves...)
+
+	legalMoves := []Move{}
+	for _, move := range moves {
+		if position.isLegalMove(move) {
+			legalMoves = append(legalMoves, move)
+		}
+	}
+
+	return legalMoves
+}
+
+// GenerateMoves generates all legal moves in the position.
+func (position Position) GenerateMoves(genType MoveGenerationType) []Move {
+	switch genType {
+	case LegalMoveGeneration:
+		return position.generateLegalMoves()
+	case AttackMoveGeneration:
+		return position.generateAttackMoves()
+	default:
+		panic("Unknown move generation type '%d' passed to GenerateMoves")
+	}
 }
