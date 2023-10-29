@@ -204,3 +204,26 @@ func TestIsDraw(t *testing.T) {
 
 	isDrawTest(t, position, true)
 }
+
+func isCheckmatedTest(t *testing.T, fen string, color Color, checkmated bool) {
+	position, err := NewPosition(fen)
+	if err != nil {
+		t.Fatalf("%s: fen %s returned error: %s", t.Name(), fen, err)
+	}
+
+	if position.IsCheckmated(color) != checkmated {
+		t.Fatalf("%s: expected checkmate status for %s to be '%v' got '%v'", t.Name(), color, checkmated, position.IsCheckmated(color))
+	}
+}
+
+func TestIsCheckmated(t *testing.T) {
+	isCheckmatedTest(t, StartingFen, White, false)
+	isCheckmatedTest(t, StartingFen, Black, false)
+
+	isCheckmatedTest(t, "r4k1q/2p2Q2/4p3/p4p2/PpP5/3P4/1P3PPP/4R1K1 b - - 2 31", Black, false)
+
+	isCheckmatedTest(t, "7k/6Q1/7P/5b2/3K4/8/2p5/2B5 b - - 8 57", Black, true)
+	isCheckmatedTest(t, "3k4/p2Q4/4Br2/1p6/8/3PK3/PPP5/R7 b - - 5 33", Black, true)
+	isCheckmatedTest(t, "4R3/5ppk/7p/2BQ4/8/5P2/r5qP/7K w - - 0 29", White, true)
+	isCheckmatedTest(t, "r4k1q/2p2Q2/4p3/p3Np2/PpP5/3P4/1P3PPP/4R1K1 b - - 2 31", Black, true)
+}

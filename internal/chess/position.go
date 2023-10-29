@@ -823,6 +823,26 @@ func (p Position) NumberOfCheckers(color Color) int {
 	return attackers.PopulationCount()
 }
 
+// IsCheckmated returns whether the specified color has been checkmated.
+func (p Position) IsCheckmated(color Color) bool {
+	if !p.IsKingInCheck(color) { // king must be in check to be checkmated
+		return false
+	}
+
+	kingSquare := p.GetKingSquare(color)
+	squares := SurroundingSquares(kingSquare)
+	for _, square := range squares {
+		piece, _ := p.GetPiece(square)
+
+		// check that the surrounding square is not attacked and not occupied by one of our pieces
+		if !p.IsSquareAttackedBy(square, color.OpposingSide()) && piece.Color() != color {
+			return false
+		}
+	}
+
+	return true
+}
+
 // IsDraw returns whether the position is a draw.
 func (p Position) IsDraw() bool {
 	if p.fiftyMoveClock == 100 {
