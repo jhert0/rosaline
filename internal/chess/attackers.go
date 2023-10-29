@@ -1,23 +1,48 @@
 package chess
 
-import "math"
-
-func generatePawnAttacks(square Square, color Color) BitBoard {
-	attacks := BitBoard(0)
+func generatePawnAttacks(position Position, color Color) []Move {
+	attacks := []Move{}
 	direction := pawnDirection(color)
 
-	attacks.SetBit(uint64(square + Square(direction) + Square(east)))
-	attacks.SetBit(uint64(square + Square(direction) + Square(west)))
+	pawnBB := position.pawnBB & position.GetColorBB(color)
+	for pawnBB > 0 {
+		square := Square(pawnBB.PopLsb())
+
+		if square.File() != 1 {
+			move := NewMove(square, square+Square(direction)+Square(west), NormalMove, NoMoveFlag)
+			attacks = append(attacks, move)
+		}
+
+		if square.File() != 8 {
+			move := NewMove(square, square+Square(direction)+Square(east), NormalMove, NoMoveFlag)
+			attacks = append(attacks, move)
+		}
+	}
 
 	return attacks
 }
 
-func generateKnightAttacks(square Square) BitBoard {
-	return knightMoves[square]
+func generateKnightAttacks(position Position, color Color) []Move {
+	attacks := []Move{}
+
+	knightBB := position.knightBB & position.GetColorBB(color)
+
+	for knightBB > 0 {
+		square := Square(knightBB.PopLsb())
+		moveBB := knightMoves[square]
+
+		for moveBB > 0 {
+			toSquare := Square(moveBB.PopLsb())
+			move := NewMove(square, toSquare, NormalMove, NoMoveFlag)
+			attacks = append(attacks, move)
+		}
+	}
+
+	return attacks
 }
 
-func generateBishopAttacks(square Square, occupied BitBoard) BitBoard {
-	attacks := BitBoard(0)
+func generateBishopAttacks(pieceBB BitBoard, occupied BitBoard) []Move {
+	attacks := []Move{}
 
 	directions := []direction{
 		north + east,
@@ -26,111 +51,119 @@ func generateBishopAttacks(square Square, occupied BitBoard) BitBoard {
 		south + west,
 	}
 
-directionLoop:
-	for _, direction := range directions {
-		toSquare := square
+	for pieceBB > 0 {
+		square := Square(pieceBB.PopLsb())
 
-		for {
-			if !toSquare.IsValid() {
-				continue directionLoop
+	directionLoop:
+		for _, direction := range directions {
+			toSquare := square + Square(direction)
+
+			for {
+				if !toSquare.IsValid() {
+					continue directionLoop
+				}
+
+				var rankDifference = RankDistance(square, toSquare)
+				var fileDifference = FileDistance(square, toSquare)
+				if rankDifference != fileDifference {
+					continue directionLoop
+				}
+
+				move := NewMove(square, toSquare, NormalMove, NoMoveFlag)
+				attacks = append(attacks, move)
+
+				if occupied.IsBitSet(uint64(toSquare)) {
+					continue directionLoop
+				}
+
+				toSquare += Square(direction)
 			}
-
-			var rankDifference = math.Abs(float64(toSquare.Rank()) - float64(square.Rank()))
-			var fileDifference = math.Abs(float64(toSquare.File()) - float64(square.File()))
-			if rankDifference != fileDifference {
-				continue directionLoop
-			}
-
-			attacks.SetBit(uint64(toSquare))
-
-			if occupied.IsBitSet(uint64(toSquare)) {
-				continue directionLoop
-			}
-
-			toSquare += Square(direction)
 		}
 	}
 
 	return attacks
 }
 
-func generateRookAttacks(square Square, occupied BitBoard) BitBoard {
+func generateRookAttacks(pieceBB BitBoard, occupied BitBoard) []Move {
 	// TODO: use bit board magic to generate this
 
-	attacks := BitBoard(0)
+	attacks := []Move{}
 
 	directions := []direction{north, south, east, west}
 
-diretionLoop:
-	for _, direction := range directions {
-		toSquare := square
+	for pieceBB > 0 {
+		square := Square(pieceBB.PopLsb())
 
-		for {
-			if !toSquare.IsValid() {
-				continue diretionLoop
+	diretionLoop:
+		for _, direction := range directions {
+			toSquare := square + Square(direction)
+
+			for {
+				if !toSquare.IsValid() {
+					continue diretionLoop
+				}
+
+				if (direction == north || direction == south) && toSquare.File() != square.File() {
+					continue diretionLoop
+				}
+
+				if (direction == east || direction == west) && toSquare.Rank() != square.Rank() {
+					continue diretionLoop
+				}
+
+				move := NewMove(square, toSquare, NormalMove, NoMoveFlag)
+				attacks = append(attacks, move)
+
+				if occupied.IsBitSet(uint64(toSquare)) {
+					continue diretionLoop
+				}
+
+				toSquare += Square(direction)
 			}
-
-			if (direction == north || direction == south) && toSquare.File() != square.File() {
-				continue diretionLoop
-			}
-
-			if (direction == east || direction == west) && toSquare.Rank() != square.Rank() {
-				continue diretionLoop
-			}
-
-			attacks.SetBit(uint64(toSquare))
-
-			if occupied.IsBitSet(uint64(toSquare)) {
-				continue diretionLoop
-			}
-
-			toSquare += Square(direction)
 		}
 	}
 
 	return attacks
 }
 
-func generateQueenAttacks(square Square, occupied BitBoard) BitBoard {
-	return generateRookAttacks(square, occupied) | generateBishopAttacks(square, occupied)
+func generateQueenAttacks(position Position, occupied BitBoard, color Color) []Move {
+	attacks := []Move{}
+
+	queenBB := position.queenBB & position.GetColorBB(color)
+
+	rookAttacks := generateRookAttacks(queenBB, occupied)
+	attacks = append(attacks, rookAttacks...)
+	bishopAttacks := generateBishopAttacks(queenBB, occupied)
+	attacks = append(attacks, bishopAttacks...)
+
+	return attacks
 }
 
-func generateKingAttacks(square Square) BitBoard {
-	return kingMoves[square]
-}
+func getAttackers(position Position, color Color) []Move {
+	attacks := []Move{}
 
-func getAttackers(position Position, color Color) BitBoard {
-	attackers := BitBoard(0)
 	occupied := position.whiteBB | position.blackBB
-
 	colorBB := position.GetColorBB(color)
-	for colorBB > 0 {
-		square := Square(colorBB.Lsb())
 
-		piece, _ := position.GetPiece(square)
-		switch piece.Type() {
-		case Pawn:
-			attackers = generatePawnAttacks(square, piece.Color())
-			break
-		case Knight:
-			attackers = generateKnightAttacks(square)
-			break
-		case Bishop:
-			attackers = generateBishopAttacks(square, occupied)
-			break
-		case Rook:
-			attackers = generateRookAttacks(square, occupied)
-			break
-		case Queen:
-			attackers = generateQueenAttacks(square, occupied)
-			break
-		case King:
-			attackers = generateKingAttacks(square)
-			break
-		}
+	pawnAttacks := generatePawnAttacks(position, color)
+	attacks = append(attacks, pawnAttacks...)
 
-		colorBB.ClearBit(uint64(square))
-	}
+	knightAttacks := generateKnightAttacks(position, color)
+	attacks = append(attacks, knightAttacks...)
 
-	return attackers
+	bishopBB := position.bishopBB & colorBB
+	bishopAttacks := generateBishopAttacks(bishopBB, occupied)
+	attacks = append(attacks, bishopAttacks...)
+
+	rookBB := position.rookBB & colorBB
+	rookAttacks := generateRookAttacks(rookBB, occupied)
+	attacks = append(attacks, rookAttacks...)
+
+	queenAttacks := generateQueenAttacks(position, occupied, color)
+	attacks = append(attacks, queenAttacks...)
+
+	kingAttacks := generateKingMoves(position, false)
+	attacks = append(attacks, kingAttacks...)
+
+	return attacks
 }

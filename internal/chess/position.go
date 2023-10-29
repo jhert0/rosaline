@@ -782,14 +782,10 @@ func (p *Position) updateAttackers() {
 		p.attackersBB[i] = BitBoard(0)
 	}
 
-	ourMoves := p.GenerateMoves(AttackMoveGeneration)
+	ourAttacks := getAttackers(*p, p.turn)
+	theirAttacks := getAttackers(*p, p.turn.OpposingSide())
 
-	newPosition := p.Copy()
-	newPosition.MakeNullMove()
-
-	opposingMoves := newPosition.GenerateMoves(AttackMoveGeneration)
-
-	moves := append(ourMoves, opposingMoves...)
+	moves := append(ourAttacks, theirAttacks...)
 	for _, move := range moves {
 		if move.HasFlag(PawnPushMoveFlag) { // skip pawn pushes, they aren't attacks
 			continue
