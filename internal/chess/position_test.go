@@ -160,7 +160,7 @@ func TestIsKingInCheck(t *testing.T) {
 func numberOfCheckersTest(t *testing.T, position Position, color Color, expectedCheckers int) {
 	checkers := position.NumberOfCheckers(color)
 	if checkers != expectedCheckers {
-		t.Fatalf("%s: expected %s king to have '%v' number of checks instead got '%v'", t.Name(), color, checkers, expectedCheckers)
+		t.Fatalf("%s: expected %s king to have '%v' number of checks instead got '%v'", t.Name(), color, expectedCheckers, checkers)
 	}
 }
 
