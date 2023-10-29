@@ -321,24 +321,26 @@ func (p Position) isLegalMove(move Move) bool {
 func (position Position) generateLegalMoves() []Move {
 	moves := []Move{}
 
-	colorBB := position.GetColorBB(position.turn)
+	if position.NumberOfCheckers(position.turn) < 2 {
+		colorBB := position.GetColorBB(position.turn)
 
-	pawnMoves := generatePawnMoves(position, LegalMoveGeneration)
-	moves = append(moves, pawnMoves...)
+		pawnMoves := generatePawnMoves(position, LegalMoveGeneration)
+		moves = append(moves, pawnMoves...)
 
-	knightMoves := generateKnightMoves(position)
-	moves = append(moves, knightMoves...)
+		knightMoves := generateKnightMoves(position)
+		moves = append(moves, knightMoves...)
 
-	bishopBB := position.GetPieceBB(Bishop)
-	bishopMoves := generateBishopMoves(position, bishopBB&colorBB)
-	moves = append(moves, bishopMoves...)
+		bishopBB := position.GetPieceBB(Bishop)
+		bishopMoves := generateBishopMoves(position, bishopBB&colorBB)
+		moves = append(moves, bishopMoves...)
 
-	rookBB := position.GetPieceBB(Rook)
-	rookMoves := generateRookMoves(position, rookBB&colorBB)
-	moves = append(moves, rookMoves...)
+		rookBB := position.GetPieceBB(Rook)
+		rookMoves := generateRookMoves(position, rookBB&colorBB)
+		moves = append(moves, rookMoves...)
 
-	queenMoves := generateQueenMoves(position)
-	moves = append(moves, queenMoves...)
+		queenMoves := generateQueenMoves(position)
+		moves = append(moves, queenMoves...)
+	}
 
 	kingMoves := generateKingMoves(position, !position.IsKingInCheck(position.turn))
 	moves = append(moves, kingMoves...)
