@@ -140,7 +140,17 @@ loop:
 				square := chess.Square(i)
 				fmt.Printf("%s: ", square.ToAlgebraic())
 				attackers := position.GetAttackers(square)
-				attackers.Print()
+
+				fmt.Print("[")
+				for attackers > 0 {
+					square := chess.Square(attackers.PopLsb())
+					fmt.Printf("%s", square)
+
+					if attackers != 0 {
+						fmt.Print(", ")
+					}
+				}
+				fmt.Println("]")
 			}
 
 			break
