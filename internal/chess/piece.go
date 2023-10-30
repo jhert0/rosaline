@@ -88,3 +88,22 @@ func (p Piece) Value() uint8 {
 
 	panic(fmt.Sprintf("Unknown piece type '%v' encountered in Value()", p.Type()))
 }
+
+func (t PieceType) String() string {
+	switch t {
+	case Pawn:
+		return "Pawn"
+	case Knight:
+		return "Knight"
+	case Bishop:
+		return "Bishop"
+	case Rook:
+		return "Rook"
+	case Queen:
+		return "Queen"
+	case King:
+		return "King"
+	default:
+		return "<unknown>"
+	}
+}
