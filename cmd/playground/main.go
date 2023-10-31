@@ -134,6 +134,7 @@ loop:
 			fmt.Println()
 
 			fmt.Println("FEN:", position.Fen())
+			fmt.Println("Hash:", position.Hash())
 			break
 		case "attackers":
 			for i := 0; i < 64; i++ {
