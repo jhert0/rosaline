@@ -204,13 +204,13 @@ func (p Position) Fen() string {
 			fileIncrement := 1
 
 			square := SquareFromRankFile(rank, file)
-			if p.PieceAt(square) {
+			if p.IsSquareOccupied(square) {
 				piece, _ := p.GetPiece(square)
 				builder.WriteString(string(piece.Character()))
 			} else {
 				for f := file + 1; f <= 8; f++ {
 					nextSquare := SquareFromRankFile(rank, f)
-					if p.PieceAt(nextSquare) {
+					if p.IsSquareOccupied(nextSquare) {
 						break
 					}
 
@@ -288,7 +288,7 @@ func (p Position) HasCastlingRights(rights CastlingRights) bool {
 }
 
 // PieceAt checks if there is a piece at the give square.
-func (p Position) PieceAt(square Square) bool {
+func (p Position) IsSquareOccupied(square Square) bool {
 	return p.whiteBB.IsBitSet(uint64(square)) || p.blackBB.IsBitSet(uint64(square))
 }
 
@@ -307,7 +307,7 @@ func (p Position) GetPieceColor(square Square) (Color, error) {
 
 // GetPiece gets the piece at the given square.
 func (p Position) GetPiece(square Square) (Piece, error) {
-	if !p.PieceAt(square) {
+	if !p.IsSquareOccupied(square) {
 		return EmptyPiece, errors.New(fmt.Sprintf("no piece exists at: %s", square.ToAlgebraic()))
 	}
 
@@ -474,7 +474,7 @@ func (p Position) Print() {
 		for file := 1; file <= 8; file++ {
 			square := SquareFromRankFile(rank, file)
 			piece, _ := p.GetPiece(square)
-			if p.PieceAt(square) {
+			if p.IsSquareOccupied(square) {
 				fmt.Printf(" %c ", piece.Character())
 			} else {
 				fmt.Print(" - ")

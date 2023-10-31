@@ -16,7 +16,7 @@ func generatePawnMoves(position Position, genType MoveGenerationType) []Move {
 	for pawnBB > 0 {
 		square := Square(pawnBB.PopLsb())
 
-		if !position.PieceAt(square+dir) && genType != AttackMoveGeneration {
+		if !position.IsSquareOccupied(square+dir) && genType != AttackMoveGeneration {
 			toSquare := square + dir
 
 			if toSquare.Rank() == pawnPromotionRank(position.Turn()) {
@@ -32,7 +32,7 @@ func generatePawnMoves(position Position, genType MoveGenerationType) []Move {
 
 			if square.Rank() == pawnStartingRank(position.turn) {
 				toSquare := square + (dir * 2)
-				if !position.PieceAt(toSquare) {
+				if !position.IsSquareOccupied(toSquare) {
 					moves = append(moves, NewMove(square, toSquare, NormalMove, QuietMoveFlag))
 				}
 			}
