@@ -310,12 +310,12 @@ func (p Position) isLegalMove(move Move) bool {
 		return true
 	}
 
-	// check that the king is not moving into an attacked square
-	if piece.Type() == King {
-		return !p.IsSquareAttackedBy(move.To, p.turn.OpposingSide())
-	}
+	// check that after the move is made that the king is not in check
+	p.makeMove(move)
+	inCheck := p.IsKingInCheck(p.turn.OpposingSide())
+	p.Undo()
 
-	return true
+	return !inCheck
 }
 
 func (position Position) generateLegalMoves() []Move {
