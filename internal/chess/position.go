@@ -28,6 +28,8 @@ type Position struct {
 	fiftyMoveClock int            // Number of moves since a capture or a pawn has moved. This is stored in half moves.
 	fullMoves      int            // Number of moves played in the game.
 
+	hash uint64 // The zobrist has of the current position.
+
 	previous *Position // The previous Position.
 }
 
@@ -183,6 +185,7 @@ func NewPosition(fen string) (Position, error) {
 
 	position.fullMoves = fullMoves
 
+	position.hash = generateHash(position)
 	position.previous = nil
 
 	if ok, err := position.IsValid(); !ok {
@@ -714,6 +717,7 @@ func (p *Position) makeMove(move Move) error {
 		p.fullMoves++
 	}
 
+	p.hash = generateHash(*p)
 	p.turn = p.turn.OpposingSide()
 	p.previous = &copy
 
@@ -876,6 +880,11 @@ func (p Position) GetAttackers(square Square) BitBoard {
 	return p.attackersBB[square]
 }
 
+// Hash returns the hash for the current position.
+func (p Position) Hash() uint64 {
+	return p.hash
+}
+
 // Copy creates a copy of the current position.
 func (p Position) Copy() Position {
 	copy := Position{
@@ -892,6 +901,7 @@ func (p Position) Copy() Position {
 		castlingRights: p.castlingRights,
 		fiftyMoveClock: p.fiftyMoveClock,
 		fullMoves:      p.fullMoves,
+		hash:           p.hash,
 		previous:       p.previous,
 	}
 
@@ -919,5 +929,6 @@ func (p *Position) Undo() {
 	p.castlingRights = p.previous.castlingRights
 	p.fiftyMoveClock = p.previous.fiftyMoveClock
 	p.fullMoves = p.previous.fullMoves
+	p.hash = p.previous.hash
 	p.previous = p.previous.previous
 }
