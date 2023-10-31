@@ -35,12 +35,12 @@ type Position struct {
 func NewPosition(fen string) (Position, error) {
 	fenParts := strings.Split(fen, " ")
 	if len(fenParts) < 6 {
-		return Position{}, errors.New("too few sections in fen")
+		return Position{}, fmt.Errorf("%w: too few sections in fen", ErrInvalidFen)
 	}
 
 	ranks := strings.Split(fenParts[0], "/")
 	if len(ranks) < 8 {
-		return Position{}, errors.New("too few ranks in board")
+		return Position{}, fmt.Errorf("%w: too few ranks in board", ErrInvalidFen)
 	}
 
 	position := Position{}
@@ -130,7 +130,7 @@ func NewPosition(fen string) (Position, error) {
 	} else if fenParts[1] == "b" {
 		position.turn = Black
 	} else {
-		return Position{}, errors.New(fmt.Sprintf("invalid character: %s for turn", fenParts[1]))
+		return Position{}, fmt.Errorf("%w: invalid character '%s' for turn", ErrInvalidFen, fenParts[1])
 	}
 
 	// parse castling rights
@@ -161,7 +161,7 @@ func NewPosition(fen string) (Position, error) {
 	} else {
 		square, err := SquareFromAlgebraic(fenParts[3])
 		if err != nil {
-			return Position{}, err
+			return Position{}, fmt.Errorf("%w: invalid en passant square: %s", ErrInvalidFen, fenParts[3])
 		}
 
 		position.enPassant = square
@@ -170,7 +170,7 @@ func NewPosition(fen string) (Position, error) {
 	// parse half moves
 	moveClock, err := strconv.Atoi(fenParts[4])
 	if err != nil {
-		return Position{}, errors.New(fmt.Sprintf("invalid value: %s for fifty move clock", fenParts[4]))
+		return Position{}, fmt.Errorf("%w: invalid value '%s' for fifty move clock", ErrInvalidFen, fenParts[4])
 	}
 
 	position.fiftyMoveClock = moveClock
@@ -178,7 +178,7 @@ func NewPosition(fen string) (Position, error) {
 	// parse full moves
 	fullMoves, err := strconv.Atoi(fenParts[5])
 	if err != nil {
-		return Position{}, errors.New(fmt.Sprintf("invalid value: %s for full moves", fenParts[5]))
+		return Position{}, fmt.Errorf("%w: invalid value '%s' for full moves", ErrInvalidFen, fenParts[5])
 	}
 
 	position.fullMoves = fullMoves
