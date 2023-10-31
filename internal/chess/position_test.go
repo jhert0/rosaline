@@ -117,8 +117,9 @@ func TestIsValid(t *testing.T) {
 		t.Fatalf("%s: fen %s returned error: %s", t.Name(), StartingFen, err)
 	}
 
-	if !position.IsValid() {
-		t.Fatalf("%s: fen %s should be valid but IsValid returned false", t.Name(), StartingFen)
+	ok, err := position.IsValid()
+	if !ok {
+		t.Fatalf("%s: fen %s should be valid but IsValid returned false: %v", t.Name(), StartingFen, err)
 	}
 }
 

@@ -185,8 +185,8 @@ func NewPosition(fen string) (Position, error) {
 
 	position.previous = nil
 
-	if !position.IsValid() {
-		return Position{}, errors.New("invalid fen: too many or too few pieces")
+	if ok, err := position.IsValid(); !ok {
+		return Position{}, err
 	}
 
 	position.updateAttackers()
@@ -419,49 +419,52 @@ func (p Position) squaresEmpty(squares []Square) bool {
 }
 
 // IsValid returns whether the position is playable, i.e no more than 8 pawns, one king, etc.
-func (p Position) IsValid() bool {
+func (p Position) IsValid() (bool, error) {
 	// check that neither side has more than 16 pieces or zero pieces
-	if p.whiteBB.PopulationCount() > 16 || p.whiteBB.PopulationCount() == 0 {
-		return false
+	whitePieces := p.whiteBB.PopulationCount()
+	if whitePieces > 16 || whitePieces == 0 {
+		return false, fmt.Errorf("%w: white has an invald number of pieces: %d", ErrInvalidPosition, whitePieces)
 	}
 
-	if p.blackBB.PopulationCount() > 16 || p.blackBB.PopulationCount() == 0 {
-		return false
+	blackPieces := p.blackBB.PopulationCount()
+	if blackPieces > 16 || blackPieces == 0 {
+		return false, fmt.Errorf("%w: black has an invalid number of pieces: %d", ErrInvalidPosition, blackPieces)
 	}
 
 	// check that neither side has more than 8 pawns
 	whitePawns := p.pawnBB & p.whiteBB
 	if whitePawns.PopulationCount() > 8 {
-		return false
+		return false, fmt.Errorf("%w: white has too many pawns: %d", ErrInvalidPosition, whitePawns)
 	}
 
 	blackPawns := p.pawnBB & p.blackBB
 	if blackPawns.PopulationCount() > 8 {
-		return false
+		return false, fmt.Errorf("%w: black has too many pawns: %d", ErrInvalidPosition, blackPawns)
 	}
 
 	// check that both sides only have one king
 	whiteKing := p.kingBB & p.whiteBB
 	if whiteKing.PopulationCount() != 1 {
-		return false
+		return false, fmt.Errorf("%w: white has an invalid number of kings: %d", ErrInvalidPosition, whiteKing.PopulationCount())
 	}
 
 	blackKings := p.kingBB & p.blackBB
 	if blackKings.PopulationCount() != 1 {
-		return false
+		return false, fmt.Errorf("%w: black has an invalid number of kings: %d", ErrInvalidPosition, blackKings.PopulationCount())
 	}
 
 	// the opposing side can't be in check
 	if p.IsKingInCheck(p.turn.OpposingSide()) {
-		return false
+		return false, fmt.Errorf("%w: the opponent can't be in check", ErrInvalidPosition)
 	}
 
 	// it is not possible to be in check by 3 or more pieces
+	checkers := p.NumberOfCheckers(p.turn)
 	if p.NumberOfCheckers(p.turn) >= 3 {
-		return false
+		return false, fmt.Errorf("%w: the %s king is in check by %d pieces which is not possible", ErrInvalidPosition, p.turn, checkers)
 	}
 
-	return true
+	return true, nil
 }
 
 func (p Position) Print() {
@@ -713,6 +716,10 @@ func (p *Position) makeMove(move Move) error {
 
 	p.turn = p.turn.OpposingSide()
 	p.previous = &copy
+
+	if ok, err := p.IsValid(); !ok {
+		panic(fmt.Sprintf("invalid position reached after %s: %v", move, err))
+	}
 
 	return nil
 }
