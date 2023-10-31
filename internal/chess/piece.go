@@ -75,8 +75,7 @@ func (p Piece) Value() uint8 {
 	switch p.Type() {
 	case Pawn:
 		return 1
-	case Knight:
-	case Bishop:
+	case Knight, Bishop:
 		return 3
 	case Rook:
 		return 5
