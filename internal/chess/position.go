@@ -717,10 +717,6 @@ func (p *Position) makeMove(move Move) error {
 	p.turn = p.turn.OpposingSide()
 	p.previous = &copy
 
-	if ok, err := p.IsValid(); !ok {
-		panic(fmt.Sprintf("invalid position reached after %s: %v", move, err))
-	}
-
 	return nil
 }
 
