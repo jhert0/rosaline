@@ -486,6 +486,14 @@ func (p Position) Print() {
 }
 
 func (p *Position) setPiece(square Square, piece Piece) {
+	if !square.IsValid() {
+		panic(fmt.Sprintf("invalid square '%d' passed to setPiece", square))
+	}
+
+	if piece == EmptyPiece {
+		panic(fmt.Sprintf("trying to set an empty piece on square %s", square))
+	}
+
 	index := uint64(square)
 
 	if piece.Color() == White {
@@ -517,6 +525,14 @@ func (p *Position) setPiece(square Square, piece Piece) {
 }
 
 func (p *Position) clearPiece(square Square, piece Piece) {
+	if !square.IsValid() {
+		panic(fmt.Sprintf("invalid square '%d' passed to clearPiece", square))
+	}
+
+	if piece == EmptyPiece {
+		panic(fmt.Sprintf("trying to clear a square %s with no piece", square))
+	}
+
 	index := uint64(square)
 
 	if piece.Color() == White {
