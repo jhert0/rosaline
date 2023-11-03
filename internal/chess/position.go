@@ -28,7 +28,7 @@ type Position struct {
 	fiftyMoveClock int            // Number of moves since a capture or a pawn has moved. This is stored in half moves.
 	fullMoves      int            // Number of moves played in the game.
 
-	hash uint64 // The zobrist has of the current position.
+	hash uint64 // The zobrist hash of the current position.
 
 	previous *Position // The previous Position.
 }
