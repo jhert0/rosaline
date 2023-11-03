@@ -21,19 +21,19 @@ func generatePawnMoves(position Position, genType MoveGenerationType) []Move {
 
 			if toSquare.Rank() == pawnPromotionRank(position.Turn()) {
 				for _, pieceType := range promotablePieces {
-					move := NewMove(square, toSquare, NormalMove, PawnPushMoveFlag)
+					move := NewMove(square, toSquare, NormalMove, QuietMoveFlag|PawnPushMoveFlag)
 					move.WithPromotion(NewPiece(pieceType, position.turn))
 
 					moves = append(moves, move)
 				}
 			} else {
-				moves = append(moves, NewMove(square, toSquare, NormalMove, QuietMoveFlag))
+				moves = append(moves, NewMove(square, toSquare, NormalMove, QuietMoveFlag|PawnPushMoveFlag))
 			}
 
 			if square.Rank() == pawnStartingRank(position.turn) {
 				toSquare := square + (dir * 2)
 				if !position.IsSquareOccupied(toSquare) {
-					moves = append(moves, NewMove(square, toSquare, NormalMove, QuietMoveFlag))
+					moves = append(moves, NewMove(square, toSquare, NormalMove, QuietMoveFlag|PawnPushMoveFlag))
 				}
 			}
 		}
@@ -54,13 +54,13 @@ func generatePawnMoves(position Position, genType MoveGenerationType) []Move {
 			if capturePiece != EmptyPiece && capturePiece.Color() != position.turn {
 				if captureSquare.Rank() == pawnPromotionRank(position.Turn()) {
 					for _, pieceType := range promotablePieces {
-						move := NewMove(square, captureSquare, NormalMove, QuietMoveFlag)
+						move := NewMove(square, captureSquare, NormalMove, NoMoveFlag)
 						move.WithCapture(capturePiece)
 						move.WithPromotion(NewPiece(pieceType, position.Turn()))
 						moves = append(moves, move)
 					}
 				} else {
-					move := NewMove(square, captureSquare, NormalMove, QuietMoveFlag)
+					move := NewMove(square, captureSquare, NormalMove, NoMoveFlag)
 					move.WithCapture(capturePiece)
 					moves = append(moves, move)
 				}
@@ -72,7 +72,7 @@ func generatePawnMoves(position Position, genType MoveGenerationType) []Move {
 
 			capturePiece, _ := position.GetPiece(captureSquare)
 			if capturePiece.Type() == Pawn && capturePiece.Color() == position.Turn().OpposingSide() {
-				move := NewMove(square, position.EnPassant(), EnPassantMove, QuietMoveFlag)
+				move := NewMove(square, position.EnPassant(), EnPassantMove, NoMoveFlag)
 				move.WithCapture(capturePiece)
 				moves = append(moves, move)
 			}
