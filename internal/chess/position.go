@@ -26,7 +26,7 @@ type Position struct {
 	enPassant      Square         // The square where en passant is posssible.
 	castlingRights CastlingRights // The current castling rights for both players.
 	fiftyMoveClock int            // Number of moves since a capture or a pawn has moved. This is stored in half moves.
-	fullMoves      int            // Number of moves played in the game.
+	plies          int            // Number of half moves in the game.
 
 	hash uint64 // The zobrist hash of the current position.
 
@@ -183,7 +183,7 @@ func NewPosition(fen string) (Position, error) {
 		return Position{}, fmt.Errorf("%w: invalid value '%s' for full moves", ErrInvalidFen, fenParts[5])
 	}
 
-	position.fullMoves = fullMoves
+	position.plies = fullMoves * 2
 
 	position.hash = generateHash(position)
 	position.previous = nil
@@ -280,7 +280,7 @@ func (p Position) Fen() string {
 	builder.WriteString(" ")
 
 	// write full moves
-	builder.WriteString(fmt.Sprintf("%d", p.fullMoves))
+	builder.WriteString(fmt.Sprintf("%d", p.FullMoves()))
 
 	return builder.String()
 }
@@ -360,8 +360,14 @@ func (p Position) Turn() Color {
 	return p.turn
 }
 
+// Plies return the number of plies that have been made.
+func (p Position) Plies() int {
+	return p.plies
+}
+
+// FullMoves returns the number of full moves that have been made.
 func (p Position) FullMoves() int {
-	return p.fullMoves
+	return p.plies / 2
 }
 
 func (p Position) EnPassant() Square {
@@ -713,9 +719,7 @@ func (p *Position) makeMove(move Move) error {
 
 	p.updateAttackers()
 
-	if p.turn == Black {
-		p.fullMoves++
-	}
+	p.plies++
 
 	p.hash = generateHash(*p)
 	p.turn = p.turn.OpposingSide()
@@ -789,10 +793,7 @@ func (p *Position) MakeNullMove() {
 	copy := p.Copy()
 
 	p.enPassant = -1
-
-	if p.turn == Black {
-		p.fullMoves++
-	}
+	p.plies++
 
 	p.turn = p.turn.OpposingSide()
 
@@ -900,7 +901,7 @@ func (p Position) Copy() Position {
 		enPassant:      p.enPassant,
 		castlingRights: p.castlingRights,
 		fiftyMoveClock: p.fiftyMoveClock,
-		fullMoves:      p.fullMoves,
+		plies:          p.plies,
 		hash:           p.hash,
 		previous:       p.previous,
 	}
@@ -928,7 +929,7 @@ func (p *Position) Undo() {
 	p.enPassant = p.previous.enPassant
 	p.castlingRights = p.previous.castlingRights
 	p.fiftyMoveClock = p.previous.fiftyMoveClock
-	p.fullMoves = p.previous.fullMoves
+	p.plies = p.previous.plies
 	p.hash = p.previous.hash
 	p.previous = p.previous.previous
 }
