@@ -573,16 +573,16 @@ func (p *Position) clearPiece(square Square, piece Piece) {
 func (p *Position) makeMove(move Move) error {
 	movingPiece, err := p.GetPiece(move.From)
 	if err != nil {
-		return err
+		return fmt.Errorf("%w: %w", ErrInvalidMove, err)
 	}
 
 	if movingPiece.Color() != p.turn {
-		return errors.New(fmt.Sprintf("invalid move: '%s', trying to move opponents piece", move))
+		return fmt.Errorf("%w: tyring to move opponent's piece with %s", ErrInvalidMove, move)
 	}
 
 	capturePiece, _ := p.GetPiece(move.To)
 	if movingPiece.Color() == capturePiece.Color() {
-		return errors.New(fmt.Sprintf("invalid move: '%s', trying to capture piece of same color", move))
+		return fmt.Errorf("%w: trying to capture piece of same color with %s", ErrInvalidMove, move)
 	}
 
 	copy := p.Copy()
