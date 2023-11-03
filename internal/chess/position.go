@@ -23,10 +23,11 @@ type Position struct {
 
 	attackersBB [64]BitBoard // BitBoard for attackers of each square.
 
-	enPassant      Square         // The square where en passant is posssible.
-	castlingRights CastlingRights // The current castling rights for both players.
-	fiftyMoveClock int            // Number of moves since a capture or a pawn has moved. This is stored in half moves.
-	plies          int            // Number of half moves in the game.
+	enPassant               Square         // The square where en passant is posssible.
+	castlingRights          CastlingRights // The current castling rights for both players.
+	lastIrreversibleMovePly int            // The ply at which the last irreversible move happened. An irreversible move is a pawn move or capture.
+	fiftyMoveClock          int            // Number of moves since a capture or a pawn has moved. This is stored in half moves.
+	plies                   int            // Number of half moves in the game.
 
 	hash uint64 // The zobrist hash of the current position.
 
@@ -184,6 +185,7 @@ func NewPosition(fen string) (Position, error) {
 	}
 
 	position.plies = fullMoves * 2
+	position.lastIrreversibleMovePly = position.plies
 
 	position.hash = generateHash(position)
 	position.previous = nil
@@ -720,6 +722,10 @@ func (p *Position) makeMove(move Move) error {
 	p.updateAttackers()
 
 	p.plies++
+
+	if move.IsIrreversible() {
+		p.lastIrreversibleMovePly = p.plies
+	}
 
 	p.hash = generateHash(*p)
 	p.turn = p.turn.OpposingSide()
