@@ -592,11 +592,6 @@ func (p *Position) makeMove(move Move) error {
 
 	switch move.Type() {
 	case NormalMove:
-		// clear the fifty move clock, a pawn has moved or a capture has happened
-		if movingPiece.Type() == Pawn || capturePiece.Type() != None {
-			p.fiftyMoveClock = 0
-		}
-
 		if movingPiece.Type() == Pawn && move.RankDifference() == 2 {
 			opposingSide := p.turn.OpposingSide()
 
@@ -709,6 +704,11 @@ func (p *Position) makeMove(move Move) error {
 		capturedPawn, _ := p.GetPiece(captureSquare)
 		p.clearPiece(captureSquare, capturedPawn)
 		break
+	}
+
+	// clear the fifty move clock, a pawn has moved or a capture has happened
+	if movingPiece.Type() == Pawn || capturePiece.Type() != None {
+		p.fiftyMoveClock = 0
 	}
 
 	p.updateAttackers()
