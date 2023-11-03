@@ -895,21 +895,22 @@ func (p Position) Hash() uint64 {
 // Copy creates a copy of the current position.
 func (p Position) Copy() Position {
 	copy := Position{
-		turn:           p.turn,
-		whiteBB:        p.whiteBB,
-		blackBB:        p.blackBB,
-		pawnBB:         p.pawnBB,
-		bishopBB:       p.bishopBB,
-		knightBB:       p.knightBB,
-		rookBB:         p.rookBB,
-		queenBB:        p.queenBB,
-		kingBB:         p.kingBB,
-		enPassant:      p.enPassant,
-		castlingRights: p.castlingRights,
-		fiftyMoveClock: p.fiftyMoveClock,
-		plies:          p.plies,
-		hash:           p.hash,
-		previous:       p.previous,
+		turn:                    p.turn,
+		whiteBB:                 p.whiteBB,
+		blackBB:                 p.blackBB,
+		pawnBB:                  p.pawnBB,
+		bishopBB:                p.bishopBB,
+		knightBB:                p.knightBB,
+		rookBB:                  p.rookBB,
+		queenBB:                 p.queenBB,
+		kingBB:                  p.kingBB,
+		enPassant:               p.enPassant,
+		castlingRights:          p.castlingRights,
+		fiftyMoveClock:          p.fiftyMoveClock,
+		lastIrreversibleMovePly: p.lastIrreversibleMovePly,
+		plies:                   p.plies,
+		hash:                    p.hash,
+		previous:                p.previous,
 	}
 
 	return copy
@@ -935,6 +936,7 @@ func (p *Position) Undo() {
 	p.enPassant = p.previous.enPassant
 	p.castlingRights = p.previous.castlingRights
 	p.fiftyMoveClock = p.previous.fiftyMoveClock
+	p.lastIrreversibleMovePly = p.previous.lastIrreversibleMovePly
 	p.plies = p.previous.plies
 	p.hash = p.previous.hash
 	p.previous = p.previous.previous
