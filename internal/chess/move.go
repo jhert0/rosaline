@@ -93,6 +93,14 @@ func (m Move) HasFlag(flag MoveFlag) bool {
 	return (m.flags & flag) > 0
 }
 
+// IsIrreversible returns whether the move can be reversed.
+//
+// Moves such as pawn moves and captures can't be reversed once done meaning
+// the position before the was made is no longer possible.
+func (m Move) IsIrreversible() bool {
+	return m.HasFlag(PawnPushMoveFlag) || m.HasFlag(CaputureMoveFlag) || m.HasFlag(PromotionMoveFlag)
+}
+
 func (m Move) String() string {
 	str := m.From.ToAlgebraic() + m.To.ToAlgebraic()
 
