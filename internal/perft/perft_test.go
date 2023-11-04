@@ -21,4 +21,5 @@ func TestPerft(t *testing.T) {
 	perftTest(t, position, 1, 20)
 	perftTest(t, position, 2, 400)
 	perftTest(t, position, 3, 8902)
+	perftTest(t, position, 4, 197281)
 }
