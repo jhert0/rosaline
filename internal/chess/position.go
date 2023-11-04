@@ -594,7 +594,7 @@ func (p *Position) makeMove(move Move) error {
 		return fmt.Errorf("%w: tyring to move opponent's piece with %s", ErrInvalidMove, move)
 	}
 
-	capturePiece, _ := p.GetPieceAt(move.To)
+	capturePiece := move.capturePiece
 	if movingPiece.Color() == capturePiece.Color() {
 		return fmt.Errorf("%w: trying to capture piece of same color with %s", ErrInvalidMove, move)
 	}
@@ -642,10 +642,7 @@ func (p *Position) makeMove(move Move) error {
 			}
 		}
 
-		p.clearPiece(move.From, movingPiece)
-		p.setPiece(move.To, movingPiece)
-
-		if capturePiece.Type() != None {
+		if move.Captures() {
 			p.clearPiece(move.To, capturePiece)
 
 			if capturePiece.Type() == Rook {
@@ -665,6 +662,9 @@ func (p *Position) makeMove(move Move) error {
 				}
 			}
 		}
+
+		p.clearPiece(move.From, movingPiece)
+		p.setPiece(move.To, movingPiece)
 
 		if move.IsPromotion() {
 			p.clearPiece(move.To, movingPiece) // remove the original piece
