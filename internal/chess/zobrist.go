@@ -26,7 +26,7 @@ func generateHash(p Position) uint64 {
 	for rank := 0; rank < 8; rank++ {
 		for file := 0; file < 8; file++ {
 			square := SquareFromRankFile(rank+1, file+1)
-			piece, err := p.GetPiece(square)
+			piece, err := p.GetPieceAt(square)
 			if err == nil {
 				var pieceIndex int
 				switch piece.Type() {

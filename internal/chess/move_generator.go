@@ -50,7 +50,7 @@ func generatePawnMoves(position Position, genType MoveGenerationType) []Move {
 				continue
 			}
 
-			capturePiece, _ := position.GetPiece(captureSquare)
+			capturePiece, _ := position.GetPieceAt(captureSquare)
 			if capturePiece != EmptyPiece && capturePiece.Color() != position.turn {
 				if captureSquare.Rank() == pawnPromotionRank(position.Turn()) {
 					for _, pieceType := range promotablePieces {
@@ -70,7 +70,7 @@ func generatePawnMoves(position Position, genType MoveGenerationType) []Move {
 		if position.EnPassantPossible() {
 			captureSquare := position.EnPassant() + Square(pawnDirection(position.turn.OpposingSide()))
 
-			capturePiece, _ := position.GetPiece(captureSquare)
+			capturePiece, _ := position.GetPieceAt(captureSquare)
 			if capturePiece.Type() == Pawn && capturePiece.Color() == position.Turn().OpposingSide() {
 				move := NewMove(square, position.EnPassant(), EnPassantMove, NoMoveFlag)
 				move.WithCapture(capturePiece)
@@ -94,7 +94,7 @@ func generateKnightMoves(position Position) []Move {
 		for moveBB > 0 {
 			toSquare := Square(moveBB.PopLsb())
 
-			piece, _ := position.GetPiece(toSquare)
+			piece, _ := position.GetPieceAt(toSquare)
 			if piece == EmptyPiece {
 				moves = append(moves, NewMove(fromSquare, toSquare, NormalMove, QuietMoveFlag))
 			} else if piece.Color() != position.turn {
@@ -138,7 +138,7 @@ func generateBishopMoves(position Position, pieceBB BitBoard) []Move {
 					continue directionLoop
 				}
 
-				piece, _ := position.GetPiece(toSquare)
+				piece, _ := position.GetPieceAt(toSquare)
 
 				// we hit one of our pieces, stop looking for moves in this direction
 				if piece.Color() == position.turn {
@@ -193,7 +193,7 @@ func generateRookMoves(position Position, pieceBB BitBoard) []Move {
 					continue diretionLoop
 				}
 
-				piece, _ := position.GetPiece(toSquare)
+				piece, _ := position.GetPieceAt(toSquare)
 
 				// we hit one of our pieces, stop looking for moves in this direction
 				if piece.Color() == position.turn {
@@ -244,7 +244,7 @@ func generateKingMoves(position Position, includeCastling bool) []Move {
 		for moveBB > 0 {
 			toSquare := Square(moveBB.PopLsb())
 
-			piece, _ := position.GetPiece(toSquare)
+			piece, _ := position.GetPieceAt(toSquare)
 			if piece == EmptyPiece {
 				moves = append(moves, NewMove(fromSquare, toSquare, NormalMove, QuietMoveFlag))
 			} else if piece.Color() != position.Turn() {
@@ -285,7 +285,7 @@ func generateKingMoves(position Position, includeCastling bool) []Move {
 
 // isLegalMove checks that the move would not result in an illegal position.
 func (p Position) isLegalMove(move Move) bool {
-	piece, _ := p.GetPiece(move.From)
+	piece, _ := p.GetPieceAt(move.From)
 
 	// the only way to get out of a double check is to move the king, therefore any other move is illegal
 	if p.NumberOfCheckers(p.Turn()) == 2 && piece.Type() != King {

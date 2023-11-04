@@ -212,7 +212,7 @@ func (p Position) Fen() string {
 
 			square := SquareFromRankFile(rank, file)
 			if p.IsSquareOccupied(square) {
-				piece, _ := p.GetPiece(square)
+				piece, _ := p.GetPieceAt(square)
 				builder.WriteString(string(piece.Character()))
 			} else {
 				for f := file + 1; f <= 8; f++ {
@@ -312,8 +312,8 @@ func (p Position) GetPieceColor(square Square) (Color, error) {
 	return NoColor, errors.New(fmt.Sprintf("no piece exists at: %s", square.ToAlgebraic()))
 }
 
-// GetPiece gets the piece at the given square.
-func (p Position) GetPiece(square Square) (Piece, error) {
+// GetPieceAt gets the piece at the given square.
+func (p Position) GetPieceAt(square Square) (Piece, error) {
 	if !p.IsSquareOccupied(square) {
 		return EmptyPiece, errors.New(fmt.Sprintf("no piece exists at: %s", square.ToAlgebraic()))
 	}
@@ -356,7 +356,7 @@ func (p Position) GetKingSquare(color Color) Square {
 
 // IsPieceAt returns whether a piece matching the piece type and color are
 func (p Position) IsPieceAt(square Square, pieceType PieceType, color Color) bool {
-	piece, _ := p.GetPiece(square)
+	piece, _ := p.GetPieceAt(square)
 	return piece.Type() == pieceType && piece.Color() == color
 }
 
@@ -422,7 +422,7 @@ func (p Position) GetPieceBB(pieceType PieceType) BitBoard {
 // squaresEmpty returns whether all squares are empty.
 func (p Position) squaresEmpty(squares []Square) bool {
 	for _, square := range squares {
-		piece, _ := p.GetPiece(square)
+		piece, _ := p.GetPieceAt(square)
 		if piece != EmptyPiece {
 			return false
 		}
@@ -486,7 +486,7 @@ func (p Position) Print() {
 
 		for file := 1; file <= 8; file++ {
 			square := SquareFromRankFile(rank, file)
-			piece, _ := p.GetPiece(square)
+			piece, _ := p.GetPieceAt(square)
 			if p.IsSquareOccupied(square) {
 				fmt.Printf(" %c ", piece.Character())
 			} else {
@@ -581,7 +581,7 @@ func (p *Position) clearPiece(square Square, piece Piece) {
 
 // makeMove applies the move to the current position.
 func (p *Position) makeMove(move Move) error {
-	movingPiece, err := p.GetPiece(move.From)
+	movingPiece, err := p.GetPieceAt(move.From)
 	if err != nil {
 		return fmt.Errorf("%w: %w", ErrInvalidMove, err)
 	}
@@ -590,7 +590,7 @@ func (p *Position) makeMove(move Move) error {
 		return fmt.Errorf("%w: tyring to move opponent's piece with %s", ErrInvalidMove, move)
 	}
 
-	capturePiece, _ := p.GetPiece(move.To)
+	capturePiece, _ := p.GetPieceAt(move.To)
 	if movingPiece.Color() == capturePiece.Color() {
 		return fmt.Errorf("%w: trying to capture piece of same color with %s", ErrInvalidMove, move)
 	}
@@ -606,8 +606,8 @@ func (p *Position) makeMove(move Move) error {
 			opposingSide := p.turn.OpposingSide()
 
 			// check to see if a pawn is on a valid square for en passant
-			westPawn, _ := p.GetPiece(move.To + Square(west))
-			eastPawn, _ := p.GetPiece(move.To + Square(east))
+			westPawn, _ := p.GetPieceAt(move.To + Square(west))
+			eastPawn, _ := p.GetPieceAt(move.To + Square(east))
 			if (westPawn.Type() == Pawn && westPawn.Color() == opposingSide && move.To.File() != 1) || (eastPawn.Type() == Pawn && eastPawn.Color() == opposingSide && move.To.File() != 8) {
 				p.enPassant = move.To + Square(pawnDirection(opposingSide))
 			}
@@ -677,22 +677,22 @@ func (p *Position) makeMove(move Move) error {
 		// move the rook to it's new square
 		switch move.To {
 		case C1:
-			rook, _ := p.GetPiece(A1)
+			rook, _ := p.GetPieceAt(A1)
 			p.clearPiece(A1, rook)
 			p.setPiece(D1, rook)
 			break
 		case G1:
-			rook, _ := p.GetPiece(H1)
+			rook, _ := p.GetPieceAt(H1)
 			p.clearPiece(H1, rook)
 			p.setPiece(F1, rook)
 			break
 		case C8:
-			rook, _ := p.GetPiece(C8)
+			rook, _ := p.GetPieceAt(C8)
 			p.clearPiece(C8, rook)
 			p.setPiece(D8, rook)
 			break
 		case G8:
-			rook, _ := p.GetPiece(H8)
+			rook, _ := p.GetPieceAt(H8)
 			p.clearPiece(H8, rook)
 			p.setPiece(F8, rook)
 			break
@@ -711,7 +711,7 @@ func (p *Position) makeMove(move Move) error {
 
 		// remove the captured pawn
 		captureSquare := move.To + Square(pawnDirection(p.turn.OpposingSide()))
-		capturedPawn, _ := p.GetPiece(captureSquare)
+		capturedPawn, _ := p.GetPieceAt(captureSquare)
 		p.clearPiece(captureSquare, capturedPawn)
 		break
 	}
@@ -776,7 +776,7 @@ func (p *Position) MakeUciMove(uci string) error {
 		break
 	}
 
-	movingPiece, err := p.GetPiece(from)
+	movingPiece, err := p.GetPieceAt(from)
 	if err != nil {
 		return err
 	}
@@ -787,7 +787,7 @@ func (p *Position) MakeUciMove(uci string) error {
 
 	move := NewMove(from, to, moveType, NoMoveFlag)
 
-	capturePiece, err := p.GetPiece(to)
+	capturePiece, err := p.GetPieceAt(to)
 	if err == nil {
 		move.WithCapture(capturePiece)
 	}
@@ -880,7 +880,7 @@ func (p Position) IsCheckmated(color Color) bool {
 	kingSquare := p.GetKingSquare(color)
 	squares := SurroundingSquares(kingSquare)
 	for _, square := range squares {
-		piece, _ := p.GetPiece(square)
+		piece, _ := p.GetPieceAt(square)
 
 		// check that the surrounding square is not attacked and not occupied by one of our pieces
 		if !p.IsSquareAttackedBy(square, color.OpposingSide()) && piece.Color() != color {

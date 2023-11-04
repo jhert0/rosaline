@@ -23,11 +23,11 @@ func TestIsSquareOccupied(t *testing.T) {
 	isSquareOccupiedTest(t, position, B6, false)
 }
 
-func getPieceTest(t *testing.T, algebraic string, expectedType PieceType, expectedColor Color) {
+func getPieceAtTest(t *testing.T, algebraic string, expectedType PieceType, expectedColor Color) {
 	position, _ := NewPosition(StartingFen)
 	square, _ := SquareFromAlgebraic(algebraic)
 
-	piece, err := position.GetPiece(square)
+	piece, err := position.GetPieceAt(square)
 	if err != nil {
 		t.Fatalf("%s: error returned trying to get piece from %s: %e", t.Name(), algebraic, err)
 	}
@@ -42,10 +42,10 @@ func getPieceTest(t *testing.T, algebraic string, expectedType PieceType, expect
 }
 
 func TestGetPiece(t *testing.T) {
-	getPieceTest(t, "a1", Rook, White)
-	getPieceTest(t, "a2", Pawn, White)
-	getPieceTest(t, "a8", Rook, Black)
-	getPieceTest(t, "e8", King, Black)
+	getPieceAtTest(t, "a1", Rook, White)
+	getPieceAtTest(t, "a2", Pawn, White)
+	getPieceAtTest(t, "a8", Rook, Black)
+	getPieceAtTest(t, "e8", King, Black)
 }
 
 func TestFen(t *testing.T) {
