@@ -139,6 +139,24 @@ func generateQueenAttacks(position Position, occupied BitBoard, color Color) []M
 	return attacks
 }
 
+func generateKingAttacks(position Position, color Color) []Move {
+	attacks := []Move{}
+
+	kingBB := position.kingBB & position.GetColorBB(color)
+	for kingBB > 0 {
+		fromSquare := Square(kingBB.PopLsb())
+
+		moveBB := kingMoves[fromSquare]
+		for moveBB > 0 {
+			toSquare := Square(moveBB.PopLsb())
+			move := NewMove(fromSquare, toSquare, NormalMove, NoMoveFlag)
+			attacks = append(attacks, move)
+		}
+	}
+
+	return attacks
+}
+
 func getAttackers(position Position, color Color) []Move {
 	attacks := []Move{}
 
@@ -162,7 +180,7 @@ func getAttackers(position Position, color Color) []Move {
 	queenAttacks := generateQueenAttacks(position, occupied, color)
 	attacks = append(attacks, queenAttacks...)
 
-	kingAttacks := generateKingMoves(position, false)
+	kingAttacks := generateKingAttacks(position, color)
 	attacks = append(attacks, kingAttacks...)
 
 	return attacks
