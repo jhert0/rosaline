@@ -46,20 +46,24 @@ func NewMove(from, to Square, moveType MoveType, flags MoveFlag) Move {
 	}
 }
 
+// WithPromotion sets that the move will result with the moving piece being promoted to the given piece.
 func (m *Move) WithPromotion(piece Piece) {
 	m.flags |= PromotionMoveFlag
 	m.promotionPiece = piece
 }
 
+// WithCapture sets that the move will result in the given piece being captured.
 func (m *Move) WithCapture(piece Piece) {
 	m.flags |= CaputureMoveFlag
 	m.capturePiece = piece
 }
 
+// Type returns the type of the move.
 func (m Move) Type() MoveType {
 	return m.moveType
 }
 
+// PromotionPiece returns the piece that the moving piece will be promoted to.
 func (m Move) PromotionPiece() Piece {
 	return m.promotionPiece
 }
@@ -80,10 +84,12 @@ func (m Move) FileDifference() int {
 	return int(math.Abs(from - to))
 }
 
+// IsPromotion returns whether the move results in a promotion.
 func (m Move) IsPromotion() bool {
 	return m.promotionPiece != EmptyPiece
 }
 
+// Captures returns whether the move results in a capture.
 func (m Move) Captures() bool {
 	return m.capturePiece != EmptyPiece
 }
