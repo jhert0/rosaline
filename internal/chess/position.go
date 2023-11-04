@@ -537,6 +537,8 @@ func (p *Position) setPiece(square Square, piece Piece) {
 	case King:
 		p.kingBB.SetBit(index)
 		break
+	default:
+		panic(fmt.Sprintf("setPiece: unkown piece type '%d' encountered", piece.Type()))
 	}
 }
 
@@ -576,6 +578,8 @@ func (p *Position) clearPiece(square Square, piece Piece) {
 	case King:
 		p.kingBB.ClearBit(index)
 		break
+	default:
+		panic(fmt.Sprintf("clearPiece: unkown piece type '%d' encountered", piece.Type()))
 	}
 }
 
