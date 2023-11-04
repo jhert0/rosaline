@@ -85,7 +85,7 @@ func (m Move) IsPromotion() bool {
 }
 
 func (m Move) Captures() bool {
-	return m.capturePiece == EmptyPiece
+	return m.capturePiece != EmptyPiece
 }
 
 // HasFlag checks if the move has that flag set.
