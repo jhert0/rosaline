@@ -4,6 +4,25 @@ import (
 	"testing"
 )
 
+func isSquareOccupiedTest(t *testing.T, position Position, square Square, expectedValue bool) {
+	occupied := position.IsSquareOccupied(square)
+	if occupied != expectedValue {
+		t.Fatalf("%s: expected square '%s' occupied status to be '%v' got '%v'", t.Name(), square, expectedValue, occupied)
+	}
+}
+
+func TestIsSquareOccupied(t *testing.T) {
+	position, _ := NewPosition(StartingFen)
+
+	isSquareOccupiedTest(t, position, A1, true)
+	isSquareOccupiedTest(t, position, A2, true)
+	isSquareOccupiedTest(t, position, D8, true)
+
+	isSquareOccupiedTest(t, position, A5, false)
+	isSquareOccupiedTest(t, position, E3, false)
+	isSquareOccupiedTest(t, position, B6, false)
+}
+
 func getPieceTest(t *testing.T, algebraic string, expectedType PieceType, expectedColor Color) {
 	position, _ := NewPosition(StartingFen)
 	square, _ := SquareFromAlgebraic(algebraic)
