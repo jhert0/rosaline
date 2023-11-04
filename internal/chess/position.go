@@ -345,7 +345,7 @@ func (p Position) GetPieceAt(square Square) (Piece, error) {
 		return NewPiece(King, color), nil
 	}
 
-	return EmptyPiece, nil
+	panic(fmt.Sprintf("GetPieceAt: expected a piece at %s but one was not found", square))
 }
 
 // GetKingSquare returns the square of the specified color's King is on.
