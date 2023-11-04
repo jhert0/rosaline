@@ -297,7 +297,7 @@ func (p Position) isLegalMove(move Move) bool {
 
 		difference := move.FileDifference()
 		for i := 0; i <= difference; i++ {
-			square := move.To + Square(difference*int(direction))
+			square := move.From + Square(difference*int(direction))
 			if p.IsSquareAttackedBy(square, p.turn.OpposingSide()) {
 				return false
 			}
