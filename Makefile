@@ -6,7 +6,11 @@ build:
 
 test:
 	go test -v ./internal/chess
+
+perft-test:
 	go test -v ./internal/perft/
+
+test-all: test perft-test
 
 clean:
 	rm -rf bin
