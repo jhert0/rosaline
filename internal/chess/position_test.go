@@ -243,3 +243,18 @@ func TestThreeFoldRepition(t *testing.T) {
 		t.Fatalf("%s: expected position to be a draw but wasn't", t.Name())
 	}
 }
+
+func isStalemateTest(t *testing.T, fen string, color Color, expectedValue bool) {
+	position, _ := NewPosition(fen)
+	if position.IsStalemate(color) != expectedValue {
+		t.Fatalf("%s: expected position '%s' to return '%v' from IsStalemate", t.Name(), fen, expectedValue)
+	}
+}
+
+func TestIsStalemate(t *testing.T) {
+	isStalemateTest(t, "8/r6p/5k1K/7P/8/p7/8/8 w - - 1 61", White, true)
+	isStalemateTest(t, "k7/P3Q3/8/4P3/8/1K1B4/1PP5/8 b - - 0 58", Black, true)
+	isStalemateTest(t, "k7/p1K5/P7/1B6/8/8/8/8 b - - 4 55", Black, true)
+
+	isStalemateTest(t, "4R3/5ppk/7p/2BQ4/8/5P2/r5qP/7K w - - 0 29", White, false)
+}

@@ -900,6 +900,22 @@ func (p Position) IsDraw() bool {
 	return p.whiteBB.PopulationCount() <= 1 && p.blackBB.PopulationCount() <= 1
 }
 
+// IsStalemate returns whether position is a stalemate due to the given color having no legal moves.
+func (p Position) IsStalemate(color Color) bool {
+	if p.IsKingInCheck(color) { // king can't be in check and also in stalemate
+		return false
+	}
+
+	// temporarily switch to the color's turn if it is not currently their turn
+	if p.turn != color {
+		p.MakeNullMove()
+		defer p.Undo()
+	}
+
+	moves := p.GenerateMoves(LegalMoveGeneration)
+	return len(moves) == 0
+}
+
 // GetAttackers returns a BitBoard containing all pieces attacking the given Square.
 func (p Position) GetAttackers(square Square) BitBoard {
 	return p.attackersBB[square]
