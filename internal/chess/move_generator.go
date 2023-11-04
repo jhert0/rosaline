@@ -236,27 +236,23 @@ func generateQueenMoves(position Position) []Move {
 func generateKingMoves(position Position, includeCastling bool) []Move {
 	moves := []Move{}
 
-	kingBB := position.kingBB & position.GetColorBB(position.turn)
-	for kingBB > 0 {
-		fromSquare := Square(kingBB.PopLsb())
+	kingSquare := position.GetKingSquare(position.turn)
 
-		moveBB := kingMoves[fromSquare]
-		for moveBB > 0 {
-			toSquare := Square(moveBB.PopLsb())
+	moveBB := kingMoves[kingSquare]
+	for moveBB > 0 {
+		toSquare := Square(moveBB.PopLsb())
 
-			piece, _ := position.GetPieceAt(toSquare)
-			if piece == EmptyPiece {
-				moves = append(moves, NewMove(fromSquare, toSquare, NormalMove, QuietMoveFlag))
-			} else if piece.Color() != position.Turn() {
-				move := NewMove(fromSquare, toSquare, NormalMove, QuietMoveFlag)
-				move.WithCapture(piece)
-				moves = append(moves, move)
-			}
+		piece, _ := position.GetPieceAt(toSquare)
+		if piece == EmptyPiece {
+			moves = append(moves, NewMove(kingSquare, toSquare, NormalMove, QuietMoveFlag))
+		} else if piece.Color() != position.Turn() {
+			move := NewMove(kingSquare, toSquare, NormalMove, QuietMoveFlag)
+			move.WithCapture(piece)
+			moves = append(moves, move)
 		}
 	}
 
 	if includeCastling {
-		kingSquare := position.GetKingSquare(position.turn)
 		if position.turn == White {
 			if position.HasCastlingRights(WhiteCastleKingside) && position.squaresEmpty([]Square{F1, G1}) {
 				move := NewMove(kingSquare, kingSquare+Square(east*2), CastleMove, QuietMoveFlag)
