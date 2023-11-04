@@ -31,6 +31,8 @@ type Position struct {
 
 	hash uint64 // The zobrist hash of the current position.
 
+	repetitions int // The number of times the current position has ocurred.
+
 	previous *Position // The previous Position.
 }
 
@@ -727,9 +729,25 @@ func (p *Position) makeMove(move Move) error {
 		p.lastIrreversibleMovePly = p.plies
 	}
 
+	p.repetitions = 0
 	p.hash = generateHash(*p)
 	p.turn = p.turn.OpposingSide()
 	p.previous = &copy
+
+	// determine the number of times this position has been reached
+	numPlies := p.plies - p.lastIrreversibleMovePly
+	previous := p.previous
+	for i := 0; i < numPlies; i++ {
+		if previous == nil {
+			break
+		}
+
+		if previous.hash == p.hash {
+			p.repetitions++
+		}
+
+		previous = previous.previous
+	}
 
 	return nil
 }
@@ -875,7 +893,7 @@ func (p Position) IsCheckmated(color Color) bool {
 
 // IsDraw returns whether the position is a draw.
 func (p Position) IsDraw() bool {
-	if p.fiftyMoveClock == 100 {
+	if p.fiftyMoveClock == 100 || p.repetitions >= 3 {
 		return true
 	}
 
@@ -910,6 +928,7 @@ func (p Position) Copy() Position {
 		lastIrreversibleMovePly: p.lastIrreversibleMovePly,
 		plies:                   p.plies,
 		hash:                    p.hash,
+		repetitions:             p.repetitions,
 		previous:                p.previous,
 	}
 
@@ -939,5 +958,6 @@ func (p *Position) Undo() {
 	p.lastIrreversibleMovePly = p.previous.lastIrreversibleMovePly
 	p.plies = p.previous.plies
 	p.hash = p.previous.hash
+	p.repetitions = p.previous.repetitions
 	p.previous = p.previous.previous
 }

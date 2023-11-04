@@ -228,3 +228,18 @@ func TestIsCheckmated(t *testing.T) {
 	isCheckmatedTest(t, "4R3/5ppk/7p/2BQ4/8/5P2/r5qP/7K w - - 0 29", White, true)
 	isCheckmatedTest(t, "r4k1q/2p2Q2/4p3/p3Np2/PpP5/3P4/1P3PPP/4R1K1 b - - 2 31", Black, true)
 }
+
+func TestThreeFoldRepition(t *testing.T) {
+	position, _ := NewPosition(StartingFen)
+
+	for i := 0; i < 3; i++ {
+		position.MakeUciMove("b1b3")
+		position.MakeUciMove("g8g6")
+		position.MakeUciMove("b3b1")
+		position.MakeUciMove("g6g8")
+	}
+
+	if position.IsDraw() != true {
+		t.Fatalf("%s: expected position to be a draw but wasn't", t.Name())
+	}
+}
