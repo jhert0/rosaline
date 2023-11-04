@@ -88,6 +88,10 @@ func (p Piece) Value() uint8 {
 	panic(fmt.Sprintf("Unknown piece type '%v' encountered in Value()", p.Type()))
 }
 
+func (p Piece) String() string {
+	return fmt.Sprintf("%s %s", p.Color(), p.Type())
+}
+
 func (t PieceType) String() string {
 	switch t {
 	case Pawn:
