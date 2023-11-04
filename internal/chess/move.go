@@ -13,6 +13,19 @@ const (
 	EnPassantMove
 )
 
+func (t MoveType) String() string {
+	switch t {
+	case NormalMove:
+		return "Normal"
+	case CastleMove:
+		return "Castle"
+	case EnPassantMove:
+		return "En Passant"
+	}
+
+	return "<unknown>"
+}
+
 type MoveFlag uint16
 
 const (
