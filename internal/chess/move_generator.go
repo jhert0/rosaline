@@ -67,8 +67,9 @@ func generatePawnMoves(position Position, genType MoveGenerationType) []Move {
 			}
 		}
 
-		if position.EnPassantPossible() {
-			captureSquare := position.EnPassant() + Square(pawnDirection(position.turn.OpposingSide()))
+		enPassantSquare := position.EnPassant()
+		if square+dir+Square(east) == enPassantSquare || square+dir+Square(west) == enPassantSquare {
+			captureSquare := enPassantSquare + Square(pawnDirection(position.turn.OpposingSide()))
 
 			capturePiece, _ := position.GetPieceAt(captureSquare)
 			if capturePiece.Type() == Pawn && capturePiece.Color() == position.Turn().OpposingSide() {
