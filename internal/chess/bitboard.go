@@ -56,6 +56,36 @@ func (bb *BitBoard) PopLsb() int {
 	return lsb
 }
 
+// NorthOne fills the square north of the current square on an otherwise empty BitBoard.
+func (bb *BitBoard) NorthOne() {
+	*bb <<= 8
+}
+
+// SouthOne fills the square south of the current square on an otherwise empty BitBoard.
+func (bb *BitBoard) SouthOne() {
+	*bb >>= 8
+}
+
+// FillNorth fills the squares above the set square on an otherwise empty BitBoard.
+func (bb *BitBoard) FillNorth() {
+	*bb |= *bb << 8
+	*bb |= *bb << 16
+	*bb |= *bb << 32
+}
+
+// FillSouth fills the squares below the set square on an otherwise empty BitBoard.
+func (bb *BitBoard) FillSouth() {
+	*bb |= *bb >> 8
+	*bb |= *bb >> 16
+	*bb |= *bb >> 32
+}
+
+// FillFile fills north and south squares on an otherwise empty BitBoard.
+func (bb *BitBoard) FillFile() {
+	bb.FillNorth()
+	bb.FillSouth()
+}
+
 // Print prints the BitBoard value in binary.
 func (bb BitBoard) Print() {
 	fmt.Printf("%064b\n", bb)
