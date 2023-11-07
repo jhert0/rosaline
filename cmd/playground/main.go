@@ -6,25 +6,11 @@ import (
 	"os"
 	"rosaline/internal/chess"
 	"rosaline/internal/perft"
+	"rosaline/internal/utils"
 	"strconv"
 	"strings"
 	"time"
 )
-
-func parseCommand(line string) (string, []string) {
-	parts := strings.Split(line, " ")
-	if len(parts) < 1 {
-		return "", []string{}
-	}
-
-	cmd := parts[0]
-	args := []string{}
-	if len(parts) > 1 {
-		args = parts[1:len(parts)]
-	}
-
-	return cmd, args
-}
 
 func main() {
 	position, err := chess.NewPosition(chess.StartingFen)
@@ -44,7 +30,7 @@ loop:
 
 		fmt.Println()
 
-		command, args := parseCommand(scanner.Text())
+		command, args := utils.ParseCommand(scanner.Text())
 		switch command {
 		case "reset":
 			position, err = chess.NewPosition(chess.StartingFen)
