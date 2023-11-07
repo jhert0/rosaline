@@ -40,7 +40,23 @@ func (g *Game) MakeUciMove(uci string) error {
 		return err
 	}
 
-	// update status of the game if necessary
+	g.updateStatus()
+
+	return nil
+}
+
+func (g *Game) MakeMove(move Move) error {
+	err := g.Position.MakeMove(move)
+	if err != nil {
+		return err
+	}
+
+	g.updateStatus()
+
+	return nil
+}
+
+func (g *Game) updateStatus() {
 	opponent := g.Position.turn.OpposingSide()
 	if g.Position.IsCheckmated(opponent) {
 		if opponent == White {
@@ -53,8 +69,6 @@ func (g *Game) MakeUciMove(uci string) error {
 	} else if g.Position.IsDraw() {
 		g.status = Draw
 	}
-
-	return nil
 }
 
 // Status returns the status of the game.
