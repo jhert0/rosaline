@@ -308,7 +308,7 @@ func (p Position) isLegalMove(move Move) bool {
 	}
 
 	// check that after the move is made that the king is not in check
-	p.makeMove(move)
+	p.MakeMove(move)
 	inCheck := p.IsKingInCheck(p.turn.OpposingSide())
 	p.Undo()
 

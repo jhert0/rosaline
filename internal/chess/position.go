@@ -583,8 +583,8 @@ func (p *Position) clearPiece(square Square, piece Piece) {
 	}
 }
 
-// makeMove applies the move to the current position.
-func (p *Position) makeMove(move Move) error {
+// MakeMove applies the move to the current position.
+func (p *Position) MakeMove(move Move) error {
 	movingPiece, err := p.GetPieceAt(move.From)
 	if err != nil {
 		return fmt.Errorf("%w: %w", ErrInvalidMove, err)
@@ -813,7 +813,7 @@ func (p *Position) MakeUciMove(uci string) error {
 		}
 	}
 
-	return p.makeMove(move)
+	return p.MakeMove(move)
 }
 
 // MakeNullMove switches sides without making an actual move.
