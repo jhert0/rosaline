@@ -44,6 +44,11 @@ func (bb BitBoard) Lsb() int {
 	return bits.TrailingZeros64(uint64(bb))
 }
 
+// Msb returns the bit number of the first bit that is set.
+func (bb BitBoard) Msb() int {
+	return bits.LeadingZeros64(uint64(bb))
+}
+
 // PopulationCount returns the number of bits that are set.
 func (bb BitBoard) PopulationCount() int {
 	return bits.OnesCount64(uint64(bb))
@@ -54,6 +59,13 @@ func (bb *BitBoard) PopLsb() int {
 	lsb := bb.Lsb()
 	bb.ClearBit(uint64(lsb))
 	return lsb
+}
+
+// PopMsb clears the most significant bit and the returns the bit number it was at.
+func (bb *BitBoard) PopMsb() int {
+	msb := bb.Lsb()
+	bb.ClearBit(uint64(msb))
+	return msb
 }
 
 // NorthOne fills the square north of the current square on an otherwise empty BitBoard.
