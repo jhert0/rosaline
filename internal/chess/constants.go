@@ -14,3 +14,14 @@ const (
 	FileGBB = BitBoard(4629771061636907072)
 	FileHBB = BitBoard(9259542123273814144)
 )
+
+const (
+	Rank1BB = BitBoard(255)
+	Rank2BB = BitBoard(65280)
+	Rank3BB = BitBoard(16711680)
+	Rank4BB = BitBoard(4278190080)
+	Rank5BB = BitBoard(1095216660480)
+	Rank6BB = BitBoard(280375465082880)
+	Rank7BB = BitBoard(71776119061217280)
+	Rank8BB = BitBoard(18374686479671623680)
+)
