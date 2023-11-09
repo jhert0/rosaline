@@ -21,3 +21,82 @@ var kingMoves = [64]BitBoard{
 	216739030602088448, 505818229730443264, 1011636459460886528, 2023272918921773056, 4046545837843546112, 8093091675687092224, 16186183351374184448, 13853283560024178688,
 	144959613005987840, 362258295026614272, 724516590053228544, 1449033180106457088, 2898066360212914176, 5796132720425828352, 11592265440851656704, 4665729213955833856,
 }
+
+var rayAttacks [8][65]BitBoard
+
+func init() {
+	for square := A1; square <= H8; square++ {
+		northBB := BitBoard(0)
+		northBB.SetBit(uint64(square))
+		northBB.FillNorth()
+		northBB.ClearBit(uint64(square))
+
+		rayAttacks[north.rayIndex()][square] = northBB
+
+		southBB := BitBoard(0)
+		southBB.SetBit(uint64(square))
+		southBB.FillSouth()
+		southBB.ClearBit(uint64(square))
+
+		rayAttacks[south.rayIndex()][square] = southBB
+
+		eastBB := BitBoard(0)
+		eastBB.SetBit(uint64(square))
+
+		westBB := BitBoard(0)
+		westBB.SetBit(uint64(square))
+
+		for file := square.File(); file <= 8; file++ {
+			eastBB.EastOne()
+		}
+
+		for file := square.File(); file >= 1; file-- {
+			westBB.WestOne()
+		}
+
+		eastBB.ClearBit(uint64(square))
+		westBB.ClearBit(uint64(square))
+
+		rayAttacks[east.rayIndex()][square] = eastBB
+		rayAttacks[west.rayIndex()][square] = westBB
+	}
+
+	for _, direction := range directions {
+		rayAttacks[direction.rayIndex()][64] = BitBoard(0)
+	}
+}
+
+func getPositiveRayAttacks(occupied BitBoard, dir direction, square Square) BitBoard {
+	rayIndex := dir.rayIndex()
+
+	attacks := rayAttacks[rayIndex][square]
+	blocker := attacks & occupied
+	firstBlockingSquare := blocker.Lsb()
+	attacks ^= rayAttacks[rayIndex][firstBlockingSquare]
+	return attacks
+}
+
+func getNegativeRayAttacks(occupied BitBoard, dir direction, square Square) BitBoard {
+	rayIndex := dir.rayIndex()
+
+	attacks := rayAttacks[rayIndex][square]
+	blocker := attacks & occupied
+	firstBlockingSquare := 63 - blocker.Msb()
+	if firstBlockingSquare < 0 {
+		firstBlockingSquare = 64
+	}
+	attacks ^= rayAttacks[rayIndex][firstBlockingSquare]
+	return attacks
+}
+
+func getFileRayAttacks(occupied BitBoard, square Square) BitBoard {
+	return getPositiveRayAttacks(occupied, north, square) | getNegativeRayAttacks(occupied, south, square)
+}
+
+func getRankRayAttacks(occupied BitBoard, square Square) BitBoard {
+	return getPositiveRayAttacks(occupied, east, square) | getNegativeRayAttacks(occupied, west, square)
+}
+
+func getRookAttacks(occupied BitBoard, square Square) BitBoard {
+	return getFileRayAttacks(occupied, square) | getRankRayAttacks(occupied, square)
+}

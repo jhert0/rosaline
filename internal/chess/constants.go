@@ -42,6 +42,29 @@ func (d direction) String() string {
 	panic(fmt.Sprintf("Unknown direction: %d", d))
 }
 
+func (d direction) rayIndex() int {
+	switch d {
+	case north:
+		return 0
+	case south:
+		return 1
+	case east:
+		return 2
+	case west:
+		return 3
+	case northwest:
+		return 4
+	case northeast:
+		return 5
+	case southwest:
+		return 6
+	case southeast:
+		return 7
+	}
+
+	panic(fmt.Sprintf("rayIndex: unknown direction encountered: %d", d))
+}
+
 // These directions are from white's perspective.
 const (
 	north direction = 8

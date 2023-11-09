@@ -22,7 +22,7 @@ func pawnPromotionRank(color Color) int {
 // for the standard starting position.
 func pawnStartingRank(color Color) int {
 	if color == White {
-		return 2;
+		return 2
 	}
 
 	return 7

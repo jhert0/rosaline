@@ -85,41 +85,16 @@ func generateBishopAttacks(pieceBB BitBoard, occupied BitBoard) []Move {
 }
 
 func generateRookAttacks(pieceBB BitBoard, occupied BitBoard) []Move {
-	// TODO: use bit board magic to generate this
-
 	attacks := []Move{}
 
-	directions := []direction{north, south, east, west}
-
 	for pieceBB > 0 {
-		square := Square(pieceBB.PopLsb())
+		fromSquare := Square(pieceBB.PopLsb())
 
-	diretionLoop:
-		for _, direction := range directions {
-			toSquare := square + Square(direction)
-
-			for {
-				if !toSquare.IsValid() {
-					continue diretionLoop
-				}
-
-				if (direction == north || direction == south) && toSquare.File() != square.File() {
-					continue diretionLoop
-				}
-
-				if (direction == east || direction == west) && toSquare.Rank() != square.Rank() {
-					continue diretionLoop
-				}
-
-				move := NewMove(square, toSquare, NormalMove, NoMoveFlag)
-				attacks = append(attacks, move)
-
-				if occupied.IsBitSet(uint64(toSquare)) {
-					continue diretionLoop
-				}
-
-				toSquare += Square(direction)
-			}
+		attackBB := getRookAttacks(occupied, fromSquare)
+		for attackBB > 0 {
+			toSquare := Square(attackBB.PopLsb())
+			move := NewMove(fromSquare, toSquare, NormalMove, NoMoveFlag)
+			attacks = append(attacks, move)
 		}
 	}
 

@@ -168,52 +168,24 @@ func generateBishopMoves(position Position, pieceBB BitBoard) []Move {
 
 // generateRookMoves generates the moves for the rooks on the board
 func generateRookMoves(position Position, pieceBB BitBoard) []Move {
-	// TODO: use bitboard magic to generate rook moves
-
 	moves := []Move{}
-
-	directions := []direction{north, south, east, west}
+	occupied := position.whiteBB | position.blackBB
 
 	for pieceBB > 0 {
 		fromSquare := Square(pieceBB.PopLsb())
+		attacks := getRookAttacks(occupied, fromSquare)
 
-	diretionLoop:
-		for _, direction := range directions {
-			toSquare := fromSquare + Square(direction)
+		for attacks > 0 {
+			toSquare := Square(attacks.PopLsb())
+			piece, _ := position.GetPieceAt(toSquare)
 
-			for {
-				if !toSquare.IsValid() {
-					continue diretionLoop
-				}
-
-				if (direction == north || direction == south) && toSquare.File() != fromSquare.File() {
-					continue diretionLoop
-				}
-
-				if (direction == east || direction == west) && toSquare.Rank() != fromSquare.Rank() {
-					continue diretionLoop
-				}
-
-				piece, _ := position.GetPieceAt(toSquare)
-
-				// we hit one of our pieces, stop looking for moves in this direction
-				if piece.Color() == position.turn {
-					break
-				}
-
+			if piece == EmptyPiece || piece.Color() != position.turn {
 				move := NewMove(fromSquare, toSquare, NormalMove, QuietMoveFlag)
-
-				if piece.Color() == position.turn.OpposingSide() {
+				if piece != EmptyPiece {
 					move.WithCapture(piece)
 				}
 
 				moves = append(moves, move)
-
-				if piece.Color() == position.turn.OpposingSide() {
-					continue diretionLoop
-				}
-
-				toSquare += Square(direction)
 			}
 		}
 	}
