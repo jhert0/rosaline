@@ -260,7 +260,8 @@ func (p Position) isLegalMove(move Move) bool {
 func (position Position) generateLegalMoves() []Move {
 	moves := []Move{}
 
-	if position.NumberOfCheckers(position.turn) < 2 {
+	checkers := position.NumberOfCheckers(position.turn)
+	if checkers < 2 {
 		colorBB := position.GetColorBB(position.turn)
 
 		pawnMoves := generatePawnMoves(position, LegalMoveGeneration)
@@ -281,7 +282,8 @@ func (position Position) generateLegalMoves() []Move {
 		moves = append(moves, queenMoves...)
 	}
 
-	kingMoves := generateKingMoves(position, !position.IsKingInCheck(position.turn))
+	inCheck := checkers != 0
+	kingMoves := generateKingMoves(position, !inCheck)
 	moves = append(moves, kingMoves...)
 
 	legalMoves := []Move{}
