@@ -44,40 +44,14 @@ func generateKnightAttacks(position Position, color Color) []Move {
 func generateBishopAttacks(pieceBB BitBoard, occupied BitBoard) []Move {
 	attacks := []Move{}
 
-	directions := []direction{
-		north + east,
-		north + west,
-		south + east,
-		south + west,
-	}
-
 	for pieceBB > 0 {
-		square := Square(pieceBB.PopLsb())
+		fromSquare := Square(pieceBB.PopLsb())
 
-	directionLoop:
-		for _, direction := range directions {
-			toSquare := square + Square(direction)
-
-			for {
-				if !toSquare.IsValid() {
-					continue directionLoop
-				}
-
-				var rankDifference = RankDistance(square, toSquare)
-				var fileDifference = FileDistance(square, toSquare)
-				if rankDifference != fileDifference {
-					continue directionLoop
-				}
-
-				move := NewMove(square, toSquare, NormalMove, NoMoveFlag)
-				attacks = append(attacks, move)
-
-				if occupied.IsBitSet(uint64(toSquare)) {
-					continue directionLoop
-				}
-
-				toSquare += Square(direction)
-			}
+		attackBB := getBishopAttacks(occupied, fromSquare)
+		for attackBB > 0 {
+			toSquare := Square(attackBB.PopLsb())
+			move := NewMove(fromSquare, toSquare, NormalMove, NoMoveFlag)
+			attacks = append(attacks, move)
 		}
 	}
 

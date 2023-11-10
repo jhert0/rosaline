@@ -111,54 +111,24 @@ func generateKnightMoves(position Position) []Move {
 
 // generateBishopMoves generates the moves for the bishops on the board
 func generateBishopMoves(position Position, pieceBB BitBoard) []Move {
-	// TODO: generate moves using bitboard magic
-
 	moves := []Move{}
-
-	directions := []direction{
-		north + east,
-		north + west,
-		south + east,
-		south + west,
-	}
+	occupied := position.whiteBB | position.blackBB
 
 	for pieceBB > 0 {
 		fromSquare := Square(pieceBB.PopLsb())
 
-	directionLoop:
-		for _, direction := range directions {
-			toSquare := fromSquare + Square(direction)
+		attackBB := getBishopAttacks(occupied, fromSquare)
+		for attackBB > 0 {
+			toSquare := Square(attackBB.PopLsb())
+			piece, _ := position.GetPieceAt(toSquare)
 
-			for {
-				if !toSquare.IsValid() {
-					continue directionLoop
-				}
-
-				rankDifference, fileDifference := RankFileDifference(toSquare, fromSquare)
-				if rankDifference != fileDifference {
-					continue directionLoop
-				}
-
-				piece, _ := position.GetPieceAt(toSquare)
-
-				// we hit one of our pieces, stop looking for moves in this direction
-				if piece.Color() == position.turn {
-					break
-				}
-
+			if piece == EmptyPiece || piece.Color() != position.turn {
 				move := NewMove(fromSquare, toSquare, NormalMove, QuietMoveFlag)
-
-				if piece.Color() == position.turn.OpposingSide() {
+				if piece != EmptyPiece {
 					move.WithCapture(piece)
 				}
 
 				moves = append(moves, move)
-
-				if piece.Color() == position.turn.OpposingSide() {
-					continue directionLoop
-				}
-
-				toSquare += Square(direction)
 			}
 		}
 	}

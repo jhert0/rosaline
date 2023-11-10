@@ -46,19 +46,43 @@ func init() {
 		westBB := BitBoard(0)
 		westBB.SetBit(uint64(square))
 
+		northEastBB := BitBoard(0)
+		northEastBB.SetBit(uint64(square))
+
+		northWestBB := BitBoard(0)
+		northWestBB.SetBit(uint64(square))
+
+		southEastBB := BitBoard(0)
+		southEastBB.SetBit(uint64(square))
+
+		southWestBB := BitBoard(0)
+		southWestBB.SetBit(uint64(square))
+
 		for file := square.File(); file <= 8; file++ {
 			eastBB.EastOne()
+			northEastBB.NortheastOne()
+			southEastBB.SoutheastOne()
 		}
 
 		for file := square.File(); file >= 1; file-- {
 			westBB.WestOne()
+			northWestBB.NorthwestOne()
+			southWestBB.SouthwestOne()
 		}
 
 		eastBB.ClearBit(uint64(square))
 		westBB.ClearBit(uint64(square))
+		northEastBB.ClearBit(uint64(square))
+		northWestBB.ClearBit(uint64(square))
+		southEastBB.ClearBit(uint64(square))
+		southWestBB.ClearBit(uint64(square))
 
 		rayAttacks[east.rayIndex()][square] = eastBB
 		rayAttacks[west.rayIndex()][square] = westBB
+		rayAttacks[northeast.rayIndex()][square] = northEastBB
+		rayAttacks[northwest.rayIndex()][square] = northWestBB
+		rayAttacks[southeast.rayIndex()][square] = southEastBB
+		rayAttacks[southwest.rayIndex()][square] = southWestBB
 	}
 
 	for _, direction := range directions {
@@ -97,6 +121,18 @@ func getRankRayAttacks(occupied BitBoard, square Square) BitBoard {
 	return getPositiveRayAttacks(occupied, east, square) | getNegativeRayAttacks(occupied, west, square)
 }
 
+func getDiagonalAttacks(occupied BitBoard, square Square) BitBoard {
+	return getPositiveRayAttacks(occupied, northeast, square) | getNegativeRayAttacks(occupied, southwest, square)
+}
+
+func getAntiDiagonalAttacks(occupied BitBoard, square Square) BitBoard {
+	return getPositiveRayAttacks(occupied, northwest, square) | getNegativeRayAttacks(occupied, southeast, square)
+}
+
 func getRookAttacks(occupied BitBoard, square Square) BitBoard {
 	return getFileRayAttacks(occupied, square) | getRankRayAttacks(occupied, square)
+}
+
+func getBishopAttacks(occupied BitBoard, square Square) BitBoard {
+	return getDiagonalAttacks(occupied, square) | getAntiDiagonalAttacks(occupied, square)
 }
