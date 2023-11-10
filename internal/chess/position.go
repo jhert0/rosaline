@@ -897,7 +897,7 @@ func (p Position) IsCheckmated(color Color) bool {
 
 // IsDraw returns whether the position is a draw.
 func (p Position) IsDraw() bool {
-	if p.fiftyMoveClock == 100 || p.repetitions >= 3 {
+	if p.fiftyMoveClock >= 100 || p.repetitions >= 3 {
 		return true
 	}
 
