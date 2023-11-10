@@ -88,21 +88,30 @@ func generateKnightMoves(position Position) []Move {
 	moves := []Move{}
 
 	knightBB := position.knightBB & position.GetColorBB(position.turn)
+
+	occupied := position.whiteBB | position.blackBB
+	opponent := position.GetColorBB(position.turn.OpposingSide())
+
 	for knightBB > 0 {
 		fromSquare := Square(knightBB.PopLsb())
+		attackBB := knightMoves[fromSquare]
 
-		moveBB := knightMoves[fromSquare]
+		moveBB := attackBB & ^occupied
 		for moveBB > 0 {
 			toSquare := Square(moveBB.PopLsb())
+			move := NewMove(fromSquare, toSquare, NormalMove, QuietMoveFlag)
+			moves = append(moves, move)
+		}
 
+		capturesBB := attackBB & opponent
+		for capturesBB > 0 {
+			toSquare := Square(capturesBB.PopLsb())
 			piece, _ := position.GetPieceAt(toSquare)
-			if piece == EmptyPiece {
-				moves = append(moves, NewMove(fromSquare, toSquare, NormalMove, QuietMoveFlag))
-			} else if piece.Color() != position.turn {
-				move := NewMove(fromSquare, toSquare, NormalMove, QuietMoveFlag)
-				move.WithCapture(piece)
-				moves = append(moves, move)
-			}
+
+			move := NewMove(fromSquare, toSquare, NormalMove, QuietMoveFlag)
+			move.WithCapture(piece)
+
+			moves = append(moves, move)
 		}
 	}
 
@@ -112,24 +121,30 @@ func generateKnightMoves(position Position) []Move {
 // generateBishopMoves generates the moves for the bishops on the board
 func generateBishopMoves(position Position, pieceBB BitBoard) []Move {
 	moves := []Move{}
+
 	occupied := position.whiteBB | position.blackBB
+	opponent := position.GetColorBB(position.turn.OpposingSide())
 
 	for pieceBB > 0 {
 		fromSquare := Square(pieceBB.PopLsb())
-
 		attackBB := getBishopAttacks(occupied, fromSquare)
-		for attackBB > 0 {
-			toSquare := Square(attackBB.PopLsb())
+
+		moveBB := attackBB & ^occupied
+		for moveBB > 0 {
+			toSquare := Square(moveBB.PopLsb())
+			move := NewMove(fromSquare, toSquare, NormalMove, QuietMoveFlag)
+			moves = append(moves, move)
+		}
+
+		capturesBB := attackBB & opponent
+		for capturesBB > 0 {
+			toSquare := Square(capturesBB.PopLsb())
 			piece, _ := position.GetPieceAt(toSquare)
 
-			if piece == EmptyPiece || piece.Color() != position.turn {
-				move := NewMove(fromSquare, toSquare, NormalMove, QuietMoveFlag)
-				if piece != EmptyPiece {
-					move.WithCapture(piece)
-				}
+			move := NewMove(fromSquare, toSquare, NormalMove, QuietMoveFlag)
+			move.WithCapture(piece)
 
-				moves = append(moves, move)
-			}
+			moves = append(moves, move)
 		}
 	}
 
@@ -139,24 +154,30 @@ func generateBishopMoves(position Position, pieceBB BitBoard) []Move {
 // generateRookMoves generates the moves for the rooks on the board
 func generateRookMoves(position Position, pieceBB BitBoard) []Move {
 	moves := []Move{}
+
 	occupied := position.whiteBB | position.blackBB
+	opponent := position.GetColorBB(position.turn.OpposingSide())
 
 	for pieceBB > 0 {
 		fromSquare := Square(pieceBB.PopLsb())
 		attacks := getRookAttacks(occupied, fromSquare)
 
-		for attacks > 0 {
-			toSquare := Square(attacks.PopLsb())
+		moveBB := attacks & ^occupied
+		for moveBB > 0 {
+			toSquare := Square(moveBB.PopLsb())
+			move := NewMove(fromSquare, toSquare, NormalMove, QuietMoveFlag)
+			moves = append(moves, move)
+		}
+
+		capturesBB := attacks & opponent
+		for capturesBB > 0 {
+			toSquare := Square(capturesBB.PopLsb())
 			piece, _ := position.GetPieceAt(toSquare)
 
-			if piece == EmptyPiece || piece.Color() != position.turn {
-				move := NewMove(fromSquare, toSquare, NormalMove, QuietMoveFlag)
-				if piece != EmptyPiece {
-					move.WithCapture(piece)
-				}
+			move := NewMove(fromSquare, toSquare, NormalMove, QuietMoveFlag)
+			move.WithCapture(piece)
 
-				moves = append(moves, move)
-			}
+			moves = append(moves, move)
 		}
 	}
 
@@ -181,18 +202,26 @@ func generateKingMoves(position Position, includeCastling bool) []Move {
 
 	kingSquare := position.GetKingSquare(position.turn)
 
-	moveBB := kingMoves[kingSquare]
+	attacks := kingMoves[kingSquare]
+	occupied := position.whiteBB | position.blackBB
+	opponent := position.GetColorBB(position.turn.OpposingSide())
+
+	moveBB := attacks & ^occupied
 	for moveBB > 0 {
 		toSquare := Square(moveBB.PopLsb())
+		move := NewMove(kingSquare, toSquare, NormalMove, QuietMoveFlag)
+		moves = append(moves, move)
+	}
 
+	capturesBB := attacks & opponent
+	for capturesBB > 0 {
+		toSquare := Square(capturesBB.PopLsb())
 		piece, _ := position.GetPieceAt(toSquare)
-		if piece == EmptyPiece {
-			moves = append(moves, NewMove(kingSquare, toSquare, NormalMove, QuietMoveFlag))
-		} else if piece.Color() != position.Turn() {
-			move := NewMove(kingSquare, toSquare, NormalMove, QuietMoveFlag)
-			move.WithCapture(piece)
-			moves = append(moves, move)
-		}
+
+		move := NewMove(kingSquare, toSquare, NormalMove, QuietMoveFlag)
+		move.WithCapture(piece)
+
+		moves = append(moves, move)
 	}
 
 	if includeCastling {
