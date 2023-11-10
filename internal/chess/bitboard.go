@@ -88,6 +88,26 @@ func (bb *BitBoard) EastOne() {
 	*bb |= (*bb & ^FileHBB) << 1
 }
 
+// NortheastOne fills one square northeast of the current square on an otherwise empty BitBoard.
+func (bb *BitBoard) NortheastOne() {
+	*bb |= (*bb & ^FileHBB) << 9
+}
+
+// NorthwestOne fills one square northwest of the current square on an otherwise empty BitBoard.
+func (bb *BitBoard) NorthwestOne() {
+	*bb |= (*bb & ^FileABB) << 7
+}
+
+// SoutheastOne fills one square southeast of the current square on an otherwise empty BitBoard.
+func (bb *BitBoard) SoutheastOne() {
+	*bb |= (*bb & ^FileHBB) >> 7
+}
+
+// SouthwestOne fills one square southwest of the current square on an otherwise empty BitBoard.
+func (bb *BitBoard) SouthwestOne() {
+	*bb |= (*bb & ^FileABB) >> 9
+}
+
 // FillNorth fills the squares above the set square on an otherwise empty BitBoard.
 func (bb *BitBoard) FillNorth() {
 	*bb |= *bb << 8
