@@ -149,6 +149,54 @@ func (s Square) IsValid() bool {
 	return s >= 0 && s < 64
 }
 
+// FileMask returns the file mask for the square.
+func (s Square) FileMask() BitBoard {
+	switch s.File() {
+	case 1:
+		return FileABB
+	case 2:
+		return FileBBB
+	case 3:
+		return FileCBB
+	case 4:
+		return FileDBB
+	case 5:
+		return FileEBB
+	case 6:
+		return FileFBB
+	case 7:
+		return FileGBB
+	case 8:
+		return FileHBB
+	}
+
+	panic(fmt.Sprintf("FileMask: unknown file encountered: %d", s.File()))
+}
+
+// RankMask returns the rank mask for the square.
+func (s Square) RankMask() BitBoard {
+	switch s.Rank() {
+	case 1:
+		return Rank1BB
+	case 2:
+		return Rank2BB
+	case 3:
+		return Rank3BB
+	case 4:
+		return Rank4BB
+	case 5:
+		return Rank5BB
+	case 6:
+		return Rank6BB
+	case 7:
+		return Rank7BB
+	case 8:
+		return Rank8BB
+	}
+
+	panic(fmt.Sprintf("RankMask: unknown rank encountered: %d", s.Rank()))
+}
+
 // ToAlgebraic returns the algebraic string for the Square.
 func (s Square) ToAlgebraic() string {
 	if !s.IsValid() {
