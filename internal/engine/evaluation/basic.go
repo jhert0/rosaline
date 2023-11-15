@@ -13,7 +13,7 @@ func NewBasicEvaluator() basicEvaluator {
 func (e basicEvaluator) evaluateSide(position chess.Position, color chess.Color) int {
 	score := 0
 
-	colorBB := position.GetColorBB(chess.Black)
+	colorBB := position.GetColorBB(color)
 	for colorBB > 0 {
 		square := chess.Square(colorBB.PopLsb())
 		piece, _ := position.GetPieceAt(square)
