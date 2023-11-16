@@ -1,6 +1,8 @@
 package evaluation
 
-import "rosaline/internal/chess"
+import (
+	"rosaline/internal/chess"
+)
 
 type basicEvaluator struct {
 }
@@ -18,11 +20,42 @@ func (e basicEvaluator) evaluateSide(position chess.Position, color chess.Color)
 		square := chess.Square(colorBB.PopLsb())
 		piece, _ := position.GetPieceAt(square)
 		score += pieceValue(piece)
+
+		scoreBoard, ok := squareScores[piece]
+		if ok {
+			score += scoreBoard[square]
+		}
+	}
+
+	pawnBB := colorBB & position.GetPieceBB(chess.Pawn)
+	for _, bb := range chess.FileBitBoards {
+		pawns := pawnBB & bb
+		if pawns.PopulationCount() >= 2 {
+			score += doublePawnPenalty
+		}
+	}
+
+	bishopBB := colorBB & position.GetPieceBB(chess.Bishop)
+	if bishopBB.PopulationCount() >= 2 {
+		score += doubleBishopBonus
 	}
 
 	return score
 }
 
 func (e basicEvaluator) Evaluate(position chess.Position) int {
+	if position.IsDraw() {
+		return DrawScore
+	}
+
+	turn := position.Turn()
+	if position.IsCheckmated(turn) {
+		return MateScore * evaluationMultiplier(turn.OpposingSide())
+	}
+
+	if position.IsCheckmated(turn.OpposingSide()) {
+		return MateScore * evaluationMultiplier(turn)
+	}
+
 	return e.evaluateSide(position, chess.White) - e.evaluateSide(position, chess.Black)
 }
