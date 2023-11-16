@@ -15,6 +15,17 @@ const (
 	FileHBB = BitBoard(9259542123273814144)
 )
 
+var FileBitBoards = []BitBoard{
+	FileABB,
+	FileBBB,
+	FileCBB,
+	FileDBB,
+	FileEBB,
+	FileFBB,
+	FileGBB,
+	FileHBB,
+}
+
 const (
 	Rank1BB = BitBoard(255)
 	Rank2BB = BitBoard(65280)
