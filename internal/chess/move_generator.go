@@ -4,7 +4,7 @@ type MoveGenerationType uint8
 
 const (
 	LegalMoveGeneration MoveGenerationType = iota
-	AttackMoveGeneration
+	CaptureMoveGeneration
 )
 
 // generatePawnMoves generates the moves for the pawns on the board
@@ -16,7 +16,7 @@ func generatePawnMoves(position Position, genType MoveGenerationType) []Move {
 	for pawnBB > 0 {
 		square := Square(pawnBB.PopLsb())
 
-		if !position.IsSquareOccupied(square+dir) && genType != AttackMoveGeneration {
+		if !position.IsSquareOccupied(square+dir) && genType != CaptureMoveGeneration {
 			toSquare := square + dir
 
 			if toSquare.Rank() == pawnPromotionRank(position.Turn()) {
@@ -84,7 +84,7 @@ func generatePawnMoves(position Position, genType MoveGenerationType) []Move {
 }
 
 // generateKnightMoves generates the moves for the knights on the board
-func generateKnightMoves(position Position) []Move {
+func generateKnightMoves(position Position, genType MoveGenerationType) []Move {
 	moves := []Move{}
 
 	knightBB := position.knightBB & position.GetColorBB(position.turn)
@@ -96,11 +96,13 @@ func generateKnightMoves(position Position) []Move {
 		fromSquare := Square(knightBB.PopLsb())
 		attackBB := knightMoves[fromSquare]
 
-		moveBB := attackBB & ^occupied
-		for moveBB > 0 {
-			toSquare := Square(moveBB.PopLsb())
-			move := NewMove(fromSquare, toSquare, NormalMove, QuietMoveFlag)
-			moves = append(moves, move)
+		if genType != CaptureMoveGeneration {
+			moveBB := attackBB & ^occupied
+			for moveBB > 0 {
+				toSquare := Square(moveBB.PopLsb())
+				move := NewMove(fromSquare, toSquare, NormalMove, QuietMoveFlag)
+				moves = append(moves, move)
+			}
 		}
 
 		capturesBB := attackBB & opponent
@@ -119,7 +121,7 @@ func generateKnightMoves(position Position) []Move {
 }
 
 // generateBishopMoves generates the moves for the bishops on the board
-func generateBishopMoves(position Position, pieceBB BitBoard) []Move {
+func generateBishopMoves(position Position, pieceBB BitBoard, genType MoveGenerationType) []Move {
 	moves := []Move{}
 
 	occupied := position.whiteBB | position.blackBB
@@ -129,11 +131,13 @@ func generateBishopMoves(position Position, pieceBB BitBoard) []Move {
 		fromSquare := Square(pieceBB.PopLsb())
 		attackBB := getBishopAttacks(occupied, fromSquare)
 
-		moveBB := attackBB & ^occupied
-		for moveBB > 0 {
-			toSquare := Square(moveBB.PopLsb())
-			move := NewMove(fromSquare, toSquare, NormalMove, QuietMoveFlag)
-			moves = append(moves, move)
+		if genType != CaptureMoveGeneration {
+			moveBB := attackBB & ^occupied
+			for moveBB > 0 {
+				toSquare := Square(moveBB.PopLsb())
+				move := NewMove(fromSquare, toSquare, NormalMove, QuietMoveFlag)
+				moves = append(moves, move)
+			}
 		}
 
 		capturesBB := attackBB & opponent
@@ -152,7 +156,7 @@ func generateBishopMoves(position Position, pieceBB BitBoard) []Move {
 }
 
 // generateRookMoves generates the moves for the rooks on the board
-func generateRookMoves(position Position, pieceBB BitBoard) []Move {
+func generateRookMoves(position Position, pieceBB BitBoard, genType MoveGenerationType) []Move {
 	moves := []Move{}
 
 	occupied := position.whiteBB | position.blackBB
@@ -162,11 +166,13 @@ func generateRookMoves(position Position, pieceBB BitBoard) []Move {
 		fromSquare := Square(pieceBB.PopLsb())
 		attacks := getRookAttacks(occupied, fromSquare)
 
-		moveBB := attacks & ^occupied
-		for moveBB > 0 {
-			toSquare := Square(moveBB.PopLsb())
-			move := NewMove(fromSquare, toSquare, NormalMove, QuietMoveFlag)
-			moves = append(moves, move)
+		if genType != CaptureMoveGeneration {
+			moveBB := attacks & ^occupied
+			for moveBB > 0 {
+				toSquare := Square(moveBB.PopLsb())
+				move := NewMove(fromSquare, toSquare, NormalMove, QuietMoveFlag)
+				moves = append(moves, move)
+			}
 		}
 
 		capturesBB := attacks & opponent
@@ -185,19 +191,19 @@ func generateRookMoves(position Position, pieceBB BitBoard) []Move {
 }
 
 // generateQueenMoves generates the moves for the queens on the board
-func generateQueenMoves(position Position) []Move {
+func generateQueenMoves(position Position, genType MoveGenerationType) []Move {
 	queenBB := position.queenBB & position.GetColorBB(position.turn)
 
-	moves := generateRookMoves(position, queenBB)
+	moves := generateRookMoves(position, queenBB, genType)
 
-	bishopMoves := generateBishopMoves(position, queenBB)
+	bishopMoves := generateBishopMoves(position, queenBB, genType)
 	moves = append(moves, bishopMoves...)
 
 	return moves
 }
 
 // generateKingMoves generates the moves for the kings on the board
-func generateKingMoves(position Position, includeCastling bool) []Move {
+func generateKingMoves(position Position, genType MoveGenerationType, includeCastling bool) []Move {
 	moves := []Move{}
 
 	kingSquare := position.GetKingSquare(position.turn)
@@ -206,11 +212,13 @@ func generateKingMoves(position Position, includeCastling bool) []Move {
 	occupied := position.whiteBB | position.blackBB
 	opponent := position.GetColorBB(position.turn.OpposingSide())
 
-	moveBB := attacks & ^occupied
-	for moveBB > 0 {
-		toSquare := Square(moveBB.PopLsb())
-		move := NewMove(kingSquare, toSquare, NormalMove, QuietMoveFlag)
-		moves = append(moves, move)
+	if genType != CaptureMoveGeneration {
+		moveBB := attacks & ^occupied
+		for moveBB > 0 {
+			toSquare := Square(moveBB.PopLsb())
+			move := NewMove(kingSquare, toSquare, NormalMove, QuietMoveFlag)
+			moves = append(moves, move)
+		}
 	}
 
 	capturesBB := attacks & opponent
@@ -289,23 +297,23 @@ func (position Position) generateLegalMoves() []Move {
 		pawnMoves := generatePawnMoves(position, LegalMoveGeneration)
 		moves = append(moves, pawnMoves...)
 
-		knightMoves := generateKnightMoves(position)
+		knightMoves := generateKnightMoves(position, LegalMoveGeneration)
 		moves = append(moves, knightMoves...)
 
 		bishopBB := position.GetPieceBB(Bishop)
-		bishopMoves := generateBishopMoves(position, bishopBB&colorBB)
+		bishopMoves := generateBishopMoves(position, bishopBB&colorBB, LegalMoveGeneration)
 		moves = append(moves, bishopMoves...)
 
 		rookBB := position.GetPieceBB(Rook)
-		rookMoves := generateRookMoves(position, rookBB&colorBB)
+		rookMoves := generateRookMoves(position, rookBB&colorBB, LegalMoveGeneration)
 		moves = append(moves, rookMoves...)
 
-		queenMoves := generateQueenMoves(position)
+		queenMoves := generateQueenMoves(position, LegalMoveGeneration)
 		moves = append(moves, queenMoves...)
 	}
 
 	inCheck := checkers != 0
-	kingMoves := generateKingMoves(position, !inCheck)
+	kingMoves := generateKingMoves(position, LegalMoveGeneration, !inCheck)
 	moves = append(moves, kingMoves...)
 
 	legalMoves := []Move{}
@@ -323,24 +331,24 @@ func (position Position) generateAttackMoves() []Move {
 
 	colorBB := position.GetColorBB(position.turn)
 
-	pawnMoves := generatePawnMoves(position, AttackMoveGeneration)
+	pawnMoves := generatePawnMoves(position, CaptureMoveGeneration)
 	moves = append(moves, pawnMoves...)
 
-	knightMoves := generateKnightMoves(position)
+	knightMoves := generateKnightMoves(position, CaptureMoveGeneration)
 	moves = append(moves, knightMoves...)
 
 	bishopBB := position.GetPieceBB(Bishop)
-	bishopMoves := generateBishopMoves(position, bishopBB&colorBB)
+	bishopMoves := generateBishopMoves(position, bishopBB&colorBB, CaptureMoveGeneration)
 	moves = append(moves, bishopMoves...)
 
 	rookBB := position.GetPieceBB(Rook)
-	rookMoves := generateRookMoves(position, rookBB&colorBB)
+	rookMoves := generateRookMoves(position, rookBB&colorBB, CaptureMoveGeneration)
 	moves = append(moves, rookMoves...)
 
-	queenMoves := generateQueenMoves(position)
+	queenMoves := generateQueenMoves(position, CaptureMoveGeneration)
 	moves = append(moves, queenMoves...)
 
-	kingMoves := generateKingMoves(position, false)
+	kingMoves := generateKingMoves(position, CaptureMoveGeneration, false)
 	moves = append(moves, kingMoves...)
 
 	legalMoves := []Move{}
@@ -358,7 +366,7 @@ func (position Position) GenerateMoves(genType MoveGenerationType) []Move {
 	switch genType {
 	case LegalMoveGeneration:
 		return position.generateLegalMoves()
-	case AttackMoveGeneration:
+	case CaptureMoveGeneration:
 		return position.generateAttackMoves()
 	default:
 		panic("Unknown move generation type '%d' passed to GenerateMoves")
