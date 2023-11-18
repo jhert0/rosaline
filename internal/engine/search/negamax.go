@@ -11,17 +11,17 @@ const (
 	initialBeta  = math.MaxInt - 1
 )
 
-type negamaxSearcher struct {
+type NegamaxSearcher struct {
 	evaluator evaluation.Evaluator
 }
 
-func NewNegamaxSearcher(evaluator evaluation.Evaluator) negamaxSearcher {
-	return negamaxSearcher{
+func NewNegamaxSearcher(evaluator evaluation.Evaluator) NegamaxSearcher {
+	return NegamaxSearcher{
 		evaluator: evaluator,
 	}
 }
 
-func (s negamaxSearcher) Search(position chess.Position, depth int) ScoredMove {
+func (s NegamaxSearcher) Search(position chess.Position, depth int) ScoredMove {
 	moves := position.GenerateMoves(chess.LegalMoveGeneration)
 	bestMove := ScoredMove{}
 	bestScore := math.MinInt + 1
@@ -43,7 +43,7 @@ func (s negamaxSearcher) Search(position chess.Position, depth int) ScoredMove {
 	return bestMove
 }
 
-func (s *negamaxSearcher) doSearch(position chess.Position, alpha int, beta int, depth int) int {
+func (s *NegamaxSearcher) doSearch(position chess.Position, alpha int, beta int, depth int) int {
 	if depth == 0 {
 		return s.evaluator.Evaluate(position)
 	}

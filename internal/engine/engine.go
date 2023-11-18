@@ -10,7 +10,7 @@ type Engine struct {
 	Name string // The name of the engine.
 
 	Game      chess.Game // The current game the engine is playing/analyzing.
-	searcher  search.Searcher
+	searcher  search.NegamaxSearcher
 	evaluator evaluation.Evaluator
 
 	defaultDepth int
