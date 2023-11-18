@@ -7,7 +7,7 @@ import (
 type Evaluator struct {
 }
 
-func NewBasicEvaluator() Evaluator {
+func NewEvaluator() Evaluator {
 	return Evaluator{}
 }
 

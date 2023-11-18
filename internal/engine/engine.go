@@ -18,7 +18,7 @@ type Engine struct {
 
 // NewEngine creates a new Engine.
 func NewEngine() Engine {
-	evaluator := evaluation.NewBasicEvaluator()
+	evaluator := evaluation.NewEvaluator()
 
 	return Engine{
 		Name:         "Rosaline",
