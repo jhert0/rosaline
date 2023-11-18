@@ -76,7 +76,8 @@ func (i cliInterface) Loop() {
 			score := engine.Evaluate()
 			fmt.Println("score:", score)
 		} else if cmd == "play" {
-			engine.PlayBestMove()
+			move := engine.PlayBestMove()
+			fmt.Println("played:", move.Move)
 		} else if cmd == "fen" {
 			fmt.Println(engine.Game.Position.Fen())
 		} else if cmd == "setfen" {
