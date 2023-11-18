@@ -69,7 +69,17 @@ func (i cliInterface) Loop() {
 		} else if cmd == "undo" {
 			engine.Game.Position.Undo()
 		} else if cmd == "go" {
-			move := engine.Search(4)
+			depth := engine.DefaultDepth
+			if len(args) >= 1 {
+				var err error
+				depth, err = strconv.Atoi(args[0])
+				if err != nil {
+					fmt.Println(err)
+					continue
+				}
+			}
+
+			move := engine.Search(depth)
 			fmt.Println("best move:", move)
 			fmt.Println("score:", move.Score)
 		} else if cmd == "evaluate" {
