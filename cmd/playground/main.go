@@ -141,6 +141,12 @@ loop:
 			}
 
 			break
+		case "captures":
+			captures := position.GenerateMoves(chess.CaptureMoveGeneration)
+			for _, capture := range captures {
+				fmt.Println(capture)
+			}
+			break
 		case "quit":
 			break loop
 		}
