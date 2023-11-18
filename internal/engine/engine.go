@@ -53,11 +53,14 @@ func (e Engine) Search(depth int) search.ScoredMove {
 	return e.searcher.Search(e.Game.Position, depth)
 }
 
-// PlayBestMove will search for the best move and then play it.
-func (e *Engine) PlayBestMove() {
+// PlayBestMove plays the best the move it found after searching and then returns it.
+func (e *Engine) PlayBestMove() search.ScoredMove {
 	bestMove := e.Search(e.defaultDepth)
+
 	err := e.Game.MakeMove(bestMove.Move)
 	if err != nil {
 		panic(err)
 	}
+
+	return bestMove
 }
