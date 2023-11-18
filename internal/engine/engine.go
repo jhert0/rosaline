@@ -13,7 +13,7 @@ type Engine struct {
 	searcher  search.NegamaxSearcher
 	evaluator evaluation.Evaluator
 
-	defaultDepth int
+	DefaultDepth int
 }
 
 // NewEngine creates a new Engine.
@@ -25,7 +25,7 @@ func NewEngine() Engine {
 		Game:         chess.Game{},
 		searcher:     search.NewNegamaxSearcher(evaluator),
 		evaluator:    evaluator,
-		defaultDepth: 4,
+		DefaultDepth: 4,
 	}
 }
 
@@ -55,7 +55,7 @@ func (e Engine) Search(depth int) search.ScoredMove {
 
 // PlayBestMove plays the best the move it found after searching and then returns it.
 func (e *Engine) PlayBestMove() search.ScoredMove {
-	bestMove := e.Search(e.defaultDepth)
+	bestMove := e.Search(e.DefaultDepth)
 
 	err := e.Game.MakeMove(bestMove.Move)
 	if err != nil {
