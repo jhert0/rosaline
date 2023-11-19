@@ -13,13 +13,10 @@ import (
 )
 
 type cliInterface struct {
-	scanner *bufio.Scanner
 }
 
 func NewCliProtocolHandler() cliInterface {
-	return cliInterface{
-		scanner: bufio.NewScanner(os.Stdin),
-	}
+	return cliInterface{}
 }
 
 func (i cliInterface) Loop() {
