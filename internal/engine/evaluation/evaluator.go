@@ -20,11 +20,7 @@ func (e Evaluator) evaluateSide(position chess.Position, color chess.Color) int 
 		square := chess.Square(colorBB.PopLsb())
 		piece, _ := position.GetPieceAt(square)
 		score += pieceValue(piece)
-
-		scoreBoard, ok := squareScores[piece]
-		if ok {
-			score += scoreBoard[square]
-		}
+		score += e.getSquareScore(position, piece, square)
 	}
 
 	pawnBB := colorBB & position.GetPieceBB(chess.Pawn)
@@ -41,6 +37,22 @@ func (e Evaluator) evaluateSide(position chess.Position, color chess.Color) int 
 	}
 
 	return score
+}
+
+func (e Evaluator) getSquareScore(position chess.Position, piece chess.Piece, square chess.Square) int {
+	if position.Phase() == chess.EndgamePhase {
+		scoreBoard, ok := openingScores[piece]
+		if ok {
+			return scoreBoard[square]
+		}
+	} else {
+		scoreBoard, ok := endgameScores[piece]
+		if ok {
+			return scoreBoard[square]
+		}
+	}
+
+	return 0
 }
 
 func (e Evaluator) Evaluate(position chess.Position) int {
