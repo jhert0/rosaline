@@ -14,6 +14,8 @@ const (
 
 const (
 	doubleBishopBonus = 20
+	semiOpenFileBonus = 10
+	openFileBonus     = semiOpenFileBonus * 2
 )
 
 // Penalties

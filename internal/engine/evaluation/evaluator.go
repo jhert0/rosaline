@@ -23,11 +23,19 @@ func (e Evaluator) evaluateSide(position chess.Position, color chess.Color) int 
 		score += e.getSquareScore(position, piece, square)
 	}
 
-	pawnBB := colorBB & position.GetPieceBB(chess.Pawn)
+	pawnBB := position.GetPieceBB(chess.Pawn)
+	ourPawns := colorBB & pawnBB
 	for _, bb := range chess.FileBitBoards {
-		pawns := pawnBB & bb
+		pawns := ourPawns & bb
 		if pawns.PopulationCount() >= 2 {
 			score += doublePawnPenalty
+		} else if pawns.PopulationCount() == 0 {
+			score += semiOpenFileBonus
+		}
+
+		pawns = pawnBB & bb
+		if pawns.PopulationCount() == 0 {
+			score += openFileBonus
 		}
 	}
 
