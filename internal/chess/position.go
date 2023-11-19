@@ -930,6 +930,27 @@ func (p Position) Hash() uint64 {
 	return p.hash
 }
 
+// Phase returns the phase the position is in.
+func (p Position) Phase() Phase {
+	if p.queenBB == 0 {
+		return EndgamePhase
+	}
+
+	whiteQueens := p.whiteBB & p.queenBB
+	whiteMinor := p.whiteBB & (p.knightBB | p.bishopBB)
+	if whiteQueens.PopulationCount() <= 1 && whiteMinor <= 1 {
+		return EndgamePhase
+	}
+
+	blackQueens := p.blackBB & p.queenBB
+	blackMinor := p.blackBB & (p.knightBB | p.bishopBB)
+	if blackQueens.PopulationCount() <= 1 && blackMinor <= 1 {
+		return EndgamePhase
+	}
+
+	return OpeningPhase
+}
+
 // Copy creates a copy of the current position.
 func (p Position) Copy() Position {
 	copy := Position{
