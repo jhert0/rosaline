@@ -37,6 +37,7 @@ func (e *Engine) NewGame(fen string) error {
 	}
 
 	e.Game = game
+	e.searcher.Reset()
 
 	return nil
 }

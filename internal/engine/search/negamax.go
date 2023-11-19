@@ -13,11 +13,13 @@ const (
 
 type NegamaxSearcher struct {
 	evaluator evaluation.Evaluator
+	drawTable drawTable
 }
 
 func NewNegamaxSearcher(evaluator evaluation.Evaluator) NegamaxSearcher {
 	return NegamaxSearcher{
 		evaluator: evaluator,
+		drawTable: newDrawTable(),
 	}
 }
 
@@ -48,13 +50,23 @@ func (s *NegamaxSearcher) doSearch(position chess.Position, alpha int, beta int,
 		return s.evaluator.Evaluate(position)
 	}
 
+	if s.drawTable.IsRepeat(position.Hash()) {
+		return evaluation.DrawScore
+	}
+
+	if position.IsDraw() {
+		return evaluation.DrawScore
+	}
+
 	moves := position.GenerateMoves(chess.LegalMoveGeneration)
 	for _, move := range moves {
+		s.drawTable.Push(position.Hash())
+
 		position.MakeMove(move)
-
 		score := -s.doSearch(position, -beta, -alpha, depth-1)
-
 		position.Undo()
+
+		s.drawTable.Pop()
 
 		if score >= beta {
 			return beta
@@ -66,4 +78,9 @@ func (s *NegamaxSearcher) doSearch(position chess.Position, alpha int, beta int,
 	}
 
 	return alpha
+}
+
+// Reset clears any information about searched positions.
+func (s *NegamaxSearcher) Reset() {
+	s.drawTable.Clear()
 }
