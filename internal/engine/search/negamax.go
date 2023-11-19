@@ -59,6 +59,10 @@ func (s *NegamaxSearcher) doSearch(position chess.Position, alpha int, beta int,
 	}
 
 	moves := position.GenerateMoves(chess.LegalMoveGeneration)
+	if len(moves) == 0 {
+		return s.evaluator.Evaluate(position)
+	}
+
 	for _, move := range moves {
 		s.drawTable.Push(position.Hash())
 
