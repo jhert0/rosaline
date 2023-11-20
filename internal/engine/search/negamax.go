@@ -31,7 +31,7 @@ func (s NegamaxSearcher) Search(position chess.Position, depth int) ScoredMove {
 	for _, move := range moves {
 		position.MakeMove(move)
 
-		score := s.doSearch(position, initialAlpha, initialBeta, depth-1)
+		score := -s.doSearch(position, initialAlpha, initialBeta, depth-1, 0)
 		scoredMove := NewScoredMove(move, score)
 
 		if score > bestScore {
@@ -45,9 +45,9 @@ func (s NegamaxSearcher) Search(position chess.Position, depth int) ScoredMove {
 	return bestMove
 }
 
-func (s *NegamaxSearcher) doSearch(position chess.Position, alpha int, beta int, depth int) int {
+func (s *NegamaxSearcher) doSearch(position chess.Position, alpha int, beta int, depth int, ply int) int {
 	if depth == 0 {
-		return s.evaluator.Evaluate(position)
+		return s.evaluator.AbsoluteEvaluation(position)
 	}
 
 	if s.drawTable.IsRepeat(position.Hash()) {
@@ -60,14 +60,18 @@ func (s *NegamaxSearcher) doSearch(position chess.Position, alpha int, beta int,
 
 	moves := position.GenerateMoves(chess.LegalMoveGeneration)
 	if len(moves) == 0 {
-		return s.evaluator.Evaluate(position)
+		if position.IsKingInCheck(position.Turn()) {
+			return -evaluation.MateScore + ply
+		} else {
+			return evaluation.DrawScore
+		}
 	}
 
 	for _, move := range moves {
 		s.drawTable.Push(position.Hash())
 
 		position.MakeMove(move)
-		score := -s.doSearch(position, -beta, -alpha, depth-1)
+		score := -s.doSearch(position, -beta, -alpha, depth-1, ply+1)
 		position.Undo()
 
 		s.drawTable.Pop()

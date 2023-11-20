@@ -79,3 +79,15 @@ func (e Evaluator) Evaluate(position chess.Position) int {
 
 	return e.evaluateSide(position, chess.White) - e.evaluateSide(position, chess.Black)
 }
+
+// AbsoluteEvaluation evaluates the position relative to the player to move
+// and returns the score.
+//
+// The score will be:
+//   - positive: if the player to move is winning
+//   - zero: if the position is a draw
+//   - negative: if the player to move is losing
+func (e Evaluator) AbsoluteEvaluation(position chess.Position) int {
+	evaluation := e.Evaluate(position)
+	return evaluation * evaluationMultiplier(position.Turn())
+}
