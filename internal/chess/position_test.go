@@ -280,4 +280,6 @@ func TestIsStalemate(t *testing.T) {
 	isStalemateTest(t, "k7/p1K5/P7/1B6/8/8/8/8 b - - 4 55", Black, true)
 
 	isStalemateTest(t, "4R3/5ppk/7p/2BQ4/8/5P2/r5qP/7K w - - 0 29", White, false)
+	isStalemateTest(t, StartingFen, White, false)
+	isStalemateTest(t, StartingFen, Black, false)
 }
