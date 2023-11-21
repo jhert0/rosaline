@@ -23,6 +23,23 @@ func TestIsSquareOccupied(t *testing.T) {
 	isSquareOccupiedTest(t, position, B6, false)
 }
 
+func squaresEmptyTest(t *testing.T, position Position, squares []Square, expected bool) {
+	empty := position.squaresEmpty(squares)
+	if empty != expected {
+		t.Fatalf("%s: expected squares '%s' have empty status of '%v' got '%v'", t.Name(), squares, expected, empty)
+	}
+}
+
+func TestSquaresEmpty(t *testing.T) {
+	position, _ := NewPosition(StartingFen)
+
+	squaresEmptyTest(t, position, []Square{A1, A2, A3}, false)
+	squaresEmptyTest(t, position, []Square{A2, A3, B2, B3}, false)
+
+	squaresEmptyTest(t, position, []Square{D4, E4, D5, E5}, true)
+	squaresEmptyTest(t, position, []Square{A3, A4, G5}, true)
+}
+
 func getPieceAtTest(t *testing.T, algebraic string, expectedType PieceType, expectedColor Color) {
 	position, _ := NewPosition(StartingFen)
 	square, _ := SquareFromAlgebraic(algebraic)
