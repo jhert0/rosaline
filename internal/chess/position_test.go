@@ -160,7 +160,12 @@ func TestIsSquareAttacked(t *testing.T) {
 	squareAttackedTest(t, position, A8, false)
 }
 
-func kingInCheckTest(t *testing.T, position Position, color Color, expectedValue bool) {
+func kingInCheckTest(t *testing.T, fen string, color Color, expectedValue bool) {
+	position, err := NewPosition(fen)
+	if err != nil {
+		t.Fatalf("%s: fen %s returned error: %s", t.Name(), fen, err)
+	}
+
 	check := position.IsKingInCheck(color)
 	if check != expectedValue {
 		t.Fatalf("%s: expected %s king to have of a check status of '%v' instead got '%v'", t.Name(), color, expectedValue, check)
@@ -168,13 +173,12 @@ func kingInCheckTest(t *testing.T, position Position, color Color, expectedValue
 }
 
 func TestIsKingInCheck(t *testing.T) {
-	position, err := NewPosition(StartingFen)
-	if err != nil {
-		t.Fatalf("%s: fen %s returned error: %s", t.Name(), StartingFen, err)
-	}
+	kingInCheckTest(t, StartingFen, White, false)
+	kingInCheckTest(t, StartingFen, Black, false)
 
-	kingInCheckTest(t, position, White, false)
-	kingInCheckTest(t, position, Black, false)
+	kingInCheckTest(t, "r1b2r1k/1p1p1p2/1qn5/p1p1p1R1/2B1P3/2NP2P1/PPP2PP1/1K5R b - - 2 17", Black, true)
+	kingInCheckTest(t, "3k4/p2Q4/4Br2/1p6/8/3PK3/PPP5/R7 b - - 5 33", Black, true)
+	kingInCheckTest(t, "4R3/5ppk/7p/2BQ4/8/5P2/r5qP/7K w - - 0 29", White, true)
 }
 
 func numberOfCheckersTest(t *testing.T, position Position, color Color, expectedCheckers int) {
