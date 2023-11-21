@@ -99,35 +99,86 @@ func makeMoveTest(t *testing.T, position *Position, move string, fen string) {
 }
 
 func TestMakeUciMove(t *testing.T) {
-	position, err := NewPosition(StartingFen)
-	if err != nil {
-		t.Fatalf("%s: fen %s returned error: %s", t.Name(), StartingFen, err)
+	tests := []struct {
+		Move        string
+		StartingFen string
+		ExpectedFen string
+	}{
+		{
+			Move:        "e2e4",
+			StartingFen: StartingFen,
+			ExpectedFen: "rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq - 0 1",
+		},
+		{
+			Move:        "e7e5",
+			StartingFen: "rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq - 0 1",
+			ExpectedFen: "rnbqkbnr/pppp1ppp/8/4p3/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 0 2",
+		},
+		{
+			Move:        "e5f6",
+			StartingFen: "rnbqkbnr/ppp1p1pp/8/3pPp2/8/8/PPPP1PPP/RNBQKBNR w KQkq f6 0 3",
+			ExpectedFen: "rnbqkbnr/ppp1p1pp/5P2/3p4/8/8/PPPP1PPP/RNBQKBNR b KQkq - 0 3",
+		},
+		{
+			Move:        "e1g1",
+			StartingFen: "rnbqk2r/pppp1ppp/5n2/2b1p3/2B1P3/5N2/PPPP1PPP/RNBQK2R w KQkq - 4 4",
+			ExpectedFen: "rnbqk2r/pppp1ppp/5n2/2b1p3/2B1P3/5N2/PPPP1PPP/RNBQ1RK1 b kq - 5 4",
+		},
+		{
+			Move:        "e8g8",
+			StartingFen: "rnbqk2r/pppp1ppp/5n2/2b1p3/2B1P3/5N2/PPPP1PPP/RNBQ1RK1 b kq - 5 4",
+			ExpectedFen: "rnbq1rk1/pppp1ppp/5n2/2b1p3/2B1P3/5N2/PPPP1PPP/RNBQ1RK1 w - - 6 5",
+		},
+		{
+			Move:        "e1c1",
+			StartingFen: "r3kbnr/ppp1pppp/2nq4/3p1b2/3P1B2/2NQ4/PPP1PPPP/R3KBNR w KQkq - 6 5",
+			ExpectedFen: "r3kbnr/ppp1pppp/2nq4/3p1b2/3P1B2/2NQ4/PPP1PPPP/2KR1BNR b kq - 7 5",
+		},
+		{
+			Move:        "e8c8",
+			StartingFen: "r3kbnr/ppp1pppp/2nq4/3p1b2/3P1B2/2NQ4/PPP1PPPP/2KR1BNR b kq - 7 5",
+			ExpectedFen: "2kr1bnr/ppp1pppp/2nq4/3p1b2/3P1B2/2NQ4/PPP1PPPP/2KR1BNR w - - 8 6",
+		},
+		{
+			Move:        "e4d5",
+			StartingFen: "rnbqkbnr/ppp1pppp/8/3p4/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 0 2",
+			ExpectedFen: "rnbqkbnr/ppp1pppp/8/3P4/8/8/PPPP1PPP/RNBQKBNR b KQkq - 0 2",
+		},
+		{
+			Move:        "c6d4",
+			StartingFen: "r1bqkbnr/pppppppp/2n5/8/3P1B2/8/PPP1PPPP/RN1QKBNR b KQkq - 2 2",
+			ExpectedFen: "r1bqkbnr/pppppppp/8/8/3n1B2/8/PPP1PPPP/RN1QKBNR w KQkq - 0 3",
+		},
+		{
+			Move:        "h7g8q",
+			StartingFen: "rnbqkbnr/ppp1p2P/8/8/3p4/8/PPPP1PPP/RNBQKBNR w KQkq - 0 5",
+			ExpectedFen: "rnbqkbQr/ppp1p3/8/8/3p4/8/PPPP1PPP/RNBQKBNR b KQkq - 0 5",
+		},
+		{
+			Move:        "h7g8r",
+			StartingFen: "rnbqkbnr/ppp1p2P/8/8/3p4/8/PPPP1PPP/RNBQKBNR w KQkq - 0 5",
+			ExpectedFen: "rnbqkbRr/ppp1p3/8/8/3p4/8/PPPP1PPP/RNBQKBNR b KQkq - 0 5",
+		},
+		{
+			Move:        "h7g8n",
+			StartingFen: "rnbqkbnr/ppp1p2P/8/8/3p4/8/PPPP1PPP/RNBQKBNR w KQkq - 0 5",
+			ExpectedFen: "rnbqkbNr/ppp1p3/8/8/3p4/8/PPPP1PPP/RNBQKBNR b KQkq - 0 5",
+		},
+		{
+			Move:        "h7g8b",
+			StartingFen: "rnbqkbnr/ppp1p2P/8/8/3p4/8/PPPP1PPP/RNBQKBNR w KQkq - 0 5",
+			ExpectedFen: "rnbqkbBr/ppp1p3/8/8/3p4/8/PPPP1PPP/RNBQKBNR b KQkq - 0 5",
+		},
 	}
 
-	makeMoveTest(
-		t,
-		&position,
-		"e2e4",
-		"rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq - 0 1",
-	)
-	makeMoveTest(
-		t,
-		&position,
-		"e7e5",
-		"rnbqkbnr/pppp1ppp/8/4p3/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 0 2",
-	)
-	makeMoveTest(
-		t,
-		&position,
-		"f1c4",
-		"rnbqkbnr/pppp1ppp/8/4p3/2B1P3/8/PPPP1PPP/RNBQK1NR b KQkq - 1 2",
-	)
-	makeMoveTest(
-		t,
-		&position,
-		"f8c5",
-		"rnbqk1nr/pppp1ppp/8/2b1p3/2B1P3/8/PPPP1PPP/RNBQK1NR w KQkq - 2 3",
-	)
+	for _, test := range tests {
+		position, err := NewPosition(test.StartingFen)
+		if err != nil {
+			t.Fatalf("%s: fen %s returned error: %s", t.Name(), test.StartingFen, err)
+		}
+
+		makeMoveTest(t, &position, test.Move, test.ExpectedFen)
+	}
 }
 
 func TestGetKingSquare(t *testing.T) {
