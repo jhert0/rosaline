@@ -87,3 +87,29 @@ func TestSurroundingSquares(t *testing.T) {
 	surroundingSquareTest(t, A1, []Square{A2, B2, B1})
 	surroundingSquareTest(t, C5, []Square{C4, D4, D5, D6, C6, B6, B5, B4})
 }
+
+func fileDistanceTest(t *testing.T, sq1, sq2 Square, expectedDistance int) {
+	distance := FileDistance(sq1, sq2)
+	if distance != expectedDistance {
+		t.Fatalf("%s: expected file distance betwen %s and %s to be '%d' got '%d'", t.Name(), sq1, sq1, expectedDistance, distance)
+	}
+}
+
+func TestFileDistance(t *testing.T) {
+	fileDistanceTest(t, A1, A2, 0)
+	fileDistanceTest(t, A1, B2, 1)
+	fileDistanceTest(t, C3, G8, 4)
+}
+
+func rankDistanceTest(t *testing.T, sq1, sq2 Square, expectedDistance int) {
+	distance := RankDistance(sq1, sq2)
+	if distance != expectedDistance {
+		t.Fatalf("%s: expected rank distance between %s and %s to be '%d' got '%d'", t.Name(), sq1, sq2, expectedDistance, distance)
+	}
+}
+
+func TestRankDistance(t *testing.T) {
+	rankDistanceTest(t, B3, C3, 0)
+	rankDistanceTest(t, A1, A2, 1)
+	rankDistanceTest(t, A1, A8, 7)
+}
