@@ -691,8 +691,8 @@ func (p *Position) MakeMove(move Move) error {
 			p.setPiece(F1, rook)
 			break
 		case C8:
-			rook, _ := p.GetPieceAt(C8)
-			p.clearPiece(C8, rook)
+			rook, _ := p.GetPieceAt(A8)
+			p.clearPiece(A8, rook)
 			p.setPiece(D8, rook)
 			break
 		case G8:
