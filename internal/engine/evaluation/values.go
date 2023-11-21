@@ -5,8 +5,8 @@ import (
 	"rosaline/internal/chess"
 )
 
-// pieceValue returns the value of a piece in centipawns.
-func pieceValue(piece chess.Piece) int {
+// PieceValue returns the value of a piece in centipawns.
+func PieceValue(piece chess.Piece) int {
 	switch piece.Type() {
 	case chess.Pawn:
 		return 100
