@@ -186,7 +186,11 @@ func NewPosition(fen string) (Position, error) {
 		return Position{}, fmt.Errorf("%w: invalid value '%s' for full moves", ErrInvalidFen, fenParts[5])
 	}
 
-	position.plies = fullMoves * 2
+	position.plies = (fullMoves - 1) * 2
+	if position.turn == Black {
+		position.plies++
+	}
+
 	position.lastIrreversibleMovePly = position.plies
 
 	position.hash = generateHash(position)
@@ -371,7 +375,7 @@ func (p Position) Plies() int {
 
 // FullMoves returns the number of full moves that have been made.
 func (p Position) FullMoves() int {
-	return p.plies / 2
+	return (p.plies / 2) + 1
 }
 
 func (p Position) EnPassant() Square {
