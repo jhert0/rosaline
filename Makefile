@@ -14,3 +14,6 @@ test-all: test perft-test
 
 clean:
 	rm -rf bin
+
+coverage:
+	go test -cover ./internal/chess
