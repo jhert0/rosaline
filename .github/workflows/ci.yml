@@ -1,0 +1,30 @@
+name: CI
+
+on:
+  push:
+    branches:
+      master
+  pull_request:
+    branches:
+      master
+
+# Cancel old PR builds when pushing new commits.
+concurrency:
+  group: build-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: '1.21.x'
+      - name: Install make
+        run: sudo apt-get -y install make
+      - name: Build
+        run: make
+      - name: Run Tests
+        run: make test
