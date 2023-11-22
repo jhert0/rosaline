@@ -3,7 +3,7 @@ package search
 import (
 	"math"
 	"rosaline/internal/chess"
-	"rosaline/internal/engine/evaluation"
+	"rosaline/internal/evaluation"
 )
 
 const (

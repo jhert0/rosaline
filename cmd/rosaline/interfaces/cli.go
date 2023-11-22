@@ -5,28 +5,34 @@ import (
 	"fmt"
 	"os"
 	"rosaline/internal/chess"
-	"rosaline/internal/engine"
+	"rosaline/internal/evaluation"
 	"rosaline/internal/perft"
+	"rosaline/internal/search"
 	"rosaline/internal/utils"
 	"strconv"
 	"strings"
 )
 
 type cliInterface struct {
+	searcher  search.NegamaxSearcher
+	evaluator evaluation.Evaluator
 }
 
 func NewCliProtocolHandler() cliInterface {
-	return cliInterface{}
+	evaluator := evaluation.NewEvaluator()
+	return cliInterface{
+		searcher:  search.NewNegamaxSearcher(evaluator),
+		evaluator: evaluator,
+	}
 }
 
 func (i cliInterface) Loop() {
 	scanner := bufio.NewScanner(os.Stdin)
 
-	engine := engine.NewEngine()
-	engine.NewGame(chess.StartingFen)
+	position, _ := chess.NewPosition(chess.StartingFen)
 
 	for {
-		fmt.Print(engine.Game.Position.Turn())
+		fmt.Print(position.Turn())
 		fmt.Print("> ")
 
 		scanner.Scan()
@@ -35,7 +41,7 @@ func (i cliInterface) Loop() {
 		if cmd == "quit" {
 			break
 		} else if cmd == "display" {
-			engine.Game.Position.Print()
+			position.Print()
 		} else if cmd == "perft" {
 			depth := 1
 			if len(args) > 0 {
@@ -47,9 +53,9 @@ func (i cliInterface) Loop() {
 				}
 			}
 
-			perft.Perft(engine.Game.Position, depth, true)
+			perft.Perft(position, depth, true)
 		} else if cmd == "moves" {
-			moves := engine.Game.Position.GenerateMoves(chess.LegalMoveGeneration)
+			moves := position.GenerateMoves(chess.LegalMoveGeneration)
 			for _, move := range moves {
 				fmt.Println(move)
 			}
@@ -59,14 +65,14 @@ func (i cliInterface) Loop() {
 				continue
 			}
 
-			err := engine.Game.MakeUciMove(args[0])
+			err := position.MakeUciMove(args[0])
 			if err != nil {
 				fmt.Println(err)
 			}
 		} else if cmd == "undo" {
-			engine.Game.Position.Undo()
+			position.Undo()
 		} else if cmd == "go" {
-			depth := engine.DefaultDepth
+			depth := DefaultDepth
 			if len(args) >= 1 {
 				var err error
 				depth, err = strconv.Atoi(args[0])
@@ -76,17 +82,18 @@ func (i cliInterface) Loop() {
 				}
 			}
 
-			move := engine.Search(depth)
+			move := i.searcher.Search(position, depth)
 			fmt.Println("best move:", move)
 			fmt.Println("score:", move.Score)
 		} else if cmd == "evaluate" {
-			score := engine.Evaluate()
+			score := i.evaluator.Evaluate(position)
 			fmt.Println("score:", score)
 		} else if cmd == "play" {
-			move := engine.PlayBestMove()
+			move := i.searcher.Search(position, DefaultDepth)
+			position.MakeMove(move.Move)
 			fmt.Println("played:", move.Move)
 		} else if cmd == "fen" {
-			fmt.Println(engine.Game.Position.Fen())
+			fmt.Println(position.Fen())
 		} else if cmd == "setfen" {
 			if len(args) < 1 {
 				fmt.Println("setfen requires a fen as an argument")
@@ -98,10 +105,14 @@ func (i cliInterface) Loop() {
 				fen = chess.StartingFen
 			}
 
-			err := engine.NewGame(fen)
+			p, err := chess.NewPosition(fen)
 			if err != nil {
 				fmt.Println(err)
+				continue
 			}
+
+			i.searcher.Reset()
+			position = p
 		} else if cmd == "help" {
 			fmt.Println("display                      displays the current position")
 			fmt.Println("fen                          displays the current positions fen")

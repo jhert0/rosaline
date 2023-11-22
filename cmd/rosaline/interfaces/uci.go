@@ -5,21 +5,28 @@ import (
 	"fmt"
 	"os"
 	"rosaline/internal/chess"
-	"rosaline/internal/engine"
+	"rosaline/internal/evaluation"
+	"rosaline/internal/search"
 	"rosaline/internal/utils"
 )
 
 type uciInterface struct {
+	searcher  search.NegamaxSearcher
+	evaluator evaluation.Evaluator
 }
 
 func NewUciProtocolHandler() uciInterface {
-	return uciInterface{}
+	evaluator := evaluation.NewEvaluator()
+	return uciInterface{
+		searcher:  search.NewNegamaxSearcher(evaluator),
+		evaluator: evaluator,
+	}
 }
 
 func (i uciInterface) Loop() {
-	engine := engine.NewEngine()
-
 	scanner := bufio.NewScanner(os.Stdin)
+
+	position, _ := chess.NewPosition(chess.StartingFen)
 
 loop:
 	for {
@@ -36,14 +43,16 @@ loop:
 			fmt.Println("readyok")
 			break
 		case "ucinewgame":
-			engine.NewGame(chess.StartingFen)
+			i.searcher.Reset()
+			position, _ = chess.NewPosition(chess.StartingFen)
 			break
 		case "position":
 			lastMove := args[len(args)-1]
-			engine.Game.MakeUciMove(lastMove)
+			position.MakeUciMove(lastMove)
 			break
 		case "go":
-			move := engine.PlayBestMove()
+			move := i.searcher.Search(position, DefaultDepth)
+			position.MakeMove(move.Move)
 			fmt.Println("bestmove", move)
 			break
 		case "quit":
