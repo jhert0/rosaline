@@ -46,10 +46,6 @@ func (s NegamaxSearcher) Search(position chess.Position, depth int) ScoredMove {
 }
 
 func (s *NegamaxSearcher) doSearch(position chess.Position, alpha int, beta int, depth int, ply int) int {
-	if depth == 0 {
-		return s.evaluator.AbsoluteEvaluation(position)
-	}
-
 	if s.drawTable.IsRepeat(position.Hash()) {
 		return evaluation.DrawScore
 	}
@@ -65,6 +61,10 @@ func (s *NegamaxSearcher) doSearch(position chess.Position, alpha int, beta int,
 		} else {
 			return evaluation.DrawScore
 		}
+	}
+
+	if depth == 0 {
+		return s.evaluator.AbsoluteEvaluation(position)
 	}
 
 	for _, move := range moves {
