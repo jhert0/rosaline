@@ -17,3 +17,6 @@ clean:
 
 coverage:
 	go test -cover ./internal/chess
+
+benchmark:
+	go test ./... -bench=. -run NONE

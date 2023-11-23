@@ -351,3 +351,14 @@ func TestIsStalemate(t *testing.T) {
 	isStalemateTest(t, StartingFen, White, false)
 	isStalemateTest(t, StartingFen, Black, false)
 }
+
+// Benchmarks
+
+func BenchmarkMakeUciMove(b *testing.B) {
+	position, _ := NewPosition(StartingFen)
+
+	for i := 0; i < b.N; i++ {
+		position.MakeUciMove("d2d4")
+		position.Undo()
+	}
+}
