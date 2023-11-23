@@ -13,7 +13,7 @@ const (
 // Bonuses
 
 const (
-	doubleBishopBonus = 20
+	doubleBishopBonus = 30
 	semiOpenFileBonus = 10
 	openFileBonus     = semiOpenFileBonus * 2
 )
