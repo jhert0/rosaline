@@ -61,6 +61,7 @@ loop:
 			i.searcher.Stop()
 			break
 		case "quit":
+			i.searcher.Stop()
 			break loop
 		}
 	}
