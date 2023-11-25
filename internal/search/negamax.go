@@ -54,10 +54,10 @@ func (s NegamaxSearcher) Search(position chess.Position, depth int) SearchResult
 
 	start := time.Now()
 
-	moves := position.GenerateMoves(chess.LegalMoveGeneration)
 	bestMove := chess.Move{}
 	bestScore := math.MinInt + 1
 
+	moves := position.GenerateMoves(chess.LegalMoveGeneration)
 	for _, move := range moves {
 		position.MakeMove(move)
 		score := -s.doSearch(position, initialAlpha, initialBeta, depth-1, 0, 0)
@@ -124,7 +124,11 @@ func (s *NegamaxSearcher) doSearch(position chess.Position, alpha int, beta int,
 	}
 
 	if depth == 0 {
-		return s.evaluator.AbsoluteEvaluation(position)
+		if inCheck { // don't go in quiescence search when in check
+			return s.evaluator.AbsoluteEvaluation(position)
+		} else {
+			return s.quiescence(position, alpha, beta)
+		}
 	}
 
 	s.nodes++
@@ -162,6 +166,34 @@ func (s *NegamaxSearcher) doSearch(position chess.Position, alpha int, beta int,
 				}
 			}
 
+			return beta
+		}
+
+		if score > alpha {
+			alpha = score
+		}
+	}
+
+	return alpha
+}
+
+func (s NegamaxSearcher) quiescence(position chess.Position, alpha int, beta int) int {
+	evaluation := s.evaluator.AbsoluteEvaluation(position)
+	if evaluation >= beta {
+		return beta
+	}
+
+	if alpha < evaluation {
+		alpha = evaluation
+	}
+
+	captures := position.GenerateMoves(chess.CaptureMoveGeneration)
+	for _, capture := range captures {
+		position.MakeMove(capture)
+		score := -s.quiescence(position, -beta, -alpha)
+		position.Undo()
+
+		if score >= beta {
 			return beta
 		}
 
