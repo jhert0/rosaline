@@ -6,6 +6,7 @@ import (
 	"rosaline/internal/chess"
 	"rosaline/internal/evaluation"
 	"slices"
+	"time"
 )
 
 const (
@@ -20,6 +21,8 @@ type SearchResults struct {
 	Score    int
 	Depth    int
 	Nodes    int
+	Time     time.Duration
+	NPS      int
 }
 
 type NegamaxSearcher struct {
@@ -30,6 +33,7 @@ type NegamaxSearcher struct {
 	killerMoveIndex int
 
 	nodes int
+	nps   int
 }
 
 func NewNegamaxSearcher(evaluator evaluation.Evaluator) NegamaxSearcher {
@@ -44,6 +48,8 @@ func NewNegamaxSearcher(evaluator evaluation.Evaluator) NegamaxSearcher {
 
 func (s NegamaxSearcher) Search(position chess.Position, depth int) SearchResults {
 	s.nodes = 0
+
+	start := time.Now()
 
 	moves := position.GenerateMoves(chess.LegalMoveGeneration)
 	bestMove := chess.Move{}
@@ -60,11 +66,16 @@ func (s NegamaxSearcher) Search(position chess.Position, depth int) SearchResult
 		}
 	}
 
+	elapsed := time.Since(start)
+	s.nps = int(int64(s.nodes) / elapsed.Milliseconds())
+
 	return SearchResults{
 		BestMove: bestMove,
 		Score:    bestScore,
 		Depth:    depth,
 		Nodes:    s.nodes,
+		Time:     elapsed,
+		NPS:      s.nps,
 	}
 }
 
