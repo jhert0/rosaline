@@ -85,6 +85,7 @@ func (i cliInterface) Loop() {
 			results := i.searcher.Search(position, depth)
 			fmt.Println("best move:", results.BestMove)
 			fmt.Println("score:", results.Score)
+			fmt.Println("elapsed:", results.Time.Seconds())
 		} else if cmd == "evaluate" {
 			score := i.evaluator.Evaluate(position)
 			fmt.Println("score:", score)
