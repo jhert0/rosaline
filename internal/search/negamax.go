@@ -33,9 +33,13 @@ func NewNegamaxSearcher(evaluator evaluation.Evaluator) NegamaxSearcher {
 }
 
 func (s NegamaxSearcher) Search(position chess.Position, depth int) ScoredMove {
-	moves := position.GenerateMoves(chess.LegalMoveGeneration)
 	bestMove := ScoredMove{}
 	bestScore := math.MinInt + 1
+
+	moves := position.GenerateMoves(chess.LegalMoveGeneration)
+	slices.SortFunc(moves, func(m1, m2 chess.Move) int {
+		return cmp.Compare(s.scoreMove(position, m1), s.scoreMove(position, m2))
+	})
 
 	for _, move := range moves {
 		position.MakeMove(move)
