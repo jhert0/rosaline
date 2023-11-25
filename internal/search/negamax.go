@@ -15,12 +15,21 @@ const (
 	maxNumberKillerMoves = 128
 )
 
+type SearchResults struct {
+	BestMove chess.Move
+	Score    int
+	Depth    int
+	Nodes    int
+}
+
 type NegamaxSearcher struct {
 	evaluator evaluation.Evaluator
 	drawTable drawTable
 
 	killerMoves     map[chess.Color][]chess.Move
 	killerMoveIndex int
+
+	nodes int
 }
 
 func NewNegamaxSearcher(evaluator evaluation.Evaluator) NegamaxSearcher {
@@ -29,29 +38,34 @@ func NewNegamaxSearcher(evaluator evaluation.Evaluator) NegamaxSearcher {
 		drawTable:       newDrawTable(),
 		killerMoves:     make(map[chess.Color][]chess.Move),
 		killerMoveIndex: 0,
+		nodes:           0,
 	}
 }
 
-func (s NegamaxSearcher) Search(position chess.Position, depth int) ScoredMove {
+func (s NegamaxSearcher) Search(position chess.Position, depth int) SearchResults {
+	s.nodes = 0
+
 	moves := position.GenerateMoves(chess.LegalMoveGeneration)
-	bestMove := ScoredMove{}
+	bestMove := chess.Move{}
 	bestScore := math.MinInt + 1
 
 	for _, move := range moves {
 		position.MakeMove(move)
-
 		score := -s.doSearch(position, initialAlpha, initialBeta, depth-1, 0, 0)
-		scoredMove := NewScoredMove(move, score)
+		position.Undo()
 
 		if score > bestScore {
 			bestScore = score
-			bestMove = scoredMove
+			bestMove = move
 		}
-
-		position.Undo()
 	}
 
-	return bestMove
+	return SearchResults{
+		BestMove: bestMove,
+		Score:    bestScore,
+		Depth:    depth,
+		Nodes:    s.nodes,
+	}
 }
 
 func (s NegamaxSearcher) scoreMove(position chess.Position, move chess.Move) int {
@@ -90,6 +104,8 @@ func (s *NegamaxSearcher) doSearch(position chess.Position, alpha int, beta int,
 	if depth == 0 {
 		return s.evaluator.AbsoluteEvaluation(position)
 	}
+
+	s.nodes++
 
 	slices.SortFunc(moves, func(m1, m2 chess.Move) int {
 		return cmp.Compare(s.scoreMove(position, m1), s.scoreMove(position, m2))
