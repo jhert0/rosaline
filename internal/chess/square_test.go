@@ -113,3 +113,24 @@ func TestRankDistance(t *testing.T) {
 	rankDistanceTest(t, A1, A2, 1)
 	rankDistanceTest(t, A1, A8, 7)
 }
+
+func colorTest(t *testing.T, square Square, expectedColor Color) {
+	color := square.Color()
+	if color != expectedColor {
+		t.Fatalf("%s: expected square color for %s to be '%s' got '%s'", t.Name(), square, expectedColor, color)
+	}
+}
+
+func TestColor(t *testing.T) {
+	colorTest(t, A1, Black)
+	colorTest(t, H8, Black)
+	colorTest(t, D6, Black)
+	colorTest(t, C7, Black)
+	colorTest(t, A7, Black)
+
+	colorTest(t, A2, White)
+	colorTest(t, E4, White)
+	colorTest(t, A8, White)
+	colorTest(t, D7, White)
+	colorTest(t, H1, White)
+}

@@ -237,6 +237,18 @@ func (s Square) ToAlgebraic() string {
 	return strings.Join(algebraic[:], "")
 }
 
+// Color returns the color of the square.
+func (s Square) Color() Color {
+	rank := s.Rank()
+	file := s.File()
+
+	if (file%2 == 0 && rank%2 == 0) || (file%2 == 1 && rank%2 == 1) {
+		return Black
+	}
+
+	return White
+}
+
 func (s Square) String() string {
 	return s.ToAlgebraic()
 }
