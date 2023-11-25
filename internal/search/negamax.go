@@ -139,4 +139,5 @@ func (s *NegamaxSearcher) doSearch(position chess.Position, alpha int, beta int,
 func (s *NegamaxSearcher) Reset() {
 	s.drawTable.Clear()
 	clear(s.killerMoves)
+	s.killerMoveIndex = 0
 }
