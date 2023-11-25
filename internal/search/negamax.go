@@ -12,7 +12,7 @@ const (
 	initialAlpha = math.MinInt + 1
 	initialBeta  = math.MaxInt - 1
 
-	maxNumberKillerMoves = 1024
+	maxNumberKillerMoves = 128
 )
 
 type NegamaxSearcher struct {
