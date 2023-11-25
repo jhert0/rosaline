@@ -32,6 +32,8 @@ type NegamaxSearcher struct {
 	killerMoves     map[chess.Color][]chess.Move
 	killerMoveIndex int
 
+	stop bool
+
 	nodes int
 	nps   int
 }
@@ -48,6 +50,7 @@ func NewNegamaxSearcher(evaluator evaluation.Evaluator) NegamaxSearcher {
 
 func (s NegamaxSearcher) Search(position chess.Position, depth int) SearchResults {
 	s.nodes = 0
+	s.stop = false
 
 	start := time.Now()
 
@@ -63,6 +66,10 @@ func (s NegamaxSearcher) Search(position chess.Position, depth int) SearchResult
 		if score > bestScore {
 			bestScore = score
 			bestMove = move
+		}
+
+		if s.stop {
+			break
 		}
 	}
 
@@ -89,6 +96,10 @@ func (s NegamaxSearcher) scoreMove(position chess.Position, move chess.Move) int
 }
 
 func (s *NegamaxSearcher) doSearch(position chess.Position, alpha int, beta int, depth int, ply int, extensions int) int {
+	if s.stop {
+		return 0
+	}
+
 	if s.drawTable.IsRepeat(position.Hash()) {
 		return evaluation.DrawScore
 	}
@@ -160,6 +171,10 @@ func (s *NegamaxSearcher) doSearch(position chess.Position, alpha int, beta int,
 	}
 
 	return alpha
+}
+
+func (s *NegamaxSearcher) Stop() {
+	s.stop = true
 }
 
 // Reset clears any information about searched positions.

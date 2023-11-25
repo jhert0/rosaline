@@ -51,9 +51,14 @@ loop:
 			position.MakeUciMove(lastMove)
 			break
 		case "go":
-			results := i.searcher.Search(position, DefaultDepth)
-			position.MakeMove(results.BestMove)
-			fmt.Println("bestmove", results.BestMove)
+			go func() {
+				results := i.searcher.Search(position, DefaultDepth)
+				position.MakeMove(results.BestMove)
+				fmt.Println("bestmove", results.BestMove)
+			}()
+			break
+		case "stop":
+			i.searcher.Stop()
 			break
 		case "quit":
 			break loop
