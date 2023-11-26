@@ -224,6 +224,10 @@ func (s *NegamaxSearcher) Stop() {
 	s.stop = true
 }
 
+func (s NegamaxSearcher) Stopped() bool {
+	return s.stop
+}
+
 // Reset clears any information about searched positions.
 func (s *NegamaxSearcher) Reset() {
 	s.drawTable.Clear()
