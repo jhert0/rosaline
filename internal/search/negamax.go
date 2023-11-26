@@ -140,7 +140,7 @@ func (s *NegamaxSearcher) doSearch(position chess.Position, alpha int, beta int,
 		s.drawTable.Push(position.Hash())
 
 		position.MakeNullMove()
-		score := s.doSearch(position, -beta, -alpha, depth-2, ply+1, extensions)
+		score := -s.doSearch(position, -beta, -alpha, depth-3, ply+1, extensions)
 		position.Undo()
 
 		s.drawTable.Pop()
