@@ -834,9 +834,7 @@ func (p *Position) MakeNullMove() {
 
 // updateAttackers updates the BitBoard that keeps track of attackers.
 func (p *Position) updateAttackers() {
-	for i := 0; i < len(p.attackersBB); i++ {
-		p.attackersBB[i] = BitBoard(0)
-	}
+	p.attackersBB = [64]BitBoard{}
 
 	ourAttacks := getAttackers(*p, p.turn)
 	theirAttacks := getAttackers(*p, p.turn.OpposingSide())
