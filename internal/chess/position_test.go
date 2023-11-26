@@ -362,3 +362,44 @@ func BenchmarkMakeUciMove(b *testing.B) {
 		position.Undo()
 	}
 }
+
+func isKingInCheckBenchmark(b *testing.B, fen string, color Color) {
+	position, _ := NewPosition(fen)
+	for i := 0; i < b.N; i++ {
+		position.IsKingInCheck(color)
+	}
+}
+
+func BenchmarkIsKingInCheck(b *testing.B) {
+	cases := []struct {
+		Name    string
+		Fen     string
+		InCheck bool
+		Color   Color
+	}{
+		{
+			Name:    "NotInCheck",
+			Fen:     StartingFen,
+			InCheck: false,
+			Color:   White,
+		},
+		{
+			Name:    "InCheck",
+			Fen:     "rn2kbnr/ppp2ppp/3pb3/4p3/2B1q3/BPN5/P1PP1PPP/R2QK1NR w KQkq - 0 6",
+			InCheck: true,
+			Color:   White,
+		},
+		{
+			Name:    "DoubleCheck",
+			Fen:     "rnbk1b1r/pp3ppp/2p5/4q1B1/4n3/8/PPP2PPP/2KR1BNR b - - 1 10",
+			InCheck: true,
+			Color:   Black,
+		},
+	}
+
+	for _, c := range cases {
+		b.Run(c.Name, func(b *testing.B) {
+			isKingInCheckBenchmark(b, c.Fen, c.Color)
+		})
+	}
+}
