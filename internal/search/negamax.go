@@ -57,6 +57,11 @@ func (s NegamaxSearcher) Search(position chess.Position, depth int) SearchResult
 	bestScore := math.MinInt + 1
 
 	moves := position.GenerateMoves(chess.LegalMoveGeneration)
+
+	slices.SortFunc(moves, func(m1, m2 chess.Move) int {
+		return cmp.Compare(s.scoreMove(position, m1), s.scoreMove(position, m2))
+	})
+
 	for _, move := range moves {
 		position.MakeMove(move)
 		score := -s.doSearch(position, initialAlpha, initialBeta, depth-1, 0, 0)
@@ -227,9 +232,13 @@ func (s NegamaxSearcher) Stopped() bool {
 	return s.stop
 }
 
+func (s *NegamaxSearcher) ClearPreviousSearch() {
+	clear(s.killerMoves)
+	s.killerMoveIndex = 0
+}
+
 // Reset clears any information about searched positions.
 func (s *NegamaxSearcher) Reset() {
 	s.drawTable.Clear()
-	clear(s.killerMoves)
-	s.killerMoveIndex = 0
+	s.ClearPreviousSearch()
 }

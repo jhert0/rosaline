@@ -73,6 +73,8 @@ loop:
 
 				position.MakeMove(bestMove)
 				fmt.Println("bestmove", bestMove)
+
+				i.searcher.ClearPreviousSearch()
 			}()
 			break
 		case "stop":
