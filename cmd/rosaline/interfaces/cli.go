@@ -57,8 +57,9 @@ func (i cliInterface) Loop() {
 		} else if cmd == "moves" {
 			moves := position.GenerateMoves(chess.LegalMoveGeneration)
 			for _, move := range moves {
-				fmt.Println(move)
+				fmt.Printf("%s ", move)
 			}
+			fmt.Println()
 		} else if cmd == "move" {
 			if len(args) < 1 {
 				fmt.Println("move requires a uci formated move as an argument")
