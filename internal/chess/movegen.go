@@ -110,7 +110,7 @@ func generateKnightMoves(position Position, genType MoveGenerationType) []Move {
 			toSquare := Square(capturesBB.PopLsb())
 			piece, _ := position.GetPieceAt(toSquare)
 
-			move := NewMove(fromSquare, toSquare, NormalMove, QuietMoveFlag)
+			move := NewMove(fromSquare, toSquare, NormalMove, NoMoveFlag)
 			move.WithCapture(piece)
 
 			moves = append(moves, move)
@@ -145,7 +145,7 @@ func generateBishopMoves(position Position, pieceBB BitBoard, genType MoveGenera
 			toSquare := Square(capturesBB.PopLsb())
 			piece, _ := position.GetPieceAt(toSquare)
 
-			move := NewMove(fromSquare, toSquare, NormalMove, QuietMoveFlag)
+			move := NewMove(fromSquare, toSquare, NormalMove, NoMoveFlag)
 			move.WithCapture(piece)
 
 			moves = append(moves, move)
@@ -180,7 +180,7 @@ func generateRookMoves(position Position, pieceBB BitBoard, genType MoveGenerati
 			toSquare := Square(capturesBB.PopLsb())
 			piece, _ := position.GetPieceAt(toSquare)
 
-			move := NewMove(fromSquare, toSquare, NormalMove, QuietMoveFlag)
+			move := NewMove(fromSquare, toSquare, NormalMove, NoMoveFlag)
 			move.WithCapture(piece)
 
 			moves = append(moves, move)
@@ -226,7 +226,7 @@ func generateKingMoves(position Position, genType MoveGenerationType, includeCas
 		toSquare := Square(capturesBB.PopLsb())
 		piece, _ := position.GetPieceAt(toSquare)
 
-		move := NewMove(kingSquare, toSquare, NormalMove, QuietMoveFlag)
+		move := NewMove(kingSquare, toSquare, NormalMove, NoMoveFlag)
 		move.WithCapture(piece)
 
 		moves = append(moves, move)
