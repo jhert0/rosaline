@@ -9,6 +9,26 @@ type Piece uint8
 
 type PieceType uint8
 
+// Character returns the character associated with the piece type.
+func (t PieceType) Character() rune {
+	switch t {
+	case Pawn:
+		return 'p'
+	case Knight:
+		return 'n'
+	case Bishop:
+		return 'b'
+	case Rook:
+		return 'r'
+	case Queen:
+		return 'q'
+	case King:
+		return 'k'
+	}
+
+	panic(fmt.Sprintf("Character: unknown piece type %d", t))
+}
+
 const (
 	None   PieceType = 0x00
 	Pawn   PieceType = 0x10
@@ -40,29 +60,7 @@ func (p Piece) Type() PieceType {
 
 // Character returns the character associated with the piece.
 func (p Piece) Character() rune {
-	var character rune
-
-	switch p.Type() {
-	case Pawn:
-		character = 'p'
-		break
-	case Knight:
-		character = 'n'
-		break
-	case Bishop:
-		character = 'b'
-		break
-	case Rook:
-		character = 'r'
-		break
-	case Queen:
-		character = 'q'
-		break
-	case King:
-		character = 'k'
-		break
-	}
-
+	character := p.Type().Character()
 	if p.Color() == White {
 		return unicode.ToUpper(character)
 	}
