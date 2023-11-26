@@ -23,6 +23,8 @@ type Position struct {
 
 	attackersBB [64]BitBoard // BitBoard for attackers of each square.
 
+	squares [64]Piece // Keeps track of what piece is on each square. Used for faster lookups.
+
 	enPassant               Square         // The square where en passant is posssible.
 	castlingRights          CastlingRights // The current castling rights for both players.
 	lastIrreversibleMovePly int            // The ply at which the last irreversible move happened. An irreversible move is a pawn move or capture.
@@ -59,63 +61,53 @@ func NewPosition(fen string) (Position, error) {
 	position.queenBB = NewBitBoard(0)
 	position.kingBB = NewBitBoard(0)
 
+	position.squares = [64]Piece{}
+
 	rankNumber := 8
 	for _, rank := range ranks {
 		fileNumber := 1
 
 		for _, character := range rank {
-			index := uint64(SquareFromRankFile(rankNumber, fileNumber))
+			index := SquareFromRankFile(rankNumber, fileNumber)
 			fileIncrement := 1
 
 			switch character {
 			case 'p':
-				position.blackBB.SetBit(index)
-				position.pawnBB.SetBit(index)
+				position.setPiece(index, NewPiece(Pawn, Black))
 				break
 			case 'n':
-				position.blackBB.SetBit(index)
-				position.knightBB.SetBit(index)
+				position.setPiece(index, NewPiece(Knight, Black))
 				break
 			case 'b':
-				position.blackBB.SetBit(index)
-				position.bishopBB.SetBit(index)
+				position.setPiece(index, NewPiece(Bishop, Black))
 				break
 			case 'r':
-				position.blackBB.SetBit(index)
-				position.rookBB.SetBit(index)
+				position.setPiece(index, NewPiece(Rook, Black))
 				break
 			case 'q':
-				position.blackBB.SetBit(index)
-				position.queenBB.SetBit(index)
+				position.setPiece(index, NewPiece(Queen, Black))
 				break
 			case 'k':
-				position.blackBB.SetBit(index)
-				position.kingBB.SetBit(index)
+				position.setPiece(index, NewPiece(King, Black))
 				break
 
 			case 'P':
-				position.whiteBB.SetBit(index)
-				position.pawnBB.SetBit(index)
+				position.setPiece(index, NewPiece(Pawn, White))
 				break
 			case 'N':
-				position.whiteBB.SetBit(index)
-				position.knightBB.SetBit(index)
+				position.setPiece(index, NewPiece(Knight, White))
 				break
 			case 'B':
-				position.whiteBB.SetBit(index)
-				position.bishopBB.SetBit(index)
+				position.setPiece(index, NewPiece(Bishop, White))
 				break
 			case 'R':
-				position.whiteBB.SetBit(index)
-				position.rookBB.SetBit(index)
+				position.setPiece(index, NewPiece(Rook, White))
 				break
 			case 'Q':
-				position.whiteBB.SetBit(index)
-				position.queenBB.SetBit(index)
+				position.setPiece(index, NewPiece(Queen, White))
 				break
 			case 'K':
-				position.whiteBB.SetBit(index)
-				position.kingBB.SetBit(index)
+				position.setPiece(index, NewPiece(King, White))
 				break
 
 			case '1', '2', '3', '4', '5', '6', '7', '8':
@@ -322,34 +314,7 @@ func (p Position) GetPieceAt(square Square) (Piece, error) {
 		return EmptyPiece, errors.New(fmt.Sprintf("no piece exists at: %s", square.ToAlgebraic()))
 	}
 
-	index := uint64(square)
-	color, _ := p.GetPieceColor(square)
-
-	if p.pawnBB.IsBitSet(index) {
-		return NewPiece(Pawn, color), nil
-	}
-
-	if p.knightBB.IsBitSet(index) {
-		return NewPiece(Knight, color), nil
-	}
-
-	if p.bishopBB.IsBitSet(index) {
-		return NewPiece(Bishop, color), nil
-	}
-
-	if p.rookBB.IsBitSet(index) {
-		return NewPiece(Rook, color), nil
-	}
-
-	if p.queenBB.IsBitSet(index) {
-		return NewPiece(Queen, color), nil
-	}
-
-	if p.kingBB.IsBitSet(index) {
-		return NewPiece(King, color), nil
-	}
-
-	panic(fmt.Sprintf("GetPieceAt: expected a piece at %s but one was not found", square))
+	return p.squares[square], nil
 }
 
 // GetKingSquare returns the square of the specified color's King is on.
@@ -514,6 +479,8 @@ func (p *Position) setPiece(square Square, piece Piece) {
 		panic(fmt.Sprintf("trying to set an empty piece on square %s", square))
 	}
 
+	p.squares[square] = piece
+
 	index := uint64(square)
 
 	if piece.Color() == White {
@@ -555,6 +522,8 @@ func (p *Position) clearPiece(square Square) {
 	if piece == EmptyPiece {
 		panic(fmt.Sprintf("trying to clear a square %s with no piece", square))
 	}
+
+	p.squares[square] = EmptyPiece
 
 	index := uint64(square)
 
@@ -962,6 +931,7 @@ func (p Position) Copy() Position {
 		queenBB:                 p.queenBB,
 		kingBB:                  p.kingBB,
 		attackersBB:             p.attackersBB,
+		squares:                 p.squares,
 		enPassant:               p.enPassant,
 		castlingRights:          p.castlingRights,
 		fiftyMoveClock:          p.fiftyMoveClock,
@@ -992,6 +962,7 @@ func (p *Position) Undo() {
 	p.queenBB = p.previous.queenBB
 	p.kingBB = p.previous.kingBB
 	p.attackersBB = p.previous.attackersBB
+	p.squares = p.previous.squares
 	p.enPassant = p.previous.enPassant
 	p.castlingRights = p.previous.castlingRights
 	p.fiftyMoveClock = p.previous.fiftyMoveClock
