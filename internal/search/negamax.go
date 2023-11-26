@@ -131,6 +131,21 @@ func (s *NegamaxSearcher) doSearch(position chess.Position, alpha int, beta int,
 		}
 	}
 
+	// null move pruning
+	if !inCheck && depth >= 3 && ply != 0 {
+		s.drawTable.Push(position.Hash())
+
+		position.MakeNullMove()
+		score := s.doSearch(position, -beta, -alpha, depth-2, ply+1, extensions)
+		position.Undo()
+
+		s.drawTable.Pop()
+
+		if score >= beta {
+			return beta
+		}
+	}
+
 	s.nodes++
 
 	slices.SortFunc(moves, func(m1, m2 chess.Move) int {
