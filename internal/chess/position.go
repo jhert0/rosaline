@@ -961,6 +961,7 @@ func (p Position) Copy() Position {
 		rookBB:                  p.rookBB,
 		queenBB:                 p.queenBB,
 		kingBB:                  p.kingBB,
+		attackersBB:             p.attackersBB,
 		enPassant:               p.enPassant,
 		castlingRights:          p.castlingRights,
 		fiftyMoveClock:          p.fiftyMoveClock,
