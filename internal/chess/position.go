@@ -841,10 +841,6 @@ func (p *Position) updateAttackers() {
 
 	moves := append(ourAttacks, theirAttacks...)
 	for _, move := range moves {
-		if move.HasFlag(PawnPushMoveFlag) { // skip pawn pushes, they aren't attacks
-			continue
-		}
-
 		p.attackersBB[move.To].SetBit(uint64(move.From))
 	}
 }
