@@ -57,7 +57,7 @@ loop:
 				var bestScore int = math.MinInt
 
 				for depth := 1; depth <= 4; depth++ {
-					results := i.searcher.Search(position, depth)
+					results := i.searcher.Search(&position, depth)
 
 					if i.searcher.Stopped() {
 						break

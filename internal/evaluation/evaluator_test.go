@@ -10,7 +10,7 @@ func evaluateBenchmark(b *testing.B, fen string) {
 	evaluator := NewEvaluator()
 
 	for i := 0; i < b.N; i++ {
-		evaluator.Evaluate(position)
+		evaluator.Evaluate(&position)
 	}
 }
 

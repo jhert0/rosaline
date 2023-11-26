@@ -15,7 +15,7 @@ func NewEvaluator() Evaluator {
 //   - The value of it's pieces.
 //   - The location of it's pieces.
 //   - Bonuses/penalties for advantageous/disadvantageous positions.
-func (e Evaluator) evaluateSide(position chess.Position, color chess.Color) int {
+func (e Evaluator) evaluateSide(position *chess.Position, color chess.Color) int {
 	score := 0
 
 	colorBB := position.GetColorBB(color)
@@ -54,7 +54,7 @@ func (e Evaluator) evaluateSide(position chess.Position, color chess.Color) int 
 }
 
 // getSquareScore returns the score for the given piece being on the give square.
-func (e Evaluator) getSquareScore(position chess.Position, piece chess.Piece, square chess.Square) int {
+func (e Evaluator) getSquareScore(position *chess.Position, piece chess.Piece, square chess.Square) int {
 	if position.Phase() == chess.EndgamePhase {
 		scoreBoard, ok := openingScores[piece]
 		if ok {
@@ -76,7 +76,7 @@ func (e Evaluator) getSquareScore(position chess.Position, piece chess.Piece, sq
 //   - positive: if white is winning
 //   - zero: if the position is a draw
 //   - negative: if black is winning
-func (e Evaluator) Evaluate(position chess.Position) int {
+func (e Evaluator) Evaluate(position *chess.Position) int {
 	if position.IsDraw() {
 		return DrawScore
 	}
@@ -100,7 +100,7 @@ func (e Evaluator) Evaluate(position chess.Position) int {
 //   - positive: if the player to move is winning
 //   - zero: if the position is a draw
 //   - negative: if the player to move is losing
-func (e Evaluator) AbsoluteEvaluation(position chess.Position) int {
+func (e Evaluator) AbsoluteEvaluation(position *chess.Position) int {
 	evaluation := e.Evaluate(position)
 	return evaluation * evaluationMultiplier(position.Turn())
 }

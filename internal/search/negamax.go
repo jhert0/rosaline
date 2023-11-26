@@ -47,7 +47,7 @@ func NewNegamaxSearcher(evaluator evaluation.Evaluator) NegamaxSearcher {
 	}
 }
 
-func (s NegamaxSearcher) Search(position chess.Position, depth int) SearchResults {
+func (s NegamaxSearcher) Search(position *chess.Position, depth int) SearchResults {
 	s.nodes = 0
 	s.stop = false
 
@@ -90,7 +90,7 @@ func (s NegamaxSearcher) Search(position chess.Position, depth int) SearchResult
 	}
 }
 
-func (s NegamaxSearcher) scoreMove(position chess.Position, move chess.Move) int {
+func (s NegamaxSearcher) scoreMove(position *chess.Position, move chess.Move) int {
 	turn := position.Turn()
 	if slices.Contains(s.killerMoves[turn], move) {
 		return 1000
@@ -99,7 +99,7 @@ func (s NegamaxSearcher) scoreMove(position chess.Position, move chess.Move) int
 	return 0
 }
 
-func (s *NegamaxSearcher) doSearch(position chess.Position, alpha int, beta int, depth int, ply int, extensions int) int {
+func (s *NegamaxSearcher) doSearch(position *chess.Position, alpha int, beta int, depth int, ply int, extensions int) int {
 	if s.stop {
 		return 0
 	}
@@ -196,7 +196,7 @@ func (s *NegamaxSearcher) doSearch(position chess.Position, alpha int, beta int,
 	return alpha
 }
 
-func (s NegamaxSearcher) quiescence(position chess.Position, alpha int, beta int) int {
+func (s NegamaxSearcher) quiescence(position *chess.Position, alpha int, beta int) int {
 	evaluation := s.evaluator.AbsoluteEvaluation(position)
 	if evaluation >= beta {
 		return beta
