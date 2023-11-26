@@ -25,6 +25,8 @@ type SearchResults struct {
 	Nodes    int
 	Time     time.Duration
 	NPS      float64
+	Hits     int
+	Misses   int
 }
 
 type NegamaxSearcher struct {
@@ -33,6 +35,8 @@ type NegamaxSearcher struct {
 
 	killerMoves     map[chess.Color][]chess.Move
 	killerMoveIndex int
+
+	ttable TranspositionTable
 
 	stop bool
 
@@ -45,6 +49,7 @@ func NewNegamaxSearcher(evaluator evaluation.Evaluator) NegamaxSearcher {
 		drawTable:       newDrawTable(),
 		killerMoves:     make(map[chess.Color][]chess.Move),
 		killerMoveIndex: 0,
+		ttable:          NewTranspositionTable(),
 		nodes:           0,
 	}
 }
@@ -52,6 +57,8 @@ func NewNegamaxSearcher(evaluator evaluation.Evaluator) NegamaxSearcher {
 func (s NegamaxSearcher) Search(position *chess.Position, depth int) SearchResults {
 	s.nodes = 0
 	s.stop = false
+
+	s.ttable.ResetCounters()
 
 	start := time.Now()
 
@@ -89,6 +96,8 @@ func (s NegamaxSearcher) Search(position *chess.Position, depth int) SearchResul
 		Nodes:    s.nodes,
 		Time:     elapsed,
 		NPS:      nps,
+		Hits:     s.ttable.hits,
+		Misses:   s.ttable.misses,
 	}
 }
 
@@ -139,6 +148,30 @@ func (s *NegamaxSearcher) doSearch(position *chess.Position, alpha int, beta int
 		}
 	}
 
+	s.nodes++
+
+	entry, ok := s.ttable.Get(position.Hash())
+	if ok {
+		if entry.Depth >= depth {
+			switch entry.Type {
+			case ExactNode:
+				return entry.Score
+			case UpperNode:
+				if entry.Score < alpha {
+					return alpha
+				}
+
+				break
+			case LowerNode:
+				if entry.Score > beta {
+					return beta
+				}
+
+				break
+			}
+		}
+	}
+
 	// null move pruning
 	doNullPruning := !inCheck && !pvNode
 	if doNullPruning && depth >= 3 && ply != 0 {
@@ -155,11 +188,13 @@ func (s *NegamaxSearcher) doSearch(position *chess.Position, alpha int, beta int
 		}
 	}
 
-	s.nodes++
-
 	slices.SortFunc(moves, func(m1, m2 chess.Move) int {
 		return cmp.Compare(s.scoreMove(position, m1), s.scoreMove(position, m2))
 	})
+
+	bestMove := chess.NullMove
+	bestScore := math.MinInt
+	nodeType := UpperNode
 
 	for _, move := range moves {
 		s.drawTable.Push(position.Hash())
@@ -170,7 +205,14 @@ func (s *NegamaxSearcher) doSearch(position *chess.Position, alpha int, beta int
 
 		s.drawTable.Pop()
 
+		if score > bestScore {
+			bestScore = score
+			bestMove = move
+		}
+
 		if score >= beta {
+			nodeType = LowerNode
+
 			if !move.HasFlag(chess.CaputureMoveFlag) {
 				turn := position.Turn()
 				length := len(s.killerMoves[turn])
@@ -190,15 +232,21 @@ func (s *NegamaxSearcher) doSearch(position *chess.Position, alpha int, beta int
 				}
 			}
 
-			return beta
+			break
 		}
 
 		if score > alpha {
 			alpha = score
+			nodeType = ExactNode
 		}
 	}
 
-	return alpha
+	if !s.stop {
+		entry := NewTableEntry(nodeType, bestMove, bestScore, depth, position.Plies())
+		s.ttable.Insert(position.Hash(), entry)
+	}
+
+	return bestScore
 }
 
 func (s NegamaxSearcher) quiescence(position *chess.Position, alpha int, beta int) int {
@@ -246,4 +294,5 @@ func (s *NegamaxSearcher) ClearPreviousSearch() {
 func (s *NegamaxSearcher) Reset() {
 	s.drawTable.Clear()
 	s.ClearPreviousSearch()
+	s.ttable.Clear()
 }

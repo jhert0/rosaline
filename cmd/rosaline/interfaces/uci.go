@@ -68,7 +68,7 @@ loop:
 						bestScore = results.Score
 					}
 
-					fmt.Printf("info depth %d score cp %d nodes %d nps %f time %d\n", depth, results.Score, results.Nodes, results.NPS, results.Time.Milliseconds())
+					fmt.Printf("info depth %d score cp %d nodes %d nps %f time %d tbhits %d\n", depth, results.Score, results.Nodes, results.NPS, results.Time.Milliseconds(), results.Hits)
 				}
 
 				position.MakeMove(bestMove)
