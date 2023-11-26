@@ -114,6 +114,8 @@ func (i cliInterface) Loop() {
 
 			i.searcher.Reset()
 			position = p
+		} else if cmd == "switch" {
+			position.MakeNullMove()
 		} else if cmd == "help" {
 			fmt.Println("display                      displays the current position")
 			fmt.Println("fen                          displays the current positions fen")
@@ -121,6 +123,7 @@ func (i cliInterface) Loop() {
 			fmt.Println("perft [depth]                runs move generation test code to the specified depth")
 			fmt.Println("moves                        displays the legal moves for the current position")
 			fmt.Println("move [uci]                   make the given uci formatted move")
+			fmt.Println("switch                       passes turn to the opponent")
 			fmt.Println("undo                         undos the last move")
 			fmt.Println("go                           searches for the best move in the current position")
 			fmt.Println("evaluate                     evaluates the current position")
