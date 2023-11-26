@@ -546,11 +546,12 @@ func (p *Position) setPiece(square Square, piece Piece) {
 	}
 }
 
-func (p *Position) clearPiece(square Square, piece Piece) {
+func (p *Position) clearPiece(square Square) {
 	if !square.IsValid() {
 		panic(fmt.Sprintf("invalid square '%d' passed to clearPiece", square))
 	}
 
+	piece, _ := p.GetPieceAt(square)
 	if piece == EmptyPiece {
 		panic(fmt.Sprintf("trying to clear a square %s with no piece", square))
 	}
@@ -647,7 +648,7 @@ func (p *Position) MakeMove(move Move) error {
 		}
 
 		if move.Captures() {
-			p.clearPiece(move.To, capturePiece)
+			p.clearPiece(move.To)
 
 			if capturePiece.Type() == Rook {
 				switch move.To {
@@ -667,11 +668,11 @@ func (p *Position) MakeMove(move Move) error {
 			}
 		}
 
-		p.clearPiece(move.From, movingPiece)
+		p.clearPiece(move.From)
 		p.setPiece(move.To, movingPiece)
 
 		if move.IsPromotion() {
-			p.clearPiece(move.To, movingPiece) // remove the original piece
+			p.clearPiece(move.To) // remove the original piece
 
 			// place the newly promoted piece
 			p.setPiece(move.To, move.PromotionPiece())
@@ -679,29 +680,29 @@ func (p *Position) MakeMove(move Move) error {
 		break
 	case CastleMove:
 		// move the king to it's new square
-		p.clearPiece(move.From, movingPiece)
+		p.clearPiece(move.From)
 		p.setPiece(move.To, movingPiece)
 
 		// move the rook to it's new square
 		switch move.To {
 		case C1:
 			rook, _ := p.GetPieceAt(A1)
-			p.clearPiece(A1, rook)
+			p.clearPiece(A1)
 			p.setPiece(D1, rook)
 			break
 		case G1:
 			rook, _ := p.GetPieceAt(H1)
-			p.clearPiece(H1, rook)
+			p.clearPiece(H1)
 			p.setPiece(F1, rook)
 			break
 		case C8:
 			rook, _ := p.GetPieceAt(A8)
-			p.clearPiece(A8, rook)
+			p.clearPiece(A8)
 			p.setPiece(D8, rook)
 			break
 		case G8:
 			rook, _ := p.GetPieceAt(H8)
-			p.clearPiece(H8, rook)
+			p.clearPiece(H8)
 			p.setPiece(F8, rook)
 			break
 		}
@@ -714,13 +715,12 @@ func (p *Position) MakeMove(move Move) error {
 		break
 	case EnPassantMove:
 		// move the pawn to it's new square
-		p.clearPiece(move.From, movingPiece)
+		p.clearPiece(move.From)
 		p.setPiece(move.To, movingPiece)
 
 		// remove the captured pawn
 		captureSquare := move.To + Square(pawnDirection(p.turn.OpposingSide()))
-		capturedPawn, _ := p.GetPieceAt(captureSquare)
-		p.clearPiece(captureSquare, capturedPawn)
+		p.clearPiece(captureSquare)
 		break
 	}
 
