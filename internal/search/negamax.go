@@ -14,6 +14,8 @@ const (
 	initialBeta  = math.MaxInt - 1
 
 	maxNumberKillerMoves = 128
+
+	nullMovePruningReduction = 2
 )
 
 type SearchResults struct {
@@ -112,6 +114,8 @@ func (s *NegamaxSearcher) doSearch(position *chess.Position, alpha int, beta int
 		return evaluation.DrawScore
 	}
 
+	pvNode := beta-alpha != 1
+
 	inCheck := position.IsKingInCheck(position.Turn())
 	if inCheck && extensions < 2 { // limit the number of depth increases we will do to 2
 		depth++
@@ -136,11 +140,12 @@ func (s *NegamaxSearcher) doSearch(position *chess.Position, alpha int, beta int
 	}
 
 	// null move pruning
-	if !inCheck && depth >= 3 && ply != 0 {
+	doNullPruning := !inCheck && !pvNode
+	if doNullPruning && depth >= 3 && ply != 0 {
 		s.drawTable.Push(position.Hash())
 
 		position.MakeNullMove()
-		score := -s.doSearch(position, -beta, -alpha, depth-3, ply+1, extensions)
+		score := -s.doSearch(position, -beta, -beta+1, depth-1-nullMovePruningReduction, ply+1, extensions)
 		position.Undo()
 
 		s.drawTable.Pop()
