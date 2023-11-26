@@ -22,7 +22,7 @@ type SearchResults struct {
 	Depth    int
 	Nodes    int
 	Time     time.Duration
-	NPS      int
+	NPS      float64
 }
 
 type NegamaxSearcher struct {
@@ -35,7 +35,6 @@ type NegamaxSearcher struct {
 	stop bool
 
 	nodes int
-	nps   int
 }
 
 func NewNegamaxSearcher(evaluator evaluation.Evaluator) NegamaxSearcher {
@@ -74,7 +73,7 @@ func (s NegamaxSearcher) Search(position chess.Position, depth int) SearchResult
 	}
 
 	elapsed := time.Since(start)
-	s.nps = int(int64(s.nodes) / elapsed.Milliseconds())
+	nps := float64(s.nodes) / float64(elapsed.Milliseconds())
 
 	return SearchResults{
 		BestMove: bestMove,
@@ -82,7 +81,7 @@ func (s NegamaxSearcher) Search(position chess.Position, depth int) SearchResult
 		Depth:    depth,
 		Nodes:    s.nodes,
 		Time:     elapsed,
-		NPS:      s.nps,
+		NPS:      nps,
 	}
 }
 
