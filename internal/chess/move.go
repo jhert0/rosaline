@@ -11,6 +11,7 @@ const (
 	NormalMove MoveType = iota
 	CastleMove
 	EnPassantMove
+	Null
 )
 
 func (t MoveType) String() string {
@@ -21,6 +22,8 @@ func (t MoveType) String() string {
 		return "Castle"
 	case EnPassantMove:
 		return "En Passant"
+	case Null:
+		return "Null"
 	}
 
 	return "<unknown>"
@@ -46,6 +49,8 @@ type Move struct {
 	promotionPiece Piece
 	capturePiece   Piece
 }
+
+var NullMove = NewMove(A1, A1, Null, NoMoveFlag)
 
 // NewMove creates a new move with the given from and to.
 func NewMove(from, to Square, moveType MoveType, flags MoveFlag) Move {
@@ -121,6 +126,10 @@ func (m Move) IsIrreversible() bool {
 }
 
 func (m Move) String() string {
+	if m.Type() == Null {
+		return "0000"
+	}
+
 	str := m.From.ToAlgebraic() + m.To.ToAlgebraic()
 
 	if m.promotionPiece != EmptyPiece {
