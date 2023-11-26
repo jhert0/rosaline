@@ -40,8 +40,8 @@ const (
 )
 
 type Move struct {
-	From Square
-	To   Square
+	from Square
+	to   Square
 
 	moveType MoveType
 	flags    MoveFlag
@@ -55,13 +55,23 @@ var NullMove = NewMove(A1, A1, Null, NoMoveFlag)
 // NewMove creates a new move with the given from and to.
 func NewMove(from, to Square, moveType MoveType, flags MoveFlag) Move {
 	return Move{
-		From:           from,
-		To:             to,
+		from:           from,
+		to:             to,
 		moveType:       moveType,
 		flags:          flags,
 		promotionPiece: EmptyPiece,
 		capturePiece:   EmptyPiece,
 	}
+}
+
+// From returns the square the piece is moving from.
+func (m Move) From() Square {
+	return m.from
+}
+
+// To returns the square the piece is moving to.
+func (m Move) To() Square {
+	return m.to
 }
 
 // WithPromotion sets that the move will result with the moving piece being promoted to the given piece.
@@ -89,16 +99,16 @@ func (m Move) PromotionPiece() Piece {
 // RankDifference calculates the difference in ranks between the from
 // square and the to square.
 func (m Move) RankDifference() int {
-	from := float64(m.From.Rank())
-	to := float64(m.To.Rank())
+	from := float64(m.from.Rank())
+	to := float64(m.to.Rank())
 	return int(math.Abs(from - to))
 }
 
 // FileDifference calculates the difference in files between the from
 // square and the to square.
 func (m Move) FileDifference() int {
-	from := float64(m.From.File())
-	to := float64(m.To.File())
+	from := float64(m.from.File())
+	to := float64(m.to.File())
 	return int(math.Abs(from - to))
 }
 
@@ -130,7 +140,7 @@ func (m Move) String() string {
 		return "0000"
 	}
 
-	str := m.From.ToAlgebraic() + m.To.ToAlgebraic()
+	str := m.from.ToAlgebraic() + m.to.ToAlgebraic()
 
 	if m.promotionPiece != EmptyPiece {
 		character := string(m.promotionPiece.Character())

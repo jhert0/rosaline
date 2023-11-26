@@ -559,7 +559,7 @@ func (p *Position) clearPiece(square Square) {
 
 // MakeMove applies the move to the current position.
 func (p *Position) MakeMove(move Move) error {
-	movingPiece, err := p.GetPieceAt(move.From)
+	movingPiece, err := p.GetPieceAt(move.From())
 	if err != nil {
 		return fmt.Errorf("%w: %w", ErrInvalidMove, err)
 	}
@@ -573,6 +573,9 @@ func (p *Position) MakeMove(move Move) error {
 		return fmt.Errorf("%w: trying to capture piece of same color with %s", ErrInvalidMove, move)
 	}
 
+	to := move.To()
+	from := move.From()
+
 	copy := p.Copy()
 
 	p.enPassant = -1   // clear en passant square, this will be set later if needed
@@ -584,15 +587,15 @@ func (p *Position) MakeMove(move Move) error {
 			opposingSide := p.turn.OpposingSide()
 
 			// check to see if a pawn is on a valid square for en passant
-			westPawn, _ := p.GetPieceAt(move.To + Square(west))
-			eastPawn, _ := p.GetPieceAt(move.To + Square(east))
-			if (westPawn.Type() == Pawn && westPawn.Color() == opposingSide && move.To.File() != 1) || (eastPawn.Type() == Pawn && eastPawn.Color() == opposingSide && move.To.File() != 8) {
-				p.enPassant = move.To + Square(pawnDirection(opposingSide))
+			westPawn, _ := p.GetPieceAt(to + Square(west))
+			eastPawn, _ := p.GetPieceAt(to + Square(east))
+			if (westPawn.Type() == Pawn && westPawn.Color() == opposingSide && to.File() != 1) || (eastPawn.Type() == Pawn && eastPawn.Color() == opposingSide && to.File() != 8) {
+				p.enPassant = to + Square(pawnDirection(opposingSide))
 			}
 		}
 
 		if movingPiece.Type() == Rook {
-			switch move.From {
+			switch from {
 			case A1:
 				p.castlingRights &= ^WhiteCastleQueenside
 				break
@@ -617,10 +620,10 @@ func (p *Position) MakeMove(move Move) error {
 		}
 
 		if move.Captures() {
-			p.clearPiece(move.To)
+			p.clearPiece(to)
 
 			if capturePiece.Type() == Rook {
-				switch move.To {
+				switch to {
 				case A1:
 					p.castlingRights &= ^WhiteCastleQueenside
 					break
@@ -637,23 +640,23 @@ func (p *Position) MakeMove(move Move) error {
 			}
 		}
 
-		p.clearPiece(move.From)
-		p.setPiece(move.To, movingPiece)
+		p.clearPiece(from)
+		p.setPiece(to, movingPiece)
 
 		if move.IsPromotion() {
-			p.clearPiece(move.To) // remove the original piece
+			p.clearPiece(to) // remove the original piece
 
 			// place the newly promoted piece
-			p.setPiece(move.To, move.PromotionPiece())
+			p.setPiece(to, move.PromotionPiece())
 		}
 		break
 	case CastleMove:
 		// move the king to it's new square
-		p.clearPiece(move.From)
-		p.setPiece(move.To, movingPiece)
+		p.clearPiece(from)
+		p.setPiece(to, movingPiece)
 
 		// move the rook to it's new square
-		switch move.To {
+		switch to {
 		case C1:
 			rook, _ := p.GetPieceAt(A1)
 			p.clearPiece(A1)
@@ -684,11 +687,11 @@ func (p *Position) MakeMove(move Move) error {
 		break
 	case EnPassantMove:
 		// move the pawn to it's new square
-		p.clearPiece(move.From)
-		p.setPiece(move.To, movingPiece)
+		p.clearPiece(from)
+		p.setPiece(to, movingPiece)
 
 		// remove the captured pawn
-		captureSquare := move.To + Square(pawnDirection(p.turn.OpposingSide()))
+		captureSquare := to + Square(pawnDirection(p.turn.OpposingSide()))
 		p.clearPiece(captureSquare)
 		break
 	}
@@ -810,7 +813,7 @@ func (p *Position) updateAttackers() {
 
 	moves := append(ourAttacks, theirAttacks...)
 	for _, move := range moves {
-		p.attackersBB[move.To].SetBit(uint64(move.From))
+		p.attackersBB[move.To()].SetBit(uint64(move.From()))
 	}
 }
 
