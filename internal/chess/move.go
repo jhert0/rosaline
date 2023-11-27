@@ -47,7 +47,6 @@ type Move struct {
 	flags    MoveFlag
 
 	promotionPiece Piece
-	capturePiece   Piece
 }
 
 var NullMove = NewMove(A1, A1, Null, NoMoveFlag)
@@ -60,7 +59,6 @@ func NewMove(from, to Square, moveType MoveType, flags MoveFlag) Move {
 		moveType:       moveType,
 		flags:          flags,
 		promotionPiece: EmptyPiece,
-		capturePiece:   EmptyPiece,
 	}
 }
 
@@ -78,12 +76,6 @@ func (m Move) To() Square {
 func (m *Move) WithPromotion(piece Piece) {
 	m.flags |= PromotionMoveFlag
 	m.promotionPiece = piece
-}
-
-// WithCapture sets that the move will result in the given piece being captured.
-func (m *Move) WithCapture(piece Piece) {
-	m.flags |= CaputureMoveFlag
-	m.capturePiece = piece
 }
 
 // Type returns the type of the move.
@@ -117,9 +109,9 @@ func (m Move) IsPromotion() bool {
 	return m.promotionPiece != EmptyPiece
 }
 
-// Captures returns whether the move results in a capture.
-func (m Move) Captures() bool {
-	return m.capturePiece != EmptyPiece
+// IsCapture returns whether the move results in a capture.
+func (m Move) IsCapture() bool {
+	return m.HasFlag(CaputureMoveFlag)
 }
 
 // HasFlag checks if the move has that flag set.

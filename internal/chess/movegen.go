@@ -54,14 +54,12 @@ func generatePawnMoves(position Position, genType MoveGenerationType) []Move {
 			if capturePiece != EmptyPiece && capturePiece.Color() != position.turn {
 				if captureSquare.Rank() == pawnPromotionRank(position.Turn()) {
 					for _, pieceType := range promotablePieces {
-						move := NewMove(square, captureSquare, NormalMove, NoMoveFlag)
-						move.WithCapture(capturePiece)
+						move := NewMove(square, captureSquare, NormalMove, CaputureMoveFlag)
 						move.WithPromotion(NewPiece(pieceType, position.Turn()))
 						moves = append(moves, move)
 					}
 				} else {
-					move := NewMove(square, captureSquare, NormalMove, NoMoveFlag)
-					move.WithCapture(capturePiece)
+					move := NewMove(square, captureSquare, NormalMove, CaputureMoveFlag)
 					moves = append(moves, move)
 				}
 			}
@@ -73,8 +71,7 @@ func generatePawnMoves(position Position, genType MoveGenerationType) []Move {
 
 			capturePiece, _ := position.GetPieceAt(captureSquare)
 			if capturePiece.Type() == Pawn && capturePiece.Color() == position.Turn().OpposingSide() {
-				move := NewMove(square, position.EnPassant(), EnPassantMove, NoMoveFlag)
-				move.WithCapture(capturePiece)
+				move := NewMove(square, position.EnPassant(), EnPassantMove, CaputureMoveFlag)
 				moves = append(moves, move)
 			}
 		}
@@ -108,11 +105,7 @@ func generateKnightMoves(position Position, genType MoveGenerationType) []Move {
 		capturesBB := attackBB & opponent
 		for capturesBB > 0 {
 			toSquare := Square(capturesBB.PopLsb())
-			piece, _ := position.GetPieceAt(toSquare)
-
-			move := NewMove(fromSquare, toSquare, NormalMove, NoMoveFlag)
-			move.WithCapture(piece)
-
+			move := NewMove(fromSquare, toSquare, NormalMove, CaputureMoveFlag)
 			moves = append(moves, move)
 		}
 	}
@@ -143,11 +136,7 @@ func generateBishopMoves(position Position, pieceBB BitBoard, genType MoveGenera
 		capturesBB := attackBB & opponent
 		for capturesBB > 0 {
 			toSquare := Square(capturesBB.PopLsb())
-			piece, _ := position.GetPieceAt(toSquare)
-
-			move := NewMove(fromSquare, toSquare, NormalMove, NoMoveFlag)
-			move.WithCapture(piece)
-
+			move := NewMove(fromSquare, toSquare, NormalMove, CaputureMoveFlag)
 			moves = append(moves, move)
 		}
 	}
@@ -178,11 +167,7 @@ func generateRookMoves(position Position, pieceBB BitBoard, genType MoveGenerati
 		capturesBB := attacks & opponent
 		for capturesBB > 0 {
 			toSquare := Square(capturesBB.PopLsb())
-			piece, _ := position.GetPieceAt(toSquare)
-
-			move := NewMove(fromSquare, toSquare, NormalMove, NoMoveFlag)
-			move.WithCapture(piece)
-
+			move := NewMove(fromSquare, toSquare, NormalMove, CaputureMoveFlag)
 			moves = append(moves, move)
 		}
 	}
@@ -224,11 +209,7 @@ func generateKingMoves(position Position, genType MoveGenerationType, includeCas
 	capturesBB := attacks & opponent
 	for capturesBB > 0 {
 		toSquare := Square(capturesBB.PopLsb())
-		piece, _ := position.GetPieceAt(toSquare)
-
-		move := NewMove(kingSquare, toSquare, NormalMove, NoMoveFlag)
-		move.WithCapture(piece)
-
+		move := NewMove(kingSquare, toSquare, NormalMove, CaputureMoveFlag)
 		moves = append(moves, move)
 	}
 

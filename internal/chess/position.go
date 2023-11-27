@@ -568,7 +568,7 @@ func (p *Position) MakeMove(move Move) error {
 		return fmt.Errorf("%w: tyring to move opponent's piece with %s", ErrInvalidMove, move)
 	}
 
-	capturePiece := move.capturePiece
+	capturePiece, _ := p.GetPieceAt(move.To())
 	if movingPiece.Color() == capturePiece.Color() {
 		return fmt.Errorf("%w: trying to capture piece of same color with %s", ErrInvalidMove, move)
 	}
@@ -619,7 +619,7 @@ func (p *Position) MakeMove(move Move) error {
 			}
 		}
 
-		if move.Captures() {
+		if move.IsCapture() {
 			p.clearPiece(to)
 
 			if capturePiece.Type() == Rook {
@@ -765,12 +765,13 @@ func (p *Position) MakeUciMove(uci string) error {
 		moveType = EnPassantMove
 	}
 
-	move := NewMove(from, to, moveType, NoMoveFlag)
-
-	capturePiece, err := p.GetPieceAt(to)
-	if err == nil {
-		move.WithCapture(capturePiece)
+	flag := QuietMoveFlag
+	capturePiece, _ := p.GetPieceAt(to)
+	if capturePiece != EmptyPiece {
+		flag = CaputureMoveFlag
 	}
+
+	move := NewMove(from, to, moveType, flag)
 
 	if len(uci) > 4 {
 		switch uci[4] {
