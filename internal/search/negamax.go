@@ -54,7 +54,7 @@ func NewNegamaxSearcher(evaluator evaluation.Evaluator) NegamaxSearcher {
 	}
 }
 
-func (s NegamaxSearcher) Search(position *chess.Position, depth int) SearchResults {
+func (s *NegamaxSearcher) Search(position *chess.Position, depth int) SearchResults {
 	s.nodes = 0
 	s.stop = false
 
