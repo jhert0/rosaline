@@ -9,12 +9,12 @@ func generatePawnAttacks(position Position, color Color) []Move {
 		square := Square(pawnBB.PopLsb())
 
 		if square.File() != 1 {
-			move := NewMove(square, square+Square(direction)+Square(west), NormalMove, NoMoveFlag)
+			move := NewMove(square, square+Square(direction)+Square(west), CaptureMove)
 			attacks = append(attacks, move)
 		}
 
 		if square.File() != 8 {
-			move := NewMove(square, square+Square(direction)+Square(east), NormalMove, NoMoveFlag)
+			move := NewMove(square, square+Square(direction)+Square(east), CaptureMove)
 			attacks = append(attacks, move)
 		}
 	}
@@ -33,7 +33,7 @@ func generateKnightAttacks(position Position, color Color) []Move {
 
 		for moveBB > 0 {
 			toSquare := Square(moveBB.PopLsb())
-			move := NewMove(square, toSquare, NormalMove, NoMoveFlag)
+			move := NewMove(square, toSquare, CaptureMove)
 			attacks = append(attacks, move)
 		}
 	}
@@ -50,7 +50,7 @@ func generateBishopAttacks(pieceBB BitBoard, occupied BitBoard) []Move {
 		attackBB := getBishopAttacks(occupied, fromSquare)
 		for attackBB > 0 {
 			toSquare := Square(attackBB.PopLsb())
-			move := NewMove(fromSquare, toSquare, NormalMove, NoMoveFlag)
+			move := NewMove(fromSquare, toSquare, CaptureMove)
 			attacks = append(attacks, move)
 		}
 	}
@@ -67,7 +67,7 @@ func generateRookAttacks(pieceBB BitBoard, occupied BitBoard) []Move {
 		attackBB := getRookAttacks(occupied, fromSquare)
 		for attackBB > 0 {
 			toSquare := Square(attackBB.PopLsb())
-			move := NewMove(fromSquare, toSquare, NormalMove, NoMoveFlag)
+			move := NewMove(fromSquare, toSquare, CaptureMove)
 			attacks = append(attacks, move)
 		}
 	}
@@ -98,7 +98,7 @@ func generateKingAttacks(position Position, color Color) []Move {
 		moveBB := kingMoves[fromSquare]
 		for moveBB > 0 {
 			toSquare := Square(moveBB.PopLsb())
-			move := NewMove(fromSquare, toSquare, NormalMove, NoMoveFlag)
+			move := NewMove(fromSquare, toSquare, CaptureMove)
 			attacks = append(attacks, move)
 		}
 	}

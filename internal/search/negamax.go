@@ -213,7 +213,7 @@ func (s *NegamaxSearcher) doSearch(position *chess.Position, alpha int, beta int
 		if score >= beta {
 			nodeType = LowerNode
 
-			if !move.HasFlag(chess.CaputureMoveFlag) {
+			if !move.IsCapture() {
 				turn := position.Turn()
 				length := len(s.killerMoves[turn])
 				if length >= maxNumberKillerMoves {

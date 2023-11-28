@@ -8,16 +8,19 @@ import (
 type MoveType uint8
 
 const (
-	NormalMove MoveType = iota
-	CastleMove
+	QuietMove MoveType = iota
+	CaptureMove
 	EnPassantMove
+	CastleMove
 	Null
 )
 
 func (t MoveType) String() string {
 	switch t {
-	case NormalMove:
-		return "Normal"
+	case QuietMove:
+		return "Quiet"
+	case CaptureMove:
+		return "Capture"
 	case CastleMove:
 		return "Castle"
 	case EnPassantMove:
@@ -29,14 +32,11 @@ func (t MoveType) String() string {
 	return "<unknown>"
 }
 
-type MoveFlag uint16
+type MoveFlag uint8
 
 const (
-	NoMoveFlag        MoveFlag = 0x0000
-	QuietMoveFlag     MoveFlag = 0x0001
-	CaputureMoveFlag  MoveFlag = 0x0010
-	PawnPushMoveFlag  MoveFlag = 0x0100
-	PromotionMoveFlag MoveFlag = 0x1000
+	NoMoveFlag       MoveFlag = 0b0000
+	PawnPushMoveFlag MoveFlag = 0b0001
 )
 
 type Move struct {
@@ -49,15 +49,15 @@ type Move struct {
 	promotionPiece Piece
 }
 
-var NullMove = NewMove(A1, A1, Null, NoMoveFlag)
+var NullMove = NewMove(A1, A1, Null)
 
 // NewMove creates a new move with the given from and to.
-func NewMove(from, to Square, moveType MoveType, flags MoveFlag) Move {
+func NewMove(from, to Square, moveType MoveType) Move {
 	return Move{
 		from:           from,
 		to:             to,
 		moveType:       moveType,
-		flags:          flags,
+		flags:          NoMoveFlag,
 		promotionPiece: EmptyPiece,
 	}
 }
@@ -74,8 +74,11 @@ func (m Move) To() Square {
 
 // WithPromotion sets that the move will result with the moving piece being promoted to the given piece.
 func (m *Move) WithPromotion(piece Piece) {
-	m.flags |= PromotionMoveFlag
 	m.promotionPiece = piece
+}
+
+func (m *Move) WithFlags(flags MoveFlag) {
+	m.flags |= flags
 }
 
 // Type returns the type of the move.
@@ -111,7 +114,7 @@ func (m Move) IsPromotion() bool {
 
 // IsCapture returns whether the move results in a capture.
 func (m Move) IsCapture() bool {
-	return m.HasFlag(CaputureMoveFlag)
+	return m.Type() == CaptureMove || m.Type() == EnPassantMove
 }
 
 // HasFlag checks if the move has that flag set.
@@ -124,7 +127,7 @@ func (m Move) HasFlag(flag MoveFlag) bool {
 // Moves such as pawn moves and captures can't be reversed once done meaning
 // the position before the was made is no longer possible.
 func (m Move) IsIrreversible() bool {
-	return m.HasFlag(PawnPushMoveFlag) || m.HasFlag(CaputureMoveFlag) || m.HasFlag(PromotionMoveFlag)
+	return m.HasFlag(PawnPushMoveFlag) || m.IsCapture() || m.IsPromotion()
 }
 
 func (m Move) String() string {

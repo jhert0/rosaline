@@ -582,7 +582,7 @@ func (p *Position) MakeMove(move Move) error {
 	p.fiftyMoveClock++ // increment the fifty move clock, this will be cleared later if needed
 
 	switch move.Type() {
-	case NormalMove:
+	case QuietMove:
 		if movingPiece.Type() == Pawn && move.RankDifference() == 2 {
 			opposingSide := p.turn.OpposingSide()
 
@@ -619,35 +619,30 @@ func (p *Position) MakeMove(move Move) error {
 			}
 		}
 
-		if move.IsCapture() {
-			p.clearPiece(to)
-
-			if capturePiece.Type() == Rook {
-				switch to {
-				case A1:
-					p.castlingRights &= ^WhiteCastleQueenside
-					break
-				case A8:
-					p.castlingRights &= ^BlackCastleQueenside
-					break
-				case H1:
-					p.castlingRights &= ^WhiteCastleKingside
-					break
-				case H8:
-					p.castlingRights &= ^BlackCastleKingside
-					break
-				}
-			}
-		}
-
 		p.clearPiece(from)
 		p.setPiece(to, movingPiece)
+		break
+	case CaptureMove:
+		p.clearPiece(to)
+		p.clearPiece(from)
 
-		if move.IsPromotion() {
-			p.clearPiece(to) // remove the original piece
+		p.setPiece(to, movingPiece)
 
-			// place the newly promoted piece
-			p.setPiece(to, move.PromotionPiece())
+		if capturePiece.Type() == Rook {
+			switch to {
+			case A1:
+				p.castlingRights &= ^WhiteCastleQueenside
+				break
+			case A8:
+				p.castlingRights &= ^BlackCastleQueenside
+				break
+			case H1:
+				p.castlingRights &= ^WhiteCastleKingside
+				break
+			case H8:
+				p.castlingRights &= ^BlackCastleKingside
+				break
+			}
 		}
 		break
 	case CastleMove:
@@ -696,8 +691,15 @@ func (p *Position) MakeMove(move Move) error {
 		break
 	}
 
+	if move.IsPromotion() {
+		p.clearPiece(to) // remove the original piece
+
+		// place the newly promoted piece
+		p.setPiece(to, move.PromotionPiece())
+	}
+
 	// clear the fifty move clock, a pawn has moved or a capture has happened
-	if movingPiece.Type() == Pawn || capturePiece.Type() != None {
+	if movingPiece.Type() == Pawn || move.IsCapture() {
 		p.fiftyMoveClock = 0
 	}
 
@@ -748,30 +750,36 @@ func (p *Position) MakeUciMove(uci string) error {
 		return err
 	}
 
-	moveType := NormalMove
-
-	switch uci {
-	case "e1g1", "e1c1", "e8g8", "e8c8":
-		moveType = CastleMove
-		break
-	}
-
 	movingPiece, err := p.GetPieceAt(from)
 	if err != nil {
 		return err
 	}
 
-	if movingPiece.Type() == Pawn && to == p.enPassant {
+	moveType := QuietMove
+	flags := NoMoveFlag
+
+	if movingPiece.Type() == King {
+		switch uci {
+		case "e1g1", "e1c1", "e8g8", "e8c8":
+			moveType = CastleMove
+			break
+		}
+	} else if movingPiece.Type() == Pawn && to == p.enPassant {
 		moveType = EnPassantMove
+	} else if movingPiece.Type() == Pawn && FileDistance(to, from) == 0 { // if a pawn is moving and not moving to another file then it's a pawn push
+		flags |= PawnPushMoveFlag
 	}
 
-	flag := QuietMoveFlag
 	capturePiece, _ := p.GetPieceAt(to)
 	if capturePiece != EmptyPiece {
-		flag = CaputureMoveFlag
+		moveType = CaptureMove
 	}
 
-	move := NewMove(from, to, moveType, flag)
+	move := NewMove(from, to, moveType)
+
+	if flags != NoMoveFlag {
+		move.WithFlags(flags)
+	}
 
 	if len(uci) > 4 {
 		switch uci[4] {

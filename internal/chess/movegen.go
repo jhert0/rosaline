@@ -21,19 +21,24 @@ func generatePawnMoves(position Position, genType MoveGenerationType) []Move {
 
 			if toSquare.Rank() == pawnPromotionRank(position.Turn()) {
 				for _, pieceType := range promotablePieces {
-					move := NewMove(square, toSquare, NormalMove, QuietMoveFlag|PawnPushMoveFlag)
+					move := NewMove(square, toSquare, QuietMove)
+					move.WithFlags(PawnPushMoveFlag)
 					move.WithPromotion(NewPiece(pieceType, position.turn))
 
 					moves = append(moves, move)
 				}
 			} else {
-				moves = append(moves, NewMove(square, toSquare, NormalMove, QuietMoveFlag|PawnPushMoveFlag))
+				move := NewMove(square, toSquare, QuietMove)
+				move.WithFlags(PawnPushMoveFlag)
+				moves = append(moves, move)
 			}
 
 			if square.Rank() == pawnStartingRank(position.turn) {
 				toSquare := square + (dir * 2)
 				if !position.IsSquareOccupied(toSquare) {
-					moves = append(moves, NewMove(square, toSquare, NormalMove, QuietMoveFlag|PawnPushMoveFlag))
+					move := NewMove(square, toSquare, QuietMove)
+					move.WithFlags(PawnPushMoveFlag)
+					moves = append(moves, move)
 				}
 			}
 		}
@@ -54,12 +59,12 @@ func generatePawnMoves(position Position, genType MoveGenerationType) []Move {
 			if capturePiece != EmptyPiece && capturePiece.Color() != position.turn {
 				if captureSquare.Rank() == pawnPromotionRank(position.Turn()) {
 					for _, pieceType := range promotablePieces {
-						move := NewMove(square, captureSquare, NormalMove, CaputureMoveFlag)
+						move := NewMove(square, captureSquare, CaptureMove)
 						move.WithPromotion(NewPiece(pieceType, position.Turn()))
 						moves = append(moves, move)
 					}
 				} else {
-					move := NewMove(square, captureSquare, NormalMove, CaputureMoveFlag)
+					move := NewMove(square, captureSquare, CaptureMove)
 					moves = append(moves, move)
 				}
 			}
@@ -71,7 +76,7 @@ func generatePawnMoves(position Position, genType MoveGenerationType) []Move {
 
 			capturePiece, _ := position.GetPieceAt(captureSquare)
 			if capturePiece.Type() == Pawn && capturePiece.Color() == position.Turn().OpposingSide() {
-				move := NewMove(square, position.EnPassant(), EnPassantMove, CaputureMoveFlag)
+				move := NewMove(square, position.EnPassant(), EnPassantMove)
 				moves = append(moves, move)
 			}
 		}
@@ -97,7 +102,7 @@ func generateKnightMoves(position Position, genType MoveGenerationType) []Move {
 			moveBB := attackBB & ^occupied
 			for moveBB > 0 {
 				toSquare := Square(moveBB.PopLsb())
-				move := NewMove(fromSquare, toSquare, NormalMove, QuietMoveFlag)
+				move := NewMove(fromSquare, toSquare, QuietMove)
 				moves = append(moves, move)
 			}
 		}
@@ -105,7 +110,7 @@ func generateKnightMoves(position Position, genType MoveGenerationType) []Move {
 		capturesBB := attackBB & opponent
 		for capturesBB > 0 {
 			toSquare := Square(capturesBB.PopLsb())
-			move := NewMove(fromSquare, toSquare, NormalMove, CaputureMoveFlag)
+			move := NewMove(fromSquare, toSquare, CaptureMove)
 			moves = append(moves, move)
 		}
 	}
@@ -128,7 +133,7 @@ func generateBishopMoves(position Position, pieceBB BitBoard, genType MoveGenera
 			moveBB := attackBB & ^occupied
 			for moveBB > 0 {
 				toSquare := Square(moveBB.PopLsb())
-				move := NewMove(fromSquare, toSquare, NormalMove, QuietMoveFlag)
+				move := NewMove(fromSquare, toSquare, QuietMove)
 				moves = append(moves, move)
 			}
 		}
@@ -136,7 +141,7 @@ func generateBishopMoves(position Position, pieceBB BitBoard, genType MoveGenera
 		capturesBB := attackBB & opponent
 		for capturesBB > 0 {
 			toSquare := Square(capturesBB.PopLsb())
-			move := NewMove(fromSquare, toSquare, NormalMove, CaputureMoveFlag)
+			move := NewMove(fromSquare, toSquare, CaptureMove)
 			moves = append(moves, move)
 		}
 	}
@@ -159,7 +164,7 @@ func generateRookMoves(position Position, pieceBB BitBoard, genType MoveGenerati
 			moveBB := attacks & ^occupied
 			for moveBB > 0 {
 				toSquare := Square(moveBB.PopLsb())
-				move := NewMove(fromSquare, toSquare, NormalMove, QuietMoveFlag)
+				move := NewMove(fromSquare, toSquare, QuietMove)
 				moves = append(moves, move)
 			}
 		}
@@ -167,7 +172,7 @@ func generateRookMoves(position Position, pieceBB BitBoard, genType MoveGenerati
 		capturesBB := attacks & opponent
 		for capturesBB > 0 {
 			toSquare := Square(capturesBB.PopLsb())
-			move := NewMove(fromSquare, toSquare, NormalMove, CaputureMoveFlag)
+			move := NewMove(fromSquare, toSquare, CaptureMove)
 			moves = append(moves, move)
 		}
 	}
@@ -201,7 +206,7 @@ func generateKingMoves(position Position, genType MoveGenerationType, includeCas
 		moveBB := attacks & ^occupied
 		for moveBB > 0 {
 			toSquare := Square(moveBB.PopLsb())
-			move := NewMove(kingSquare, toSquare, NormalMove, QuietMoveFlag)
+			move := NewMove(kingSquare, toSquare, QuietMove)
 			moves = append(moves, move)
 		}
 	}
@@ -209,29 +214,29 @@ func generateKingMoves(position Position, genType MoveGenerationType, includeCas
 	capturesBB := attacks & opponent
 	for capturesBB > 0 {
 		toSquare := Square(capturesBB.PopLsb())
-		move := NewMove(kingSquare, toSquare, NormalMove, CaputureMoveFlag)
+		move := NewMove(kingSquare, toSquare, CaptureMove)
 		moves = append(moves, move)
 	}
 
 	if includeCastling {
 		if position.turn == White {
 			if position.HasCastlingRights(WhiteCastleKingside) && position.squaresEmpty([]Square{F1, G1}) {
-				move := NewMove(kingSquare, kingSquare+Square(east*2), CastleMove, QuietMoveFlag)
+				move := NewMove(kingSquare, kingSquare+Square(east*2), CastleMove)
 				moves = append(moves, move)
 			}
 
 			if position.HasCastlingRights(WhiteCastleQueenside) && position.squaresEmpty([]Square{D1, C1, B1}) {
-				move := NewMove(kingSquare, kingSquare+Square(west*2), CastleMove, QuietMoveFlag)
+				move := NewMove(kingSquare, kingSquare+Square(west*2), CastleMove)
 				moves = append(moves, move)
 			}
 		} else {
 			if position.HasCastlingRights(BlackCastleKingside) && position.squaresEmpty([]Square{F8, G8}) {
-				move := NewMove(kingSquare, kingSquare+Square(east*2), CastleMove, QuietMoveFlag)
+				move := NewMove(kingSquare, kingSquare+Square(east*2), CastleMove)
 				moves = append(moves, move)
 			}
 
 			if position.HasCastlingRights(BlackCastleQueenside) && position.squaresEmpty([]Square{D8, C8, B8}) {
-				move := NewMove(kingSquare, kingSquare+Square(west*2), CastleMove, QuietMoveFlag)
+				move := NewMove(kingSquare, kingSquare+Square(west*2), CastleMove)
 				moves = append(moves, move)
 			}
 		}
