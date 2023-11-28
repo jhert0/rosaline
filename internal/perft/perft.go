@@ -15,7 +15,7 @@ func Perft(position chess.Position, depth int, print bool) uint64 {
 	var nodes uint64 = 0
 	moves := position.GenerateMoves(chess.LegalMoveGeneration)
 	for _, move := range moves {
-		err := position.MakeUciMove(move.String())
+		err := position.MakeMove(move)
 		if err != nil {
 			panic(err)
 		}
