@@ -72,7 +72,7 @@ func (s *NegamaxSearcher) Search(position *chess.Position, depth int, print bool
 
 		if print {
 			nps := float64(s.nodes) / float64(elapsed.Milliseconds())
-			fmt.Printf("info depth %d score cp %d nodes %d nps %f pv %s time %d tbhits %d\n", d, bestScore, s.nodes, nps, s.getPV(), elapsed.Milliseconds(), s.ttable.Hits())
+			fmt.Printf("info depth %d score cp %d nodes %d nps %f pv %s time %d tbhits %d\n", d, score, s.nodes, nps, s.getPV(), elapsed.Milliseconds(), s.ttable.Hits())
 		}
 
 		if s.stop {
