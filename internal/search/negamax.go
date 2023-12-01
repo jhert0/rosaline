@@ -56,7 +56,6 @@ func (s *NegamaxSearcher) Search(position *chess.Position, depth int, print bool
 	s.ClearPreviousSearch()
 
 	bestMove := chess.NullMove
-	bestScore := math.MinInt + 1
 
 	for d := 1; d <= depth; d++ {
 		start := time.Now()
@@ -65,10 +64,7 @@ func (s *NegamaxSearcher) Search(position *chess.Position, depth int, print bool
 
 		elapsed := time.Since(start)
 
-		if score > bestScore {
-			bestScore = score
-			bestMove = s.pvtable[0][0]
-		}
+		bestMove = s.pvtable[0][0]
 
 		if print {
 			nps := float64(s.nodes) / float64(elapsed.Milliseconds())
