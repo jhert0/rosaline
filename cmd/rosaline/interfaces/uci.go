@@ -3,7 +3,6 @@ package interfaces
 import (
 	"bufio"
 	"fmt"
-	"math"
 	"os"
 	"rosaline/internal/chess"
 	"rosaline/internal/evaluation"
@@ -53,28 +52,9 @@ loop:
 			break
 		case "go":
 			go func() {
-				var bestMove chess.Move
-				var bestScore int = math.MinInt
-
-				for depth := 1; depth <= 4; depth++ {
-					results := i.searcher.Search(&position, depth)
-
-					if i.searcher.Stopped() {
-						break
-					}
-
-					if results.Score > bestScore {
-						bestMove = results.BestMove
-						bestScore = results.Score
-					}
-
-					fmt.Printf("info depth %d score cp %d nodes %d nps %f time %d tbhits %d\n", depth, results.Score, results.Nodes, results.NPS, results.Time.Milliseconds(), results.Hits)
-				}
-
+				bestMove := i.searcher.Search(&position, DefaultDepth, true)
 				position.MakeMove(bestMove)
 				fmt.Println("bestmove", bestMove)
-
-				i.searcher.ClearPreviousSearch()
 			}()
 			break
 		case "stop":
