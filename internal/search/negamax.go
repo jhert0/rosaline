@@ -73,7 +73,7 @@ func (s *NegamaxSearcher) Search(position *chess.Position, depth int) SearchResu
 
 	for _, move := range moves {
 		position.MakeMove(move)
-		score := -s.doSearch(position, initialAlpha, initialBeta, depth-1, 0, 0)
+		score := -s.doSearch(position, initialAlpha, initialBeta, depth, 0, 0)
 		position.Undo()
 
 		if score > bestScore {
