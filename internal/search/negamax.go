@@ -19,7 +19,7 @@ const (
 
 	nullMovePruningReduction = 2
 
-	window = 500
+	window = 50
 
 	MaxDepth = 16
 )
@@ -56,15 +56,27 @@ func (s *NegamaxSearcher) Search(position *chess.Position, depth int, print bool
 	s.ClearPreviousSearch()
 
 	bestMove := chess.NullMove
+	alpha := initialAlpha
+	beta := initialBeta
 
 	for d := 1; d <= depth; d++ {
 		start := time.Now()
 
-		score := s.doSearch(position, initialAlpha, initialBeta, d, 0, 0)
+		score := s.doSearch(position, alpha, beta, d, 0, 0)
+		if score <= alpha || score >= beta {
+			alpha = initialAlpha
+			beta = initialBeta
+
+			d--
+
+			continue
+		}
 
 		elapsed := time.Since(start)
 
 		bestMove = s.pvtable[0][0]
+		alpha = score - window
+		beta = score + window
 
 		if print {
 			nps := float64(s.nodes) / float64(elapsed.Seconds())
