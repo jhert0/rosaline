@@ -152,20 +152,20 @@ func (s *NegamaxSearcher) doSearch(position *chess.Position, alpha int, beta int
 
 	entry, ok := s.ttable.Get(position.Hash())
 	if ok {
-		if entry.Depth >= depth {
+		if entry.Depth >= depth && entry.Hash == position.Hash() && ply != 0 {
 			switch entry.Type {
 			case ExactNode:
 				s.pvlength[ply] = ply + 1
 				s.pvtable[ply][ply] = entry.Move
 				return entry.Score
 			case UpperNode:
-				if entry.Score < alpha {
+				if entry.Score <= alpha {
 					return alpha
 				}
 
 				break
 			case LowerNode:
-				if entry.Score > beta {
+				if entry.Score >= beta {
 					return beta
 				}
 
@@ -253,7 +253,7 @@ func (s *NegamaxSearcher) doSearch(position *chess.Position, alpha int, beta int
 	}
 
 	if !s.stop {
-		entry := NewTableEntry(nodeType, bestMove, bestScore, depth, position.Plies())
+		entry := NewTableEntry(position.Hash(), nodeType, bestMove, bestScore, depth, position.Plies())
 		s.ttable.Insert(position.Hash(), entry)
 	}
 

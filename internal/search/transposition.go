@@ -28,6 +28,7 @@ func (t NodeType) String() string {
 }
 
 type TableEntry struct {
+	Hash  uint64
 	Type  NodeType
 	Move  chess.Move
 	Score int
@@ -46,8 +47,9 @@ const (
 )
 
 // NewTableEntry creates a new TableEntry.
-func NewTableEntry(nodeType NodeType, move chess.Move, score, depth int, age int) TableEntry {
+func NewTableEntry(hash uint64, nodeType NodeType, move chess.Move, score, depth int, age int) TableEntry {
 	return TableEntry{
+		Hash:  hash,
 		Type:  nodeType,
 		Move:  move,
 		Score: score,
