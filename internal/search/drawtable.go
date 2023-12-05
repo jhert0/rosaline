@@ -32,8 +32,8 @@ func (t *drawTable) Pop() (uint64, bool) {
 		return 0, false
 	}
 
-	value := t.hashes[t.index]
 	t.index--
+	value := t.hashes[t.index]
 
 	return value, true
 }
@@ -49,7 +49,7 @@ func (t drawTable) IsRepeat(searchHash uint64) bool {
 		hash := t.hashes[i]
 		if hash == searchHash {
 			count++
-			if count >= 2 {
+			if count >= 3 {
 				return true
 			}
 		}
