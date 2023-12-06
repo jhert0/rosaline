@@ -52,7 +52,7 @@ loop:
 			break
 		case "go":
 			go func() {
-				bestMove := i.searcher.Search(&position, DefaultDepth, true)
+				bestMove := i.searcher.Search(position, DefaultDepth, true)
 				position.MakeMove(bestMove)
 				fmt.Println("bestmove", bestMove)
 			}()

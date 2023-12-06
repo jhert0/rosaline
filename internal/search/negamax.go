@@ -52,7 +52,7 @@ func NewNegamaxSearcher(evaluator evaluation.Evaluator) NegamaxSearcher {
 	}
 }
 
-func (s *NegamaxSearcher) Search(position *chess.Position, depth int, print bool) chess.Move {
+func (s *NegamaxSearcher) Search(position chess.Position, depth int, print bool) chess.Move {
 	s.ClearPreviousSearch()
 
 	bestMove := chess.NullMove
@@ -106,7 +106,7 @@ func (s NegamaxSearcher) getPV() string {
 	return builder.String()
 }
 
-func (s NegamaxSearcher) scoreMove(position *chess.Position, move chess.Move, ply int) int {
+func (s NegamaxSearcher) scoreMove(position chess.Position, move chess.Move, ply int) int {
 	turn := position.Turn()
 
 	if s.pvtable[0][ply] == move {
@@ -120,7 +120,7 @@ func (s NegamaxSearcher) scoreMove(position *chess.Position, move chess.Move, pl
 	return 0
 }
 
-func (s *NegamaxSearcher) doSearch(position *chess.Position, alpha int, beta int, depth int, ply int, extensions int) int {
+func (s *NegamaxSearcher) doSearch(position chess.Position, alpha int, beta int, depth int, ply int, extensions int) int {
 	s.pvlength[ply] = ply
 
 	if s.stop {
@@ -154,7 +154,7 @@ func (s *NegamaxSearcher) doSearch(position *chess.Position, alpha int, beta int
 
 	if depth == 0 {
 		if inCheck { // don't go in quiescence search when in check
-			return s.evaluator.AbsoluteEvaluation(position)
+			return s.evaluator.AbsoluteEvaluation(&position)
 		} else {
 			return s.quiescence(position, alpha, beta)
 		}
@@ -272,8 +272,8 @@ func (s *NegamaxSearcher) doSearch(position *chess.Position, alpha int, beta int
 	return bestScore
 }
 
-func (s NegamaxSearcher) quiescence(position *chess.Position, alpha int, beta int) int {
-	evaluation := s.evaluator.AbsoluteEvaluation(position)
+func (s NegamaxSearcher) quiescence(position chess.Position, alpha int, beta int) int {
+	evaluation := s.evaluator.AbsoluteEvaluation(&position)
 	if evaluation >= beta {
 		return beta
 	}

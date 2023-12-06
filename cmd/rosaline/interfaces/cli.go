@@ -83,13 +83,13 @@ func (i cliInterface) Loop() {
 				}
 			}
 
-			bestMove := i.searcher.Search(&position, depth, false)
+			bestMove := i.searcher.Search(position, depth, false)
 			fmt.Println("best move:", bestMove)
 		} else if cmd == "evaluate" {
 			score := i.evaluator.Evaluate(&position)
 			fmt.Println("score:", score)
 		} else if cmd == "play" {
-			bestMove := i.searcher.Search(&position, DefaultDepth, false)
+			bestMove := i.searcher.Search(position, DefaultDepth, false)
 			position.MakeMove(bestMove)
 			fmt.Println("played:", bestMove)
 		} else if cmd == "fen" {

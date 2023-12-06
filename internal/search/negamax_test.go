@@ -12,6 +12,6 @@ func BenchmarkNegamax(b *testing.B) {
 	searcher := NewNegamaxSearcher(evaluator)
 
 	for i := 0; i < b.N; i++ {
-		searcher.Search(&position, 4, false)
+		searcher.Search(position, 4, false)
 	}
 }
