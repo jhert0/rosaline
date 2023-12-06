@@ -352,6 +352,65 @@ func TestIsStalemate(t *testing.T) {
 	isStalemateTest(t, StartingFen, Black, false)
 }
 
+func undoTest(t *testing.T, fen string, move string) {
+	position, _ := NewPosition(fen)
+
+	position.MakeUciMove(move)
+	position.Undo()
+
+	if position.Fen() != fen {
+		t.Fatalf("%s: expected fen after %s to be %s got %s", t.Name(), move, fen, position.Fen())
+	}
+}
+
+func TestUndo(t *testing.T) {
+	cases := []struct {
+		Fen  string
+		Move string
+	}{
+		{
+			Fen:  StartingFen,
+			Move: "e2e4",
+		},
+		{
+			Fen:  "rnbqk2r/pppp1ppp/5n2/2b1p3/2B1P3/5N2/PPPP1PPP/RNBQK2R w KQkq - 4 4",
+			Move: "e1g1",
+		},
+		{
+			Fen:  "rnbqk2r/pppp1ppp/5n2/2b1p3/2B1P3/5N2/PPPP1PPP/RNBQ1RK1 b kq - 5 4",
+			Move: "e8g8",
+		},
+		{
+			Fen:  "r3kbnr/ppp1pppp/2nq4/3p1b2/3P1B2/2NQ4/PPP1PPPP/R3KBNR w KQkq - 6 5",
+			Move: "e1c1",
+		},
+		{
+			Fen:  "r3kbnr/ppp1pppp/2nq4/3p1b2/3P1B2/2NQ4/PPP1PPPP/2KR1BNR b kq - 7 5",
+			Move: "e8c8",
+		},
+		{
+			Fen:  "r1bqk1nr/ppppp2P/2n4b/8/8/8/PPPP1PPP/RNBQKBNR w KQkq - 1 5",
+			Move: "h7g8q",
+		},
+		{
+			Fen:  "r1bqk1nr/ppppp2P/2n4b/8/8/8/PPPP1PPP/RNBQKBNR w KQkq - 1 5",
+			Move: "h7g8r",
+		},
+		{
+			Fen:  "r1bqk1nr/ppppp2P/2n4b/8/8/8/PPPP1PPP/RNBQKBNR w KQkq - 1 5",
+			Move: "h7g8n",
+		},
+		{
+			Fen:  "r1bqk1nr/ppppp2P/2n4b/8/8/8/PPPP1PPP/RNBQKBNR w KQkq - 1 5",
+			Move: "h7g8b",
+		},
+	}
+
+	for _, c := range cases {
+		undoTest(t, c.Fen, c.Move)
+	}
+}
+
 // Benchmarks
 
 func BenchmarkMakeUciMove(b *testing.B) {
