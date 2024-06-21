@@ -143,15 +143,6 @@ func (s *NegamaxSearcher) doSearch(position chess.Position, alpha int, beta int,
 		extensions++
 	}
 
-	moves := position.GenerateMoves(chess.LegalMoveGeneration)
-	if len(moves) == 0 {
-		if inCheck {
-			return -evaluation.MateScore + ply
-		} else {
-			return evaluation.DrawScore
-		}
-	}
-
 	if depth == 0 {
 		if inCheck { // don't go in quiescence search when in check
 			return s.evaluator.AbsoluteEvaluation(&position)
@@ -202,6 +193,7 @@ func (s *NegamaxSearcher) doSearch(position chess.Position, alpha int, beta int,
 		}
 	}
 
+	moves := position.GenerateMoves(chess.LegalMoveGeneration)
 	slices.SortFunc(moves, func(m1, m2 chess.Move) int {
 		return cmp.Compare(s.scoreMove(position, m1, ply), s.scoreMove(position, m2, ply))
 	})
@@ -262,6 +254,14 @@ func (s *NegamaxSearcher) doSearch(position chess.Position, alpha int, beta int,
 
 			s.pvlength[ply] = s.pvlength[ply+1]
 		}
+	}
+
+	if len(moves) == 0 {
+		if inCheck {
+			return -evaluation.MateScore + ply
+		}
+
+		return evaluation.DrawScore
 	}
 
 	if !s.stop {
